@@ -24,5 +24,6 @@ df1 <- df[!duplicated(df[c("SportswsId")]),] %>%
   filter(!(SportswsId == "/nba/-"))
 cleanname <- make_clean_names(str_replace_all(df1$SportswsId, "/nba/", ""))
 df2 <- data.frame(df1, "SportswsClean" = cleanname)
-write.csv(df2, "SportswsIds.csv", row.names = F)
+df2 <- df2[order(df2$SportswsId),]
 
+write.csv(df2, "SportswsIds.csv", row.names = F)
