@@ -55,24 +55,6 @@ for(i in 1:length(spotrac_links)){
 }
 
 spotrac_data_df <- do.call("rbind", spotrac_data)
-#spotrac_data_df <- spotrac_data_df[!duplicated(spotrac_data_df$link),]
 spotrac_data_df <- spotrac_data_df[order(spotrac_data_df$SpotracName, spotrac_data_df$SpotracSeason),]
 
-# Scrape Ages as Replacement for Birthday (Not Available on Spotrac)
-#age <- {}
-#for(i in 1:nrow(spotrac_data_df)){
-#  webpage <- read_html(as.character(spotrac_data_df$link[i]))
-#  age[i] <- webpage %>%
-#    html_nodes(xpath = "//*[@id='main']/header/div[2]/div/div[1]/span[2]/text()") %>%
-#    html_text() %>%
-#    trimws() %>%
-#    as.numeric()
-#}
-
-# Format Complete Table
-#spotrac_data_df$age <- age
-#spotrac_data_df$id <- gsub("https://www.spotrac.com/redirect/player/", "", spotrac_data_df$link)
-#spotrac_data_df$id <- gsub("\\/", "", spotrac_data_df$id)
-
 write.csv(spotrac_data_df, "SpotracIds.csv", row.names = F)
-
