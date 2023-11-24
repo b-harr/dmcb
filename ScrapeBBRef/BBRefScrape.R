@@ -54,34 +54,9 @@ all_bb_ref <- do.call("rbind", all_data)
 all_bb_ref <- all_bb_ref[!duplicated(all_bb_ref$BBRefID),]
 all_bb_ref <- all_bb_ref[order(all_bb_ref$BBRefID),]
 
-# Scrape Player Birthdays
-#urls <- paste0("https://www.basketball-reference.com", all_bb_ref$Link)
-#birthdays <- {}
-
-#for(i in 1:nrow(all_bb_ref)){
-#  webpage <- read_html(urls[i])
-#  webpage %>%
-#    html_nodes(xpath = "//*[@id='necro-birth']") %>%
-#    html_text() -> bd
-#  bd <- gsub("\n", "", bd)
-#  bd <- gsub("\\s+", " ", bd)
-#  bd <- trimws(bd)
-#  bd <- as.Date(bd, format = "%B %d, %Y")
-#  bd <- if(length(bd) == 0){
-#    NA
-#  } else {
-#    bd
-#  }
-#  
-#  birthdays[i] <- list(bd)
-#}
-
 # Format Complete Table
-#birthdays <- as.Date(unlist(birthdays))
-#all_bb_ref$BirthDate <- birthdays
 all_bb_ref$Player <- gsub("\\*", "", all_bb_ref$Player)
 all_bb_ref$Link <- paste0("https://www.basketball-reference.com", all_bb_ref$Link)
-#names(all_bb_ref) <- c("BBRefName", "BBRefLink", "BBRefID", "BBRefBirthDate")
 names(all_bb_ref) <- c("BBRefName", "BBRefUrl", "BBRefId")
 df <- data.frame(
     "BBRefId" = all_bb_ref$BBRefId, 
@@ -90,6 +65,6 @@ df <- data.frame(
     "BBRefClean" = make_clean_names(str_replace_all(str_to_lower(all_bb_ref$BBRefName), "\\.", ""))
   )
 
-df <- df[order(df$BBRefName),]
+df <- df[order(df$BBRefId),]
 
 write.csv(df, "BBRefIds.csv", row.names = F)
