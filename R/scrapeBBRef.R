@@ -43,7 +43,7 @@ scrape_nba_main <- function(yr){
 
 # Run Code For StartYear:EndYear
 all_data <- {}
-years_nba <- 2013:2023
+years_nba <- 2013:2024
 
 for(i in 1:length(years_nba)){
   data <- scrape_nba_main(years_nba[i])
