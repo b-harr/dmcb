@@ -8,7 +8,7 @@ library(janitor)
 
 # Set Spotrac Team IDs
 spotrac_link_ids <- c("atlanta-hawks", "brooklyn-nets", "boston-celtics", "charlotte-hornets", "cleveland-cavaliers", "chicago-bulls", "dallas-mavericks", "denver-nuggets", "detroit-pistons", "golden-state-warriors", "houston-rockets", "indiana-pacers", "la-clippers", "los-angeles-lakers", "memphis-grizzlies", "miami-heat", "milwaukee-bucks", "minnesota-timberwolves", "new-york-knicks", "new-orleans-pelicans", "oklahoma-city-thunder", "orlando-magic", "philadelphia-76ers", "phoenix-suns", "portland-trail-blazers", "san-antonio-spurs", "sacramento-kings", "toronto-raptors", "utah-jazz", "washington-wizards")
-years <- c(2024:2027)
+years <- c(2024:2028)
 links <- paste0("https://www.spotrac.com/nba/", spotrac_link_ids, "/cap/_/year/")
 spotrac_links <- {}
 n <- 0
