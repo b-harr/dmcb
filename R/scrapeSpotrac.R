@@ -29,6 +29,9 @@ scrape_spotrac_links <- function(link){
   players <- webpage %>%
     html_nodes(xpath = '//*[@id="table_active"]/tbody//td[1]/a') %>% 
     html_text()
+  if (length(players) == 0) {
+    return(data.frame())
+  }
   tibble <- html_table(webpage)[[1]]
   player_df <- data.frame(
     "SpotracName" = players,
