@@ -8,8 +8,8 @@ library(janitor)
 
 # Set Spotrac Team IDs
 spotrac_link_ids <- c("atlanta-hawks", "brooklyn-nets", "boston-celtics", "charlotte-hornets", "cleveland-cavaliers", "chicago-bulls", "dallas-mavericks", "denver-nuggets", "detroit-pistons", "golden-state-warriors", "houston-rockets", "indiana-pacers", "la-clippers", "los-angeles-lakers", "memphis-grizzlies", "miami-heat", "milwaukee-bucks", "minnesota-timberwolves", "new-york-knicks", "new-orleans-pelicans", "oklahoma-city-thunder", "orlando-magic", "philadelphia-76ers", "phoenix-suns", "portland-trail-blazers", "san-antonio-spurs", "sacramento-kings", "toronto-raptors", "utah-jazz", "washington-wizards")
-years <- c(2023:2026)
-links <- paste0("https://www.spotrac.com/nba/", spotrac_link_ids, "/cap/")
+years <- c(2024:2028)
+links <- paste0("https://www.spotrac.com/nba/", spotrac_link_ids, "/cap/_/year/")
 spotrac_links <- {}
 n <- 0
 
@@ -24,26 +24,30 @@ for(i in 1:length(years)){
 scrape_spotrac_links <- function(link){
   webpage <- read_html(link)
   player_links <- webpage %>%
-    html_nodes(xpath = "//table[1]//td[1]/a") %>% 
+    html_nodes(xpath = '//*[@id="table_active"]/tbody//td[1]/a') %>% 
     html_attr("href")
   players <- webpage %>%
-    html_nodes(xpath = "//table[1]//td[1]/a") %>% 
+    html_nodes(xpath = '//*[@id="table_active"]/tbody//td[1]/a') %>% 
     html_text()
+  if (length(players) == 0) {
+    return(data.frame())
+  }
   tibble <- html_table(webpage)[[1]]
-  tibble <- tibble %>% 
-    filter(tibble$`Cap Figure` != "Training Camp/Exhibit 10, Exhibit 9" & tibble$`Cap Figure` != "")
-  salary <- tibble$CapFigure
-  notes <- gsub("\\n", "", gsub("\\t", "", tibble$Notes))
   player_df <- data.frame(
-      "SpotracName" = players, 
-      "SpotracUrl" = player_links,
-      "SpotracSalary" = tibble$CapFigure,
-      "SpotracNotes" = gsub("\\t", "", gsub("\\n", "", tibble$Notes)),
+    "SpotracName" = players,
+    "SpotracUrl" = player_links
+  )
+  player_df <- player_df %>%
+    filter(player_df$SpotracName != "")
+  player_df <- data.frame(
+      "SpotracName" = player_df$SpotracName,
+      "SpotracUrl" = player_df$SpotracUrl,
+      "SpotracSalary" = tibble$`Cap Hit`,
+      "SpotracNotes" = "",
       "SpotracSource" = link,
       "SpotracSeason" = paste0(str_sub(link, -5, -2), "-", as.integer(str_sub(link, -5, -2))-2000+1),
-      "SpotracClean" = make_clean_names(str_replace_all(str_to_lower(players), "\\.", ""))
+      "SpotracClean" = make_clean_names(str_replace_all(str_to_lower(player_df$SpotracName), "\\.", ""))
     )
-  player_df <- player_df %>% filter(link != "#")
   return(player_df)
 }
 
