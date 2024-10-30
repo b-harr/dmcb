@@ -20,7 +20,7 @@ teams = [
     "utah-jazz", "washington-wizards"
 ]
 # Define the range of seasons to scrape
-years = range(2024, 2028)
+years = range(2024, 2029)
 
 # Helper function to clean text
 def clean_text(text):
@@ -90,4 +90,4 @@ spotrac_data = pd.concat([scrape_spotrac(link) for link in spotrac_links], ignor
 spotrac_data.sort_values(by=["player_clean", "season"], inplace=True)
 
 # Save the cleaned and organized data to a CSV file
-spotrac_data.to_csv("spotrac_data.csv", index=False)
+spotrac_data.to_csv("spotrac_data.csv", index=False, quoting=1)
