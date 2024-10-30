@@ -19,13 +19,14 @@ teams = [
     "san-antonio-spurs", "sacramento-kings", "toronto-raptors",
     "utah-jazz", "washington-wizards"
 ]
-years = range(2024, 2028)  # Define the range of seasons to scrape
+# Define the range of seasons to scrape
+years = range(2024, 2028)
 
 # Helper function to clean text
 def clean_text(text):
     return re.sub(r"\s+", "", text.replace("\n", ""))
     
-# Helper function to clean name as per the new requirements
+# Helper function to clean names
 def clean_name(name):
     # Normalize to ASCII, remove punctuation, convert to lowercase, and replace spaces with underscores
     normalized_text = unicodedata.normalize('NFD', name).encode('ascii', 'ignore').decode('utf-8')
