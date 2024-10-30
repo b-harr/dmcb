@@ -28,8 +28,9 @@ def clean_text(text):
     
 # Helper function to clean names
 def clean_name(name):
-    # Normalize to ASCII, remove punctuation, convert to lowercase, and replace spaces with underscores
+    # Normalize to ASCII, replace hyphens with underscores, remove other punctuation, convert to lowercase, and replace spaces with underscores
     normalized_text = unicodedata.normalize('NFD', name).encode('ascii', 'ignore').decode('utf-8')
+    normalized_text = normalized_text.replace('-', '_')
     cleaned_name = re.sub(r'[^\w\s]', '', normalized_text).strip().lower().replace(' ', '_')
     return cleaned_name
 
