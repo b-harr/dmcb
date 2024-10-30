@@ -38,7 +38,7 @@ def remove_suffix(name):
     return re.sub(r'_(sr|jr|ii|iii|iv|v|vi|vii)$', '', name)
 
 # Define the main function to scrape player contract data from a given Spotrac URL
-def scrape_spotrac_link(link):
+def scrape_spotrac(link):
     response = requests.get(link)
     soup = BeautifulSoup(response.content, "html.parser")
     
@@ -83,7 +83,7 @@ def scrape_spotrac_link(link):
 spotrac_links = [f"https://www.spotrac.com/nba/{team}/cap/_/year/{year}/" for team in teams for year in years]
 
 # Scrape data from all constructed URLs
-spotrac_data = pd.concat([scrape_spotrac_link(link) for link in spotrac_links], ignore_index=True)
+spotrac_data = pd.concat([scrape_spotrac(link) for link in spotrac_links], ignore_index=True)
 
 # Sort data by player and season
 spotrac_data.sort_values(by=["player_clean", "season"], inplace=True)
