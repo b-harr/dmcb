@@ -20,7 +20,7 @@ teams = [
     "utah-jazz", "washington-wizards"
 ]
 # Define the range of seasons to scrape
-years = range(2024, 2029)
+years = range(2024, 2028)
 
 # Helper function to clean text
 def clean_text(text):
@@ -38,6 +38,25 @@ def clean_name(name):
 def remove_suffix(name):
     # Remove common suffixes like _sr, _jr, _ii, _iii, etc.
     return re.sub(r'_(sr|jr|ii|iii|iv|v|vi|vii)$', '', name)
+
+def get_team_name(team_link):
+    # Remove the base URL and any trailing slashes from the team link
+    path = team_link.replace("https://www.spotrac.com/nba/", "").strip("/")
+    # Extract the team name segment from the path
+    team_name = path.split("/")[0]
+    
+    # Split team name by hyphens to handle multi-part names, e.g., "philadelphia-76ers"
+    team_name_parts = team_name.split("-")
+    
+    # Capitalize each part, with specific handling for "LA" and numeric parts like "76ers"
+    formatted_name = " ".join(
+        part.upper() if part.lower() == "la"  # Capitalize "LA" specifically
+        else part.capitalize() if part.isalpha()  # Capitalize alphabetic parts only (e.g., "Bulls")
+        else part  # Retain numeric parts as they are (e.g., "76ers")
+        for part in team_name_parts
+    )
+    
+    return formatted_name
 
 # Define the main function to scrape player contract data from a given Spotrac URL
 def scrape_spotrac(link):
@@ -59,6 +78,9 @@ def scrape_spotrac(link):
     # Construct the season in "YYYY-YY" format
     year = int(link.split("/")[-2])
     seasons = f"{year}-{str(year + 1)[-2:]}"
+
+    # Get team name from link
+    team = get_team_name(link)
     
     # Combine extracted data into a DataFrame
     data = pd.DataFrame({
@@ -69,7 +91,8 @@ def scrape_spotrac(link):
         "position": positions,
         "age": ages,
         "type": types,
-        "link": link
+        "team_link": link,
+        "team": team
     })
     
     # Generate 'players_clean' and 'players_clean_no_suffix' columns
