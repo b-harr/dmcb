@@ -21,23 +21,19 @@ teams = [
 ]
 # Define the range of seasons to scrape
 years = range(2024, 2028)
-
-# Helper function to clean text
-def clean_text(text):
-    return re.sub(r"\s+", "", text.replace("\n", ""))
     
 # Helper function to clean names
-def clean_name(name):
+def clean_name(player_name):
     # Normalize to ASCII, replace hyphens with underscores, remove other punctuation, convert to lowercase, and replace spaces with underscores
-    normalized_text = unicodedata.normalize('NFD', name).encode('ascii', 'ignore').decode('utf-8')
+    normalized_text = unicodedata.normalize('NFD', player_name).encode('ascii', 'ignore').decode('utf-8')
     normalized_text = normalized_text.replace('-', '_')
     cleaned_name = re.sub(r'[^\w\s]', '', normalized_text).strip().lower().replace(' ', '_')
     return cleaned_name
 
 # Helper function to remove suffixes
-def remove_suffix(name):
+def remove_suffix(player_name):
     # Remove common suffixes like _sr, _jr, _ii, _iii, etc.
-    return re.sub(r'_(sr|jr|ii|iii|iv|v|vi|vii)$', '', name)
+    return re.sub(r'_(sr|jr|ii|iii|iv|v|vi|vii)$', '', player_name)
 
 def get_team_name(team_link):
     # Remove the base URL and any trailing slashes from the team link
@@ -59,8 +55,8 @@ def get_team_name(team_link):
     return formatted_name
 
 # Define the main function to scrape player contract data from a given Spotrac URL
-def scrape_spotrac(link):
-    response = requests.get(link)
+def scrape_spotrac(team_link):
+    response = requests.get(team_link)
     soup = BeautifulSoup(response.content, "html.parser")
     
     # Extract player names; if no players found, return an empty DataFrame
@@ -70,17 +66,17 @@ def scrape_spotrac(link):
     
     # Extract player profile links, positions, ages, contract types, and cap hits
     player_links = [a['href'] for a in soup.select('#table_active tbody td:nth-of-type(1) a') if a['href'] != "javascript:void(0)"]
-    positions = [clean_text(td.get_text()) for td in soup.select('#table_active tbody td:nth-of-type(2)')]
-    ages = [clean_text(td.get_text()) for td in soup.select('#table_active tbody td:nth-of-type(3)')]
-    types = [clean_text(td.get_text()) for td in soup.select('#table_active tbody td:nth-of-type(4)')]
-    cap_hits = [clean_text(td.get_text()) for td in soup.select('#table_active tbody td:nth-of-type(5)')]
+    positions = [td.get_text().strip() for td in soup.select('#table_active tbody td:nth-of-type(2)')]
+    ages = [td.get_text().strip() for td in soup.select('#table_active tbody td:nth-of-type(3)')]
+    types = [td.get_text().strip() for td in soup.select('#table_active tbody td:nth-of-type(4)')]
+    cap_hits = [td.get_text().strip() for td in soup.select('#table_active tbody td:nth-of-type(5)')]
     
     # Construct the season in "YYYY-YY" format
-    year = int(link.split("/")[-2])
+    year = int(team_link.split("/")[-2])
     seasons = f"{year}-{str(year + 1)[-2:]}"
 
-    # Get team name from link
-    team = get_team_name(link)
+    # Get team name from team link
+    team = get_team_name(team_link)
     
     # Combine extracted data into a DataFrame
     data = pd.DataFrame({
@@ -91,7 +87,7 @@ def scrape_spotrac(link):
         "position": positions,
         "age": ages,
         "type": types,
-        "team_link": link,
+        "team_link": team_link,
         "team": team
     })
     
