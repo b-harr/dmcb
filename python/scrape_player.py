@@ -21,13 +21,13 @@ def scrape_player_data(link):
         signed_using_selector = "#contracts > div > div > div.contract-wrapper.mb-5 > div.contract-details.row.m-0 > div:nth-child(5) > div.label"
         signed_using_element = soup.select_one(signed_using_selector)
         # Extract the value following the 'Signed Using' label
-        signed_using_value = signed_using_element.find_next_sibling().get_text(strip=True) if signed_using_element else None
+        signed_using_value = signed_using_element.find_next_sibling().get_text().strip() if signed_using_element else None
 
         # CSS selector for locating the 'Free Agent' contract label and its associated value
         free_agent_selector = "#contracts > div > div > div.contract-wrapper.mb-5 > div.contract-details.row.m-0 > div:nth-child(6) > div.label"
         free_agent_element = soup.select_one(free_agent_selector)
         # Extract the value following the 'Free Agent' label
-        free_agent_value = free_agent_element.find_next_sibling().get_text(strip=True) if free_agent_element else None
+        free_agent_value = free_agent_element.find_next_sibling().get_text().strip() if free_agent_element else None
 
         # Return scraped data in a dictionary format
         return {
