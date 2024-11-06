@@ -20,7 +20,7 @@ teams = [
     "utah-jazz", "washington-wizards"
 ]
 # Define the range of seasons to scrape
-years = range(2024, 2028)
+years = range(2024, 2029)
     
 # Helper function to clean names
 def clean_name(player_name):
@@ -41,7 +41,7 @@ def get_team_name(team_link):
     # Extract the team name segment from the path
     team_name = path.split("/")[0]
     
-    # Split team name by hyphens to handle multi-part names, e.g., "philadelphia-76ers"
+    # Split team name by hyphens to handle multi-part names, e.g., "san-antonio-spurs"
     team_name_parts = team_name.split("-")
     
     # Capitalize each part, with specific handling for "LA" and numeric parts like "76ers"

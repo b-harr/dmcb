@@ -2,19 +2,10 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 
-def scrape_player_data(link):
-    """
-    Scrapes 'Signed Using' and 'Free Agent' contract information from a player's Spotrac page.
-    
-    Parameters:
-        link (str): URL of the player's page to scrape.
-        
-    Returns:
-        dict: Contains 'player_link', 'signed_using', and 'free_agent' values extracted from the page.
-    """
+def scrape_player_data(player_link):
     try:
         # Send GET request to the provided link and parse HTML content
-        page = requests.get(link)
+        page = requests.get(player_link)
         soup = BeautifulSoup(page.content, "html.parser")
 
         # CSS selector for locating the 'Signed Using' contract label and its associated value
@@ -31,14 +22,14 @@ def scrape_player_data(link):
 
         # Return scraped data in a dictionary format
         return {
-            "player_link": link,
+            "player_link": player_link,
             "signed_using": signed_using_value,
             "free_agent": free_agent_value
         }
     except Exception as e:
         # Return None values if an error occurs during scraping
         return {
-            "player_link": link,
+            "player_link": player_link,
             "signed_using": None,
             "free_agent": None
         }
