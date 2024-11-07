@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import re
 import pandas as pd
+import unicodedata
 
 # List of teams
 teams = [
@@ -19,15 +20,12 @@ teams = [
 # Initialize the CSV header
 headers = ['Player', 'Player Link', 'player-name', 'Team', 'Team Link', 'Position', 'Age', '2024-25', '2025-26', '2026-27', 
            '2027-28', '2028-29', '2029-30', '2030-31']
-
-# Function to clean the player name
+    
+# Helper function to clean names
 def clean_player_name(name):
-    cleaned_name = name.strip()
-    cleaned_name = cleaned_name.encode('ascii', 'ignore').decode('ascii')  # Remove unicode characters
-    cleaned_name = cleaned_name.lower()  # Convert to lowercase
-    cleaned_name = cleaned_name.replace("'", "")  # Remove apostrophes
-    cleaned_name = cleaned_name.replace(".", "")  # Remove periods
-    cleaned_name = cleaned_name.replace(" ", "-")  # Replace spaces with hyphens
+    # Normalize to ASCII, replace hyphens with underscores, remove other punctuation, convert to lowercase, and replace spaces with underscores
+    normalized_text = unicodedata.normalize('NFD', name).encode('ascii', 'ignore').decode('utf-8')
+    cleaned_name = re.sub(r'[^\w\s]', '', normalized_text).strip().lower().replace(' ', '-')
     return cleaned_name
 
 def clean_team_name(url):
@@ -123,6 +121,9 @@ for team in teams:
 
         # Convert to DataFrame
         df = pd.DataFrame(all_data, columns=headers)
+
+        # Sort data by player and season
+        df.sort_values(by=["player-name"], inplace=True)
         
         # Write to CSV file
         df.to_csv("salary_data.csv", index=False, mode='w', encoding='utf-8', quoting=1)
