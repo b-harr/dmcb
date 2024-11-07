@@ -52,7 +52,7 @@ all_data = []
 
 # Step 2: Iterate through each team
 for team in teams:
-    url = f"https://www.spotrac.com/nba/{team}/yearly/"
+    url = f"https://www.spotrac.com/nba/{team}/yearly"
     team_name = clean_team_name(url)
     
     # Step 1: Fetch the page
