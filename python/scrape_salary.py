@@ -1,8 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import re
-import pandas as pd
-import unicodedata
+import csv
 
 # List of teams
 teams = [
@@ -20,12 +19,20 @@ teams = [
 # Initialize the CSV header
 headers = ['Player', 'Player Link', 'player-name', 'Team', 'Team Link', 'Position', 'Age', '2024-25', '2025-26', '2026-27', 
            '2027-28', '2028-29', '2029-30', '2030-31']
-    
-# Helper function to clean names
+
+# Open CSV in write mode to clear the file at the beginning
+with open("salary_data.csv", mode='w', newline='', encoding='utf-8') as file:
+    writer = csv.writer(file, quoting=1)
+    writer.writerow(headers)  # Write the header to the cleared file
+
+# Function to clean the player name
 def clean_player_name(name):
-    # Normalize to ASCII, replace hyphens with underscores, remove other punctuation, convert to lowercase, and replace spaces with underscores
-    normalized_text = unicodedata.normalize('NFD', name).encode('ascii', 'ignore').decode('utf-8')
-    cleaned_name = re.sub(r'[^\w\s]', '', normalized_text).strip().lower().replace(' ', '-')
+    cleaned_name = name.strip()
+    cleaned_name = cleaned_name.encode('ascii', 'ignore').decode('ascii')  # Remove unicode characters
+    cleaned_name = cleaned_name.lower()  # Convert to lowercase
+    cleaned_name = cleaned_name.replace("'", "")  # Remove apostrophes
+    cleaned_name = cleaned_name.replace(".", "")  # Remove periods
+    cleaned_name = cleaned_name.replace(" ", "-")  # Replace spaces with hyphens
     return cleaned_name
 
 def clean_team_name(url):
@@ -47,12 +54,9 @@ def clean_team_name(url):
     
     return formatted_name
 
-# Initialize an empty list to store all the data
-all_data = []
-
 # Step 2: Iterate through each team
 for team in teams:
-    url = f"https://www.spotrac.com/nba/{team}/yearly"
+    url = f"https://www.spotrac.com/nba/{team}/yearly/"
     team_name = clean_team_name(url)
     
     # Step 1: Fetch the page
@@ -117,16 +121,11 @@ for team in teams:
                 salary_data = [player_name, player_link, cleaned_player_name, team_name, team_link, position, age] + salary_data
                 salary_data += [''] * (len(headers) - len(salary_data))  # Fill empty slots with ''
                 if salary_data[0]:  # Only add rows where the player name exists
-                    all_data.append(salary_data)
+                    data.append(salary_data)
 
-        # Convert to DataFrame
-        df = pd.DataFrame(all_data, columns=headers)
-
-        # Sort data by player and season
-        df.sort_values(by=["player-name"], inplace=True)
-        
-        # Write to CSV file
-        df.to_csv("salary_data.csv", index=False, mode='w', encoding='utf-8', quoting=1)
-
+            # Write to CSV file, appending if the file already exists
+            with open("salary_data.csv", mode='a', newline='', encoding='utf-8') as file:
+                writer = csv.writer(file, quoting=1)
+                writer.writerows(data)
     else:
         print(f"Failed to retrieve the page for {team}, status code: {response.status_code}")
