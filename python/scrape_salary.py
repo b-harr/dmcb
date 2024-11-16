@@ -36,9 +36,9 @@ def clean_team_name(url):
     team_key_parts = team_key.split("-")  # Splits the identifier into components
     # Capitalizes each word, with special handling for "LA" (uppercase)
     formatted_name = " ".join(
-        part.upper() if part.lower() == "la"  # LA Clippers
-        else part.capitalize() if part.isalpha()  # San Antonio Spurs
-        else part  # Philadelphia 76ers
+        part.upper() if part.lower() == "la"  # Capitalize "LA" specifically
+        else part.capitalize() if part.isalpha()  # Capitalize alphabetic parts only (e.g., "Spurs")
+        else part  # Retain numeric parts as they are (e.g., "76ers")
         for part in team_key_parts
     )
     return formatted_name
