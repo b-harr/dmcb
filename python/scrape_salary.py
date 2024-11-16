@@ -22,21 +22,21 @@ teams = [
 # Normalizes the name (e.g., removes accents), converts to lowercase, replaces spaces with hyphens,
 # removes special characters, and strips suffixes (like "Jr.", "III").
 def make_player_key(name):
-    normalized_text = unicodedata.normalize("NFD", name).encode("ascii", "ignore").decode("utf-8")
-    cleaned_name = normalized_text.lower()
+    normalized_text = unicodedata.normalize("NFD", name).encode("ascii", "ignore").decode("utf-8")  # Remove accents
+    cleaned_name = normalized_text.lower()  # Convert to lowercase
     cleaned_name = re.sub(r"\s+", "-", cleaned_name)  # Replace spaces with hyphens
     cleaned_name = re.sub(r"[^\w-]", "", cleaned_name)  # Remove non-alphanumeric characters
     cleaned_name = re.sub(r"-(sr|jr|ii|iii|iv|v|vi|vii)$", "", cleaned_name.strip())  # Remove common suffixes
     return cleaned_name
 
 # Function to extract and clean the team name from the Spotrac URL
-# Formats the team name from the URL (e.g., "atlanta-hawks" -> "Atlanta Hawks")
+# Formats the team name from the URL (e.g., "san-antonio-spurs" -> "San Antonio Spurs")
 def clean_team_name(url):
     team_key = url.split("/")[-2]  # Extracts the team identifier from the URL
     team_key_parts = team_key.split("-")  # Splits the identifier into components
-    # Capitalizes each word, with special handling for "LA" (uppercase)
+    # Capitalizes each word, with special handling
     formatted_name = " ".join(
-        part.upper() if part.lower() == "la"  # Capitalize "LA" specifically
+        part.upper() if part.lower() == "la"  # Capitalize "LA" specifically (e.g. "Los Angeles")
         else part.capitalize() if part.isalpha()  # Capitalize alphabetic parts only (e.g., "Spurs")
         else part  # Retain numeric parts as they are (e.g., "76ers")
         for part in team_key_parts
