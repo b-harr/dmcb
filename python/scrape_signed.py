@@ -5,53 +5,22 @@ import re
 
 # Load the player salary data from a CSV file and filter out inactive players and Two-Way contracts
 salary_data = pd.read_csv("salary_data.csv")
-active_data = salary_data[(salary_data['2024-25'] != "Two-Way") & (salary_data['2024-25'] != "-")]
+active_data = salary_data[(salary_data["2024-25"] != "Two-Way") & (salary_data["2024-25"] != "-")]
 
-# Extract unique player links from filtered data to avoid redundant scraping
-unique_links = sorted(active_data['Player Link'].unique())
-
-# Define a function to scrape contract details from each player's page
-def scrape_player_data(player_link):
-    try:
-        # Send GET request to retrieve the player's page HTML content
-        page = requests.get(player_link)
-        soup = BeautifulSoup(page.content, "html.parser")
-
-        # CSS selector for identifying the 'Signed Using' field in contract details
-        signed_using_selector = "#contracts > div > div > div.contract-wrapper.mb-5 > div.contract-details.row.m-0 > div:nth-child(5) > div.label"
-        signed_using_element = soup.select_one(signed_using_selector)
-        
-        # Extract the contract type text following the 'Signed Using' label, if available
-        signed_using_value = signed_using_element.find_next_sibling().get_text().strip() if signed_using_element else None
-
-        # Return the scraped contract type and player link as a dictionary
-        return {
-            "player_link": player_link,
-            "signed_using": signed_using_value
-        }
-    except Exception as e:
-        # Handle exceptions by returning None for 'signed_using' if an error occurs
-        return {
-            "player_link": player_link,
-            "signed_using": None
-        }
-
-# Apply the scraping function to each unique player link and store the results in a list of dictionaries
-scraped_data = [scrape_player_data(link) for link in unique_links]
-
-# Convert the list of dictionaries into a DataFrame for easier merging and further processing
-signed_data = pd.DataFrame(scraped_data)
+# Extract unique player links and Player Keys, then sort by Player Key
+unique_links = active_data.drop_duplicates(subset=["Player Link", "Player Key"]).sort_values(by="Player Key")["Player Link"].tolist()
 
 # Set of words to keep lowercase in title-cased text, often minor connecting words
 minor_words = {"and", "or", "the", "in", "at", "for", "to", "by", "with", "a", "an", "of", "on"}
 
+# If input text is None, return None.
+# Capitalizes specific prefixes and applies title case to the rest of the text.
 def format_signed(text):
-    # Return None if the input text is None
     if text is None:
         return None
     
     # Split the text to manage capitalization and hyphenation of each word individually
-    words = re.split(r'[-\s]', text)
+    words = re.split(r"[-\s]", text)
     formatted_words = []
     
     for i, word in enumerate(words):
@@ -64,15 +33,47 @@ def format_signed(text):
     
     # Reassemble words with spaces; preserve hyphens only for specific prefixes
     formatted = " ".join(formatted_words)
-    formatted = re.sub(r'(?<=\w)(?=\b(?:Non|Mid|Bi)-)', "-", formatted)
+    formatted = re.sub(r"(?<=\w)(?=\b(?:Non|Mid|Bi)-)", "-", formatted)
     
     return formatted
 
-# Apply the formatting function to the 'signed_using' column in the DataFrame
-signed_data['signed_using'] = signed_data['signed_using'].apply(format_signed)
+# Scrapes the 'Signed Using' contract details from each player's page
+# and formats the result for consistency.
+def scrape_player_data(player_link, player_key):
+    try:
+        page = requests.get(player_link)
+        soup = BeautifulSoup(page.content, "html.parser")
 
-# Rename columns for clarity and consistency
-signed_data.rename(columns={"player_link": "Player Link", "signed_using": "Signed Using"}, inplace=True)
+        signed_using_selector = "#contracts > div > div > div.contract-wrapper.mb-5 > div.contract-details.row.m-0 > div:nth-child(5) > div.label"
+        signed_using_element = soup.select_one(signed_using_selector)
+        
+        signed_using_value = signed_using_element.find_next_sibling().get_text().strip() if signed_using_element else None
 
-# Save the formatted and merged data to a new CSV file, with quoting to handle special characters
-signed_data.to_csv("signed_data.csv", index=False, quoting=1)
+        formatted_value = format_signed(signed_using_value)
+
+        return {
+            "Player Link": player_link,
+            "Player Key": player_key,  # Include Player Key in the returned dictionary
+            "Signed Using": signed_using_value,
+            "Formatted Signed Using": formatted_value
+        }
+    except Exception as e:
+        return {
+            "Player Link": player_link,
+            "Player Key": player_key,
+            "Signed Using": None,
+            "Formatted Signed Using": None
+        }
+
+# Define the output file path
+output_file = "signed_data.csv"
+pd.DataFrame(columns=["Player Link", "Player Key", "Signed Using", "Formatted Signed Using"]).to_csv(output_file, index=False, mode="w", encoding="utf-8", quoting=1)
+
+# Scrape and write data incrementally with a simple progress indicator
+for idx, link in enumerate(unique_links):
+    player_key = active_data[active_data["Player Link"] == link]["Player Key"].values[0]
+    scraped_row = scrape_player_data(link, player_key)
+    pd.DataFrame([scraped_row]).to_csv(output_file, mode="a", header=False, index=False, encoding="utf-8", quoting=1)
+    print(f"Processed {idx + 1}/{len(unique_links)} players ({((idx + 1) / len(unique_links)) * 100:.2f}%): {player_key}")
+
+print("Scraping and saving signed contract data completed.")
