@@ -1,13 +1,12 @@
 import requests
 import re
-import datetime
 import pandas as pd
 from bs4 import BeautifulSoup
 
 # Input CSV file containing the salary data
-input_file = "salary_data.csv"
+input_csv = "salary_data.csv"
 # Read the salary data from the input file into a pandas DataFrame
-salary_data = pd.read_csv(input_file)
+salary_data = pd.read_csv(input_csv)
 
 # Filter out inactive players or those with "Two-Way" contracts
 active_data = salary_data[(salary_data["2024-25"] != "Two-Way") & (salary_data["2024-25"] != "-")]
@@ -86,9 +85,9 @@ def scrape_player_data(player_link, player_key, player_name):
         }
 
 # Output file where the scraped data will be saved
-output_file = "signed_data.csv"
+output_csv = "signed_data.csv"
 # Initialize the output CSV file with headers
-pd.DataFrame(columns=["Player", "Player Link", "Player Key", "Signed Using"]).to_csv(output_file, index=False, mode="w", encoding="utf-8", quoting=1)
+pd.DataFrame(columns=["Player", "Player Link", "Player Key", "Signed Using"]).to_csv(output_csv, index=False, mode="w", encoding="utf-8", quoting=1)
 
 # Loop through each unique player link and scrape the data
 for idx, link in enumerate(unique_links):
@@ -99,14 +98,16 @@ for idx, link in enumerate(unique_links):
     # Scrape the player's contract data using the scrape_player_data function
     scraped_row = scrape_player_data(link, player_key, player_name)
     # Append the scraped data to the output CSV file, replacing the "Signed Using" column with the cleaned data
-    pd.DataFrame([scraped_row]).to_csv(output_file, mode="a", header=False, index=False, encoding="utf-8", quoting=1)
+    pd.DataFrame([scraped_row]).to_csv(output_csv, mode="a", header=False, index=False, encoding="utf-8", quoting=1)
     
     # Print progress as players are processed
     print(f"Processed {idx + 1}/{len(unique_links)} players ({((idx + 1) / len(unique_links)) * 100:.2f}%): {player_name}")
 
 # Get the current datetime in the local timezone
-timezone = None  #pytz.timezone("America/Chicago")  # Replace with your local timezone
-current_time = datetime.datetime.now(timezone).strftime("%Y-%m-%d %H:%M:%S")
+import pytz
+import datetime
+timezone = pytz.timezone("America/Chicago")  # Replace with your local timezone
+current_time = datetime.datetime.now(timezone).strftime("%Y-%m-%d %H:%M:%S %Z%z")
 
-# Print a message indicating the scraping process is complete
-print(f"Script completed at {current_time}. Signed data has been scraped for all players.")
+# Print the completion message with timestamp and timezone
+print(f"Data saved to {output_csv} at {current_time}")
