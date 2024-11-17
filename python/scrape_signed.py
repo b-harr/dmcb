@@ -1,7 +1,8 @@
 import requests
-from bs4 import BeautifulSoup
-import pandas as pd
 import re
+import datetime
+import pandas as pd
+from bs4 import BeautifulSoup
 
 # Input CSV file containing the salary data
 input_file = "salary_data.csv"
@@ -42,7 +43,7 @@ def format_signed(text):
     # Replace the capitalization for "Non-", "Mid-", "Bi-" if needed
     formatted = re.sub(r"(?<=\w)(?=\b(?:Non|Mid|Bi)-)", "-", formatted)
     
-    # Remove space after "Non", "Mid", "Bi" and replace it with a hyphen
+    # Remove space after "Non ", "Mid ", "Bi " and replace it with a hyphen
     formatted = re.sub(r"(Non|Mid|Bi)\s", r"\1-", formatted)
     
     # Special case: Handle "Sign and Trade" as a unique exception
@@ -103,5 +104,9 @@ for idx, link in enumerate(unique_links):
     # Print progress as players are processed
     print(f"Processed {idx + 1}/{len(unique_links)} players ({((idx + 1) / len(unique_links)) * 100:.2f}%): {player_name}")
 
+# Get the current datetime in the local timezone
+timezone = None  #pytz.timezone("America/Chicago")  # Replace with your local timezone
+current_time = datetime.datetime.now(timezone).strftime("%Y-%m-%d %H:%M:%S")
+
 # Print a message indicating the scraping process is complete
-print("Scraping and saving signed contract data completed.")
+print(f"Script completed at {current_time}. Signed data has been scraped for all players.")
