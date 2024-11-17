@@ -1,6 +1,8 @@
 import requests
 import re
 import unicodedata
+import datetime
+#import pytz
 import pandas as pd
 from bs4 import BeautifulSoup
 
@@ -142,4 +144,8 @@ sorted_data = sorted(all_data, key=lambda x: x[2].lower())
 # Overwrite the CSV with sorted data
 pd.DataFrame(sorted_data, columns=headers).to_csv(output_file, index=False, mode="w", encoding="utf-8", quoting=1)
 
-print("Script completed. Data has been saved in alphabetical order by player.")
+# Get the current datetime in the local timezone
+timezone = None  #pytz.timezone("America/Chicago")  # Replace with your local timezone
+current_time = datetime.datetime.now(timezone).strftime("%Y-%m-%d %H:%M:%S")
+
+print(f"Script completed at {current_time}. Data has been saved in alphabetical order by player.")
