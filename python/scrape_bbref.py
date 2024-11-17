@@ -2,12 +2,12 @@ import requests
 import re
 import unicodedata
 import pandas as pd
-from datetime import datetime
 from bs4 import BeautifulSoup
 
-# Function to clean and generate a unique player key from the player's name
-# Normalizes the name (e.g., removes accents, converts to lowercase, replaces spaces with hyphens,
-# removes special characters (like periods and apostrophes), and strips suffixes (like "-jr", "-iii").
+# Function to clean a player's name and generate a unique player key to join across sites
+# Normalizes the name (e.g., replaces accents with ASCII), converts to lowercase, strips trailing spaces,
+# replaces spaces with hyphens, removes special characters (e.g., periods and apostrophes), and strips
+# suffixes (e.g., "-jr", "-iii").
 def make_player_key(name):
     normalized_text = unicodedata.normalize("NFD", name).encode("ascii", "ignore").decode("utf-8")  # Remove accents
     cleaned_name = normalized_text.lower().strip()  # Convert to lowercase and remove trailing spaces
@@ -68,8 +68,11 @@ df = df.sort_values(by="Player Key")
 output_csv = "bbref_data.csv"
 df.to_csv(output_csv, index=False, quoting=1)
 
-# Get the current timestamp
-current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+# Get the current datetime in the local timezone
+import pytz
+import datetime
+timezone = pytz.timezone("America/Chicago")  # Replace with your local timezone
+current_time = datetime.datetime.now(timezone).strftime("%Y-%m-%d %H:%M:%S %Z%z")
 
-# Print the completion message with timestamp
+# Print the completion message with timestamp and timezone
 print(f"Data saved to {output_csv} at {current_time}")

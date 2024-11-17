@@ -1,8 +1,6 @@
 import requests
 import re
 import unicodedata
-import datetime
-#import pytz
 import pandas as pd
 from bs4 import BeautifulSoup
 
@@ -20,15 +18,16 @@ teams = [
     "utah-jazz", "washington-wizards"
 ]
 
-# Function to clean and generate a unique player key from the player's name
-# Normalizes the name (e.g., removes accents, converts to lowercase, replaces spaces with hyphens,
-# removes special characters (like periods and apostrophes), and strips suffixes (like "-jr", "-iii").
+# Function to clean a player's name and generate a unique player key to join across sites
+# Normalizes the name (e.g., replaces accents with ASCII), converts to lowercase, strips trailing spaces,
+# replaces spaces with hyphens, removes special characters (e.g., periods and apostrophes), and strips
+# suffixes (e.g., "-jr", "-iii").
 def make_player_key(name):
     normalized_text = unicodedata.normalize("NFD", name).encode("ascii", "ignore").decode("utf-8")  # Remove accents
-    cleaned_name = normalized_text.lower()  # Convert to lowercase
+    cleaned_name = normalized_text.lower().strip()  # Convert to lowercase and remove trailing spaces
     cleaned_name = re.sub(r"\s+", "-", cleaned_name)  # Replace spaces with hyphens
     cleaned_name = re.sub(r"[^\w-]", "", cleaned_name)  # Remove non-alphanumeric characters
-    player_key = re.sub(r"-(sr|jr|ii|iii|iv|v|vi|vii)$", "", cleaned_name.strip())  # Remove common suffixes
+    player_key = re.sub(r"-(sr|jr|ii|iii|iv|v|vi|vii)$", "", cleaned_name)  # Remove common suffixes
     return player_key
 
 # Function to extract and clean the team name from the Spotrac URL
@@ -46,7 +45,7 @@ def clean_team_name(url):
     return formatted_name
 
 # File path for saving the output CSV
-output_file = "salary_data.csv"
+output_csv = "salary_data.csv"
 
 # List to store all salary data collected during scraping
 all_data = []
@@ -80,7 +79,7 @@ if not season_headers:
 # Define CSV headers for the output file
 headers = ["Player", "Player Link", "Player Key", "Team", "Team Link", "Position", "Age"] + season_headers
 # Create an empty CSV file with the defined headers
-pd.DataFrame(columns=headers).to_csv(output_file, index=False, mode="w", encoding="utf-8", quoting=1)
+pd.DataFrame(columns=headers).to_csv(output_csv, index=False, mode="w", encoding="utf-8", quoting=1)
 
 # Loop through each team to scrape data
 total_teams = len(teams)
@@ -92,7 +91,7 @@ for idx, team in enumerate(teams):
     if response.status_code == 200:  # If the request is successful
         soup = BeautifulSoup(response.text, "html.parser")
         table = soup.select_one("table")  # Locate the salary table
-        
+
         if table:
             rows = table.find_all("tr")  # Extract all rows from the table
             for row in rows[1:]:  # Skip the header row
@@ -135,17 +134,20 @@ for idx, team in enumerate(teams):
 
                 if salary_data[0]:  # Only save data if player name exists
                     all_data.append(salary_data)
-                    pd.DataFrame([salary_data], columns=headers).to_csv(output_file, index=False, mode="a", header=False, encoding="utf-8", quoting=1)
+                    pd.DataFrame([salary_data], columns=headers).to_csv(output_csv, index=False, mode="a", header=False, encoding="utf-8", quoting=1)
 
         print(f"Processed {idx + 1}/{total_teams} teams ({((idx + 1) / total_teams) * 100:.2f}%): {team_name}")
 
 # Sort all data by the player key for consistency
 sorted_data = sorted(all_data, key=lambda x: x[2].lower())
 # Overwrite the CSV with sorted data
-pd.DataFrame(sorted_data, columns=headers).to_csv(output_file, index=False, mode="w", encoding="utf-8", quoting=1)
+pd.DataFrame(sorted_data, columns=headers).to_csv(output_csv, index=False, mode="w", encoding="utf-8", quoting=1)
 
 # Get the current datetime in the local timezone
-timezone = None  #pytz.timezone("America/Chicago")  # Replace with your local timezone
-current_time = datetime.datetime.now(timezone).strftime("%Y-%m-%d %H:%M:%S")
+import pytz
+import datetime
+timezone = pytz.timezone("America/Chicago")  # Replace with your local timezone
+current_time = datetime.datetime.now(timezone).strftime("%Y-%m-%d %H:%M:%S %Z%z")
 
-print(f"Script completed at {current_time}. Data has been saved in alphabetical order by player.")
+# Print the completion message with timestamp and timezone
+print(f"Data saved to {output_csv} at {current_time}")
