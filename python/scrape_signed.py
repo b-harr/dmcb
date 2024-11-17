@@ -1,7 +1,7 @@
 import requests
-from bs4 import BeautifulSoup
-import pandas as pd
 import re
+import pandas as pd
+from bs4 import BeautifulSoup
 
 # Input CSV file containing the salary data
 input_file = "salary_data.csv"
@@ -42,7 +42,7 @@ def format_signed(text):
     # Replace the capitalization for "Non-", "Mid-", "Bi-" if needed
     formatted = re.sub(r"(?<=\w)(?=\b(?:Non|Mid|Bi)-)", "-", formatted)
     
-    # Remove space after "Non", "Mid", "Bi" and replace it with a hyphen
+    # Remove space after "Non ", "Mid ", "Bi " and replace it with a hyphen
     formatted = re.sub(r"(Non|Mid|Bi)\s", r"\1-", formatted)
     
     # Special case: Handle "Sign and Trade" as a unique exception
@@ -104,4 +104,4 @@ for idx, link in enumerate(unique_links):
     print(f"Processed {idx + 1}/{len(unique_links)} players ({((idx + 1) / len(unique_links)) * 100:.2f}%): {player_name}")
 
 # Print a message indicating the scraping process is complete
-print("Scraping and saving signed contract data completed.")
+print("Script completed. Signed data has been scraped for all players.")

@@ -142,4 +142,4 @@ sorted_data = sorted(all_data, key=lambda x: x[2].lower())
 # Overwrite the CSV with sorted data
 pd.DataFrame(sorted_data, columns=headers).to_csv(output_file, index=False, mode="w", encoding="utf-8", quoting=1)
 
-print("Sorting completed. Data has been saved in sorted order.")
+print("Script completed. Data has been saved in alphabetical order by player.")
