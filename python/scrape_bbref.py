@@ -55,6 +55,9 @@ for row in rows:
 # Create a DataFrame
 df = pd.DataFrame(data, columns=headers)
 
+# Filter out 'League Average' from the 'Player' column
+df = df[df["Player"] != "League Average"]
+
 # Add 'Player Key' column by applying the make_player_key function to the 'Player' column
 df["Player Key"] = df["Player"].apply(make_player_key)
 
