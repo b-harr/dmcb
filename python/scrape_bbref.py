@@ -63,7 +63,7 @@ df = df.sort_values(by="Player Key")
 
 # Save to CSV
 output_csv = "bbref_data.csv"
-df.to_csv(output_csv, index=False)
+df.to_csv(output_csv, index=False, quoting=1)
 
 # Get the current timestamp
 current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
