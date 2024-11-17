@@ -1,5 +1,6 @@
 import requests
 import re
+import datetime
 import pandas as pd
 from bs4 import BeautifulSoup
 
@@ -103,5 +104,9 @@ for idx, link in enumerate(unique_links):
     # Print progress as players are processed
     print(f"Processed {idx + 1}/{len(unique_links)} players ({((idx + 1) / len(unique_links)) * 100:.2f}%): {player_name}")
 
+# Get the current datetime in the local timezone
+timezone = None  #pytz.timezone("America/Chicago")  # Replace with your local timezone
+current_time = datetime.datetime.now(timezone).strftime("%Y-%m-%d %H:%M:%S")
+
 # Print a message indicating the scraping process is complete
-print("Script completed. Signed data has been scraped for all players.")
+print(f"Script completed at {current_time}. Signed data has been scraped for all players.")
