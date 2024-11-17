@@ -45,7 +45,7 @@ def clean_team_name(url):
     return formatted_name
 
 # File path for saving the output CSV
-output_csv = "salary_data.csv"
+output_csv = "python/salary_data.csv"
 
 # List to store all salary data collected during scraping
 all_data = []

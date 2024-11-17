@@ -65,7 +65,7 @@ df["Player Key"] = df["Player"].apply(make_player_key)
 df = df.sort_values(by="Player Key")
 
 # Save to CSV
-output_csv = "bbref_data.csv"
+output_csv = "python/bbref_data.csv"
 df.to_csv(output_csv, index=False, quoting=1)
 
 # Get the current datetime in the local timezone
