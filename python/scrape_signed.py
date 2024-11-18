@@ -4,7 +4,7 @@ import pandas as pd
 from bs4 import BeautifulSoup
 
 # Input CSV file containing the salary data
-input_csv = "salary_data.csv"
+input_csv = "python/data/salary_data.csv"
 # Read the salary data from the input file into a pandas DataFrame
 salary_data = pd.read_csv(input_csv)
 
@@ -85,7 +85,7 @@ def scrape_player_data(player_link, player_key, player_name):
         }
 
 # Output file where the scraped data will be saved
-output_csv = "python/signed_data.csv"
+output_csv = "python/data/signed_data.csv"
 # Initialize the output CSV file with headers
 pd.DataFrame(columns=["Player", "Player Link", "Player Key", "Signed Using"]).to_csv(output_csv, index=False, mode="w", encoding="utf-8", quoting=1)
 
