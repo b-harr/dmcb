@@ -58,7 +58,7 @@ def scrape_bbref_data(year, output_path="python/data/totals"):
     df["Player Key"] = df["Player"].apply(make_player_key)
 
     # Sort by 'Player Key' column
-    df = df.sort_values(by="Player Key")
+    df = df.sort_values(by=["Player Key", "Team"])
 
     # Save to a year-specific CSV file in 'python/data/totals'
     output_csv = f"{output_path}/NBA_{year}_totals.csv"
