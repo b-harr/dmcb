@@ -3,8 +3,13 @@ import re
 import unicodedata
 import pandas as pd
 from bs4 import BeautifulSoup
+import pytz
+import datetime
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
+
+# Replace with your local timezone
+timezone = pytz.timezone("America/Chicago")
 
 # Function to clean a player's name and generate a unique player key to join across sites
 def make_player_key(name):
@@ -78,9 +83,6 @@ output_csv = "python/data/bbref_data.csv"
 df.to_csv(output_csv, index=False, quoting=1)
 
 # Get the current datetime in the local timezone
-import pytz
-import datetime
-timezone = pytz.timezone("America/Chicago")  # Replace with your local timezone
 current_time = datetime.datetime.now(timezone).strftime("%Y-%m-%d %H:%M:%S %Z%z")
 
 # Print the completion message with timestamp and timezone
@@ -107,9 +109,6 @@ data_to_write = [df.columns.tolist()] + df.values.tolist()
 sheet.update("A1", data_to_write)  # Start writing from cell A1
 
 # Get the current datetime in the local timezone
-import pytz
-import datetime
-timezone = pytz.timezone("America/Chicago")  # Replace with your local timezone
 current_time = datetime.datetime.now(timezone).strftime("%Y-%m-%d %H:%M:%S %Z%z")
 
 # Print the completion message with timestamp and timezone
