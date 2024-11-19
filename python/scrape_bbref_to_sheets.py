@@ -40,12 +40,6 @@ def make_player_key(name):
     player_key = re.sub(r"-(sr|jr|ii|iii|iv|v|vi|vii)$", "", cleaned_name)  # Remove common suffixes
     return player_key
 
-# Define the URL
-url = "https://www.basketball-reference.com/leagues/NBA_2025_totals.html"
-headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-}
-
 # Handle external requests with retry logic to manage failures and ensure data retrieval
 def fetch_data_with_retry(url, headers, retries=3, delay=2):
     for i in range(retries):
@@ -64,6 +58,9 @@ def fetch_data_with_retry(url, headers, retries=3, delay=2):
 # Fetch the data using retry logic
 for year in [2025]:
     url = f"https://www.basketball-reference.com/leagues/NBA_{year}_totals.html"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+    }
     response = fetch_data_with_retry(url, headers)
 
 # Parse the HTML
