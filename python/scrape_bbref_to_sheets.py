@@ -1,8 +1,6 @@
 import os
 import requests
 import random
-import unicodedata
-import re
 import pandas as pd
 from time import sleep
 from dotenv import load_dotenv
@@ -84,7 +82,7 @@ df = pd.DataFrame(data, columns=headers)
 df = df[df["Player"] != "League Average"]
 
 # Add 'Player Key' column by applying the make_player_key function to the 'Player' column
-df["Player Key"] = df["Player"].apply(make_player_key)
+df["Player Key"] = df["Player"].apply(make_player_key.make_player_key)
 
 # Sort by 'Player Key' and 'Team' columns
 df = df.sort_values(by=["Player Key", "Team"])
