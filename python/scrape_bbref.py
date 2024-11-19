@@ -96,7 +96,7 @@ df = df[df["Player"] != "League Average"]
 df["Player Key"] = df["Player"].apply(make_player_key)
 
 # Sort by 'Player Key' and 'Team' columns
-df = df.sort_values(by=["Player Key", "Team"])
+df = df.sort_values(by=["Player Key", "Team"], inplace=True)
 
 # Convert columns to numeric values and apply vectorized operations for efficient calculations
 df[numeric_columns] = df[numeric_columns].apply(pd.to_numeric, errors="coerce")
