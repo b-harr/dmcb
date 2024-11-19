@@ -45,13 +45,14 @@ def fetch_data_with_retry(url, headers, retries=3, delay=2):
     logger.error("Max retries reached. Exiting.")
     exit()
 
+# Define the URL
+url = "https://www.basketball-reference.com/leagues/NBA_2025_totals.html"
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+}
+
 # Fetch the data using retry logic
-for year in [2025]:
-    url = f"https://www.basketball-reference.com/leagues/NBA_{year}_totals.html"
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-    }
-    response = fetch_data_with_retry(url, headers)
+response = fetch_data_with_retry(url, headers)
 
 # Parse the HTML
 soup = BeautifulSoup(response.content, "html.parser")
