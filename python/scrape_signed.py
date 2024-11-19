@@ -85,7 +85,7 @@ def scrape_player_data(player_link, player_key, player_name):
         }
 
 # Output file where the scraped data will be saved
-output_csv = "python/signed_data.csv"
+output_csv = "python/data/signed_data.csv"
 # Initialize the output CSV file with headers
 pd.DataFrame(columns=["Player", "Player Link", "Player Key", "Signed Using"]).to_csv(output_csv, index=False, mode="w", encoding="utf-8", quoting=1)
 
