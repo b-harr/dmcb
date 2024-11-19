@@ -4,7 +4,7 @@ import pandas as pd
 from bs4 import BeautifulSoup
 
 # Input CSV file containing the salary data
-input_csv = "salary_data.csv"
+input_csv = "python/data/salary_data.csv"
 # Read the salary data from the input file into a pandas DataFrame
 salary_data = pd.read_csv(input_csv)
 
