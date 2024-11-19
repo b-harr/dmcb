@@ -95,7 +95,11 @@ df[numeric_columns] = df[numeric_columns].apply(pd.to_numeric, errors="coerce")
 df.fillna(0, inplace=True)
 
 # Vectorized calculations for new columns
-df["FP"] = (df["PTS"] + df["TRB"] + df["AST"] + df["STL"] + df["BLK"] - df["TOV"] - df["PF"]).astype(int)
+df["FP"] = (
+    df["PTS"] + df["TRB"] + df["AST"] + 
+    df["STL"] + df["BLK"] - 
+    df["TOV"] - df["PF"]
+    ).astype(int)
 df["FPPG"] = (df["FP"] / df["G"]).round(1)
 df["FPPM"] = (df["FP"] / df["MP"]).round(2)
 df["MPG"] = (df["MP"] / df["G"]).round(1)
