@@ -122,9 +122,6 @@ output_csv = os.path.join(output_dir, output_filename)
 # Save to CSV
 df.to_csv(output_csv, index=False)
 
-# Set local timezone and retrieve the current datetime for logging
-#current_time = datetime.datetime.now(timezone).strftime("%Y-%m-%d %H:%M:%S %Z%z")
-
 # Log progress and errors for monitoring script execution
 logger.info(f"Data saved to {output_csv}")
 
