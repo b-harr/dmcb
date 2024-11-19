@@ -16,7 +16,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger()
 
 # Log the start message with timestamp and timezone
-logger.info(f"Script started")
+logger.info("Script started")
 
 # Load environment variables
 load_dotenv()
