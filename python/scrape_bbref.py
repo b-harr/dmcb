@@ -16,7 +16,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger()
 
 # Log the start message with timestamp and timezone
-logger.info("Script started")
+logger.info("Script started.")
 
 # Load environment variables
 load_dotenv()
@@ -123,7 +123,7 @@ output_csv = os.path.join(output_dir, output_filename)
 df.to_csv(output_csv, index=False)
 
 # Log progress and errors for monitoring script execution
-logger.info(f"Data saved to {output_csv}")
+logger.info(f"Data saved to {output_csv}.")
 
 # Define API scope for Google Sheets to enable read/write operations
 scope = ["https://www.googleapis.com/auth/spreadsheets"]
@@ -142,6 +142,6 @@ try:
     sheet.update(data_to_write, "A1")
 
     # Log progress and errors for monitoring script execution
-    logger.info(f"Data successfully written to the '{sheet_name}' sheet")
+    logger.info(f"Data successfully written to the '{sheet_name}' sheet.")
 except Exception as e:
     logger.error(f"Error updating Google Sheets: {e}")
