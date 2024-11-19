@@ -16,7 +16,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger()
 
 # Log the start message with timestamp and timezone
-logger.info("Script started.")
+logger.info("The script started successfully.")
 
 # Load environment variables
 load_dotenv()
@@ -96,7 +96,7 @@ df = df[df["Player"] != "League Average"]
 df["Player Key"] = df["Player"].apply(make_player_key)
 
 # Sort by 'Player Key' and 'Team' columns
-df = df.sort_values(by=["Player Key", "Team"], inplace=True)
+df = df.sort_values(by=["Player Key", "Team"])
 
 # Convert columns to numeric values and apply vectorized operations for efficient calculations
 df[numeric_columns] = df[numeric_columns].apply(pd.to_numeric, errors="coerce")
@@ -123,7 +123,7 @@ output_csv = os.path.join(output_dir, output_filename)
 df.to_csv(output_csv, index=False)
 
 # Log progress and errors for monitoring script execution
-logger.info(f"Data saved to {output_csv}.")
+logger.info(f"Data successfully written to the file: {output_csv}")
 
 # Define API scope for Google Sheets to enable read/write operations
 scope = ["https://www.googleapis.com/auth/spreadsheets"]
