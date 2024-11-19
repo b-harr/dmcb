@@ -85,10 +85,6 @@ df = df[df["Player"] != "League Average"]
 # Check for rows with missing 'Player' and drop them (if any)
 df = df.dropna(subset=["Player"])
 
-# Optionally, filter out rows where 'G' or 'MP' is zero (invalid games or minutes played)
-df = df[df["G"] > 0]
-df = df[df["MP"] > 0]
-
 # Add 'Player Key' column by applying the make_player_key function to the 'Player' column
 df["Player Key"] = df["Player"].apply(make_player_key.make_player_key)
 
