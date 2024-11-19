@@ -62,7 +62,9 @@ def fetch_data_with_retry(url, headers, retries=3, delay=2):
     exit()
 
 # Fetch the data using retry logic
-response = fetch_data_with_retry(url, headers)
+for year in [2025]:
+    url = f"https://www.basketball-reference.com/leagues/NBA_{year}_totals.html"
+    response = fetch_data_with_retry(url, headers)
 
 # Parse the HTML
 soup = BeautifulSoup(response.content, "html.parser")
