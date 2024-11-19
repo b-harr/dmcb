@@ -10,6 +10,7 @@ from bs4 import BeautifulSoup
 from oauth2client.service_account import ServiceAccountCredentials
 import gspread
 import logging
+import make_player_key
 
 # Configure logging to track script execution and errors
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -30,15 +31,6 @@ numeric_columns = os.getenv("NUMERIC_COLUMNS", "PTS,TRB,AST,STL,BLK,TOV,PF,G,MP"
 # Ensure Google Sheets credentials and URL are provided
 if not creds_path or not google_sheets_url:
     raise ValueError("Google Sheets credentials or URL is not properly set.")
-
-# Clean a player's name and generate a unique key for consistent cross-site merging
-def make_player_key(name):
-    normalized_text = unicodedata.normalize("NFD", name).encode("ascii", "ignore").decode("utf-8")  # Remove accents
-    cleaned_name = normalized_text.lower().strip()  # Convert to lowercase and trim spaces
-    cleaned_name = re.sub(r"\s+", "-", cleaned_name)  # Replace spaces with hyphens
-    cleaned_name = re.sub(r"[^\w-]", "", cleaned_name)  # Remove non-alphanumeric characters
-    player_key = re.sub(r"-(sr|jr|ii|iii|iv|v|vi|vii)$", "", cleaned_name)  # Remove common suffixes
-    return player_key
 
 # Handle external requests with retry logic to manage failures and ensure data retrieval
 def fetch_data_with_retry(url, headers, retries=3, delay=2):
@@ -104,9 +96,7 @@ df[numeric_columns] = df[numeric_columns].apply(pd.to_numeric, errors="coerce")
 df.fillna(0, inplace=True)
 
 # Vectorized calculations for new columns
-df["FP"] = (
-    df["PTS"] + df["TRB"] + df["AST"] + df["STL"] + df["BLK"] - df["TOV"] - df["PF"]
-).astype(int)
+df["FP"] = (df["PTS"] + df["TRB"] + df["AST"] + df["STL"] + df["BLK"] - df["TOV"] - df["PF"]).astype(int)
 df["FPPG"] = (df["FP"] / df["G"]).round(1)
 df["FPPM"] = (df["FP"] / df["MP"]).round(2)
 df["MPG"] = (df["MP"] / df["G"]).round(1)
