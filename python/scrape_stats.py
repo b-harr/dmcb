@@ -73,6 +73,19 @@ df["FPR"] = ((df["FP"] ** 2) / (df["G"].astype(float) * df["MP"].astype(float)))
 # Sort by 'Player Key' column
 df = df.sort_values(by=["Player Key", "Team"])
 
+# Save to CSV
+output_csv = "python/data/bbref_data.csv"
+df.to_csv(output_csv, index=False, quoting=1)
+
+# Get the current datetime in the local timezone
+import pytz
+import datetime
+timezone = pytz.timezone("America/Chicago")  # Replace with your local timezone
+current_time = datetime.datetime.now(timezone).strftime("%Y-%m-%d %H:%M:%S %Z%z")
+
+# Print the completion message with timestamp and timezone
+print(f"Data saved to {output_csv} at {current_time}")
+
 # Authenticate with Google Sheets API
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
 creds = ServiceAccountCredentials.from_json_keyfile_name("secrets/dmcb-442123-966817b53d6f.json", scope)
