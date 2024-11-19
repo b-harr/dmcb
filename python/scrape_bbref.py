@@ -10,7 +10,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 from time import sleep
 import random
 import os
-from dotenv import load_dotenv  # Import dotenv to load .env file
+from dotenv import load_dotenv
 
 # Load environment variables from .env file
 load_dotenv()
