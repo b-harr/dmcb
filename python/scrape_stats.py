@@ -68,10 +68,10 @@ df["FP"] = (
 df["FPPG"] = (df["FP"] / df["G"].astype(float)).round(1)  # FPPG formatted to 1 decimal
 df["FPPM"] = (df["FP"] / df["MP"].astype(float)).round(2)  # FPPM formatted to 2 decimals
 df["MPG"] = (df["MP"].astype(float) / df["G"].astype(float)).round(1)  # MPG formatted to 1 decimal
-df["FPE"] = ((df["FP"] ** 2) / (df["G"].astype(float) * df["MP"].astype(float))).round(1)  # FPPGPM formatted to 1 decimal
+df["FPR"] = ((df["FP"] ** 2) / (df["G"].astype(float) * df["MP"].astype(float))).round(1)  # FPPGPM formatted to 1 decimal
 
 # Sort by 'Player Key' column
-df = df.sort_values(by="Player Key")
+df = df.sort_values(by=["Player Key", "Team"])
 
 # Authenticate with Google Sheets API
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
