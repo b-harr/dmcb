@@ -97,13 +97,12 @@ df.fillna(0, inplace=True)
 # Vectorized calculations for new columns
 df["FP"] = (
     df["PTS"] + df["TRB"] + df["AST"] + 
-    df["STL"] + df["BLK"] - 
-    df["TOV"] - df["PF"]
-    ).astype(int)
-df["FPPG"] = (df["FP"] / df["G"]).round(1)
-df["FPPM"] = (df["FP"] / df["MP"]).round(2)
-df["MPG"] = (df["MP"] / df["G"]).round(1)
-df["FPR"] = ((df["FP"] ** 2) / (df["G"] * df["MP"])).round(1)
+    df["STL"] + df["BLK"] - df["TOV"] - df["PF"]
+).astype(int)  # Fantasy Points: PTS/REB/AST/STL/BLK +1, TO,PF,TF -1
+df["FPPG"] = (df["FP"] / df["G"]).round(1)  # Fantasy Points Per Game
+df["FPPM"] = (df["FP"] / df["MP"]).round(2)  # Fantasy Points Per Minute
+df["MPG"] = (df["MP"] / df["G"]).round(1)  # Minutes Per Game
+df["FPR"] = ((df["FP"] ** 2) / (df["G"] * df["MP"])).round(1)  # Fantasy Point Rank = FPPG * FPPM = (FP ** 2) / (G * MP)
 
 # Save the output CSV file with a platform-independent path
 output_dir = "python/data"
