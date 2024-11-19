@@ -105,7 +105,7 @@ df["FP"] = (
 df["FPPG"] = (df["FP"] / df["G"]).round(1)  # Fantasy Points Per Game
 df["FPPM"] = (df["FP"] / df["MP"]).round(2)  # Fantasy Points Per Minute
 df["MPG"] = (df["MP"] / df["G"]).round(1)  # Minutes Per Game
-df["FPR"] = ((df["FP"] ** 2) / (df["G"] * df["MP"])).round(1)  # Fantasy Point Rank = FPPG * FPPM = (FP ** 2) / (G * MP)
+df["FPR"] = ((df["FP"] ** 2) / (df["G"] * df["MP"])).round(1)  # Fantasy Point Rating = FPPG * FPPM = (FP ** 2) / (G * MP)
 
 # Save the output CSV file with a platform-independent path
 output_dir = "python/data"
