@@ -12,12 +12,7 @@ import gspread
 import logging
 
 # Configure logging to track script execution and errors
-logging.basicConfig(
-    level=logging.INFO,  # Set the logging level
-    format="%(asctime)s - %(levelname)s - %(message)s",  # Log format
-    filename="scrape_bbref_to_sheets.log",  # Log file name
-    filemode="a",  # Append to the log file
-    )
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger()
 
 # Log the start message with timestamp and timezone
