@@ -1,6 +1,5 @@
 import os
 import pytz
-import datetime
 import requests
 import random
 import unicodedata
