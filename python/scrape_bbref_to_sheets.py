@@ -115,7 +115,7 @@ df["FPR"] = ((df["FP"] ** 2) / (df["G"] * df["MP"])).round(1)
 
 # Save the output CSV file with a platform-independent path
 output_dir = "python/data"
-output_filename = "bbref_data.csv"
+output_filename = "bbref_stats.csv"
 os.makedirs(output_dir, exist_ok=True)  # Ensure the directory exists
 output_csv = os.path.join(output_dir, output_filename)
 
