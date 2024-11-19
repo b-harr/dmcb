@@ -1,5 +1,4 @@
 import os
-import pytz
 import requests
 import random
 import unicodedata
@@ -15,9 +14,6 @@ import logging
 # Configure logging to track script execution and errors
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger()
-
-# Set local timezone and retrieve the current datetime for logging
-timezone = pytz.timezone("America/Chicago")
 
 # Log the start message with timestamp and timezone
 logger.info(f"Script started")
