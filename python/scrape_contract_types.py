@@ -21,8 +21,7 @@ def scrape_player_data(player_link, player_key, player_name):
 
         # CSS selector to find the "Signed Using" contract information
         signed_using_selector = (
-            "#contracts > div > div > div.contract-wrapper.mb-5 "
-            "> div.contract-details.row.m-0 > div:nth-child(5) > div.label"
+            "#contracts > div > div > div.contract-wrapper.mb-5 > div.contract-details.row.m-0 > div:nth-child(5) > div.label"
         )
         signed_using_element = soup.select_one(signed_using_selector)
 
