@@ -11,6 +11,10 @@ logging.basicConfig(
     level=logging.INFO,  # Log all INFO level messages and above
     format="%(asctime)s - %(levelname)s - %(message)s"
 )
+logger = logging.getLogger()
+
+# Log the start message with timestamp and timezone
+logger.info("The script started successfully.")
 
 # List of NBA teams to scrape salary data for (from Spotrac)
 teams = [
@@ -152,7 +156,7 @@ def scrape_and_save_data():
     # Sort player data by player key (case-insensitive) and save to CSV
     sorted_data = sorted(all_data, key=lambda x: x[2].lower())
     pd.DataFrame(sorted_data, columns=headers).to_csv(output_csv, index=False, mode="w", encoding="utf-8", quoting=1)  # Write sorted data to CSV
-    logging.info("Data processing completed and saved to CSV.")  # Log completion
+    logging.info(f"Data processing completed. Data successfully written to the file: {output_csv}")  # Log completion
 
 if __name__ == "__main__":
     scrape_and_save_data()  # Run the main function to scrape and save the data
