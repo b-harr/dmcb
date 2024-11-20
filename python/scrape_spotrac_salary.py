@@ -154,7 +154,7 @@ def scrape_and_save_data():
     for idx, team in enumerate(teams):
         team_name = utils.format_text(team)
         progress = (idx + 1) / len(teams) * 100  # Calculate progress
-        logging.info(f"Processed {idx+1}/{len(teams)} teams ({progress:.2f}%): {team_name}")  # Log progress with percentage
+        logging.info(f"Processed {idx+1}/{len(teams)} teams ({progress:.2f}%) - {team_name}")  # Log progress with percentage
         team_data = extract_player_data(session, team, season_headers)  # Extract player data
         all_data.extend(team_data)
 
