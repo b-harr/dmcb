@@ -23,3 +23,36 @@ def clean_team_name(url):
         for part in team_key_parts
     )
     return cleaned_name
+
+# List of minor words that should not be capitalized unless they are at the beginning of a phrase
+minor_words = {"and", "or", "the", "in", "at", "for", "to", "by", "with", "a", "an", "of", "on"}
+
+# Capitalizes specific prefixes and applies title case to the rest of the text
+def format_signed(text):
+    # If the text is None, return None
+    if text is None:
+        return None
+
+    # Split the text into words by spaces or hyphens
+    words = re.split(r"[-\s]", text)
+    formatted_words = []
+    
+    # Capitalize words based on specific conditions
+    for i, word in enumerate(words):
+        # If the word starts with "non", "mid", or "bi", capitalize it (e.g., "Non-" becomes "Non")
+        if any(word.lower().startswith(prefix) for prefix in ("non", "mid", "bi")):
+            formatted_words.append(word.capitalize())
+        # Capitalize all other words unless they are minor words
+        else:
+            formatted_words.append(word if word.lower() in minor_words else word.capitalize())
+    
+    # Join the formatted words into a single string
+    formatted_text = " ".join(formatted_words)
+    # Replace the capitalization for "Non-", "Mid-", "Bi-" if needed
+    formatted_text = re.sub(r"(?<=\w)(?=\b(?:Non|Mid|Bi)-)", "-", formatted_text)
+    # Remove space after "Non ", "Mid ", "Bi " and replace it with a hyphen
+    formatted_text = re.sub(r"(Non|Mid|Bi)\s", r"\1-", formatted_text)
+    # Special case: Handle "Sign and Trade" as a unique exception
+    formatted_text = re.sub(r"Sign and Trade", "Sign-and-Trade", formatted_text)
+
+    return formatted_text

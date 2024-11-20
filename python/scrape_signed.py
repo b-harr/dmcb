@@ -1,7 +1,7 @@
 import requests
-import re
 import pandas as pd
 from bs4 import BeautifulSoup
+import utils
 
 # Input CSV file containing the salary data
 input_csv = "python/data/salary_data.csv"
@@ -13,42 +13,6 @@ active_data = salary_data[(salary_data["2024-25"] != "Two-Way") & (salary_data["
 
 # Extract unique player links and keys, and sort by player key for consistency
 unique_links = active_data.drop_duplicates(subset=["Player Link", "Player Key"]).sort_values(by="Player Key")["Player Link"].tolist()
-
-# List of minor words that should not be capitalized unless they are at the beginning of a phrase
-minor_words = {"and", "or", "the", "in", "at", "for", "to", "by", "with", "a", "an", "of", "on"}
-
-# Capitalizes specific prefixes and applies title case to the rest of the text
-def format_signed(text):
-    # If the text is None, return None
-    if text is None:
-        return None
-
-    # Split the text into words by spaces or hyphens
-    words = re.split(r"[-\s]", text)
-    formatted_words = []
-    
-    # Capitalize words based on specific conditions
-    for i, word in enumerate(words):
-        # If the word starts with "non", "mid", or "bi", capitalize it (e.g., "Non-" becomes "Non")
-        if any(word.lower().startswith(prefix) for prefix in ("non", "mid", "bi")):
-            formatted_words.append(word.capitalize())
-        # Capitalize all other words unless they are minor words
-        else:
-            formatted_words.append(word if word.lower() in minor_words else word.capitalize())
-    
-    # Join the formatted words into a single string
-    formatted = " ".join(formatted_words)
-    
-    # Replace the capitalization for "Non-", "Mid-", "Bi-" if needed
-    formatted = re.sub(r"(?<=\w)(?=\b(?:Non|Mid|Bi)-)", "-", formatted)
-    
-    # Remove space after "Non ", "Mid ", "Bi " and replace it with a hyphen
-    formatted = re.sub(r"(Non|Mid|Bi)\s", r"\1-", formatted)
-    
-    # Special case: Handle "Sign and Trade" as a unique exception
-    formatted = re.sub(r"Sign and Trade", "Sign-and-Trade", formatted)
-
-    return formatted
 
 # Function to scrape player data from the player's individual page
 def scrape_player_data(player_link, player_key, player_name):
@@ -66,7 +30,7 @@ def scrape_player_data(player_link, player_key, player_name):
         signed_using_value = signed_using_element.find_next_sibling().get_text().strip() if signed_using_element else None
 
         # Format the extracted contract data using the format_signed function
-        cleaned_value = format_signed(signed_using_value)
+        cleaned_value = utils.format_signed(signed_using_value)
 
         # Return a dictionary containing the player data with the cleaned "Signed Using" value
         return {
