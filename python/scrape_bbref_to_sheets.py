@@ -113,9 +113,9 @@ def main():
 
     # Save the output CSV file with a platform-independent path
     output_dir = "python/data"
-    output_filename = "bbref_stats.csv"
+    output_file = "bbref_stats.csv"
     os.makedirs(output_dir, exist_ok=True)  # Ensure the directory exists
-    output_csv = os.path.join(output_dir, output_filename)
+    output_csv = os.path.join(output_dir, output_file)
 
     # Save to CSV
     df.to_csv(output_csv, index=False)

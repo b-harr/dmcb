@@ -31,10 +31,10 @@ teams = [
 
 # Define the directory and filename for saving the CSV file
 output_dir = "python/data"  # Directory to store the output
-output_filename = "salary_data.csv"  # Output CSV filename
+output_file = "spotrac_salary.csv"  # Output CSV filename
 
 # Generate the full path to the CSV file (ensures cross-platform compatibility)
-output_csv = os.path.join(output_dir, output_filename)
+output_csv = os.path.join(output_dir, output_file)
 
 # List to store all player data scraped from the teams
 all_data = []
@@ -80,7 +80,7 @@ def extract_season_headers(session, team):
 # Extract player data (name, position, salary, etc.) from the salary table of the team
 def extract_player_data(session, team, season_headers):
     url = f"https://www.spotrac.com/nba/{team}/yearly"  # Team-specific salary data URL
-    team_name = utils.clean_team_name(url)  # Clean the team name
+    team_name = utils.format_text(team)  # Clean the team name
     response = safe_request(session, url)  # Get the team data with safe_request
     if not response:
         return []
@@ -151,10 +151,12 @@ def scrape_and_save_data():
     # Scrape player data for all teams
     all_data = []
     for idx, team in enumerate(teams):
-        logging.info(f"Processing team {team} ({idx+1}/{len(teams)})")  # Log progress
+        team_name = utils.format_text(team)
+        progress = (idx + 1) / len(teams) * 100  # Calculate progress
+        logging.info(f"Processed {idx+1}/{len(teams)} teams ({progress:.2f}%): {team_name}")  # Log progress with percentage
         team_data = extract_player_data(session, team, season_headers)  # Extract player data
         all_data.extend(team_data)
-    
+
     # Sort player data by player key (case-insensitive) and save to CSV
     sorted_data = sorted(all_data, key=lambda x: x[2].lower())
     pd.DataFrame(sorted_data, columns=headers).to_csv(output_csv, index=False, mode="w", encoding="utf-8", quoting=1)  # Write sorted data to CSV
