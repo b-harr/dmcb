@@ -26,7 +26,7 @@ load_dotenv()
 # Retrieve environment variables
 creds_path = os.getenv("GOOGLE_SHEETS_CREDENTIALS")
 google_sheets_url = os.getenv("GOOGLE_SHEETS_URL")
-sheet_name = os.getenv("SHEET_NAME", "Stats")  # Default to "Stats"
+sheet_name = os.getenv("SHEET_NAME")
 numeric_columns = os.getenv("NUMERIC_COLUMNS", "PTS,TRB,AST,STL,BLK,TOV,PF,G,MP").split(",")
 
 # Ensure Google Sheets credentials and URL are provided

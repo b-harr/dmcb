@@ -4,3 +4,4 @@ secrets/*
 # Files
 .DS_Store
 .env
+*.pyc
