@@ -18,7 +18,7 @@ def clean_team_name(url):
     # Capitalizes each word, with special handling
     cleaned_name = " ".join(
         part.upper() if part.lower() == "la"  # Capitalize "LA" specifically (e.g. "Los Angeles")
-        else part.capitalize() if part.isalpha()  # Capitalize alphabetic parts only (e.g., "Bulls")
+        else part.capitalize() if part.isalpha()  # Capitalize alphabetic parts only (e.g., "Hawks")
         else part  # Retain numeric parts as they are (e.g., "76ers")
         for part in team_key_parts
     )
