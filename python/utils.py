@@ -10,49 +10,45 @@ def make_player_key(name):
     player_key = re.sub(r"-(sr|jr|ii|iii|iv|v|vi|vii)$", "", cleaned_name)  # Remove common suffixes
     return player_key
 
-# Function to extract and clean the team name from the Spotrac URL 
-# e.g., "san-antonio-spurs" -> "San Antonio Spurs"
-def clean_team_name(url):
-    team_key = url.split("/")[-2]  # Extracts the team identifier from the URL
-    team_key_parts = team_key.split("-")  # Splits the identifier into components
-    # Capitalizes each word, with special handling
-    cleaned_name = " ".join(
-        part.upper() if part.lower() == "la"  # Capitalize "LA" specifically (e.g. "Los Angeles")
-        else part.capitalize() if part.isalpha()  # Capitalize alphabetic parts only (e.g., "Hawks")
-        else part  # Retain numeric parts as they are (e.g., "76ers")
-        for part in team_key_parts
-    )
-    return cleaned_name
-
-# List of minor words that should not be capitalized unless they are at the beginning of a phrase
-minor_words = {"and", "or", "the", "in", "at", "for", "to", "by", "with", "a", "an", "of", "on"}
-
 # Capitalizes specific prefixes and applies title case to the rest of the text
-def format_signed(text):
+def format_text(text):
+    # List of minor words that should not be capitalized unless they are at the beginning or end
+    minor_words = {"and", "or", "the", "in", "at", "for", "to", "by", "with", "a", "an", "of", "on"}
+    exception_words = {"non", "mid", "bi"}
+    
     # If the text is None, return None
     if text is None:
         return None
 
     # Split the text into words by spaces or hyphens
     words = re.split(r"[-\s]", text)
+    
+    # Initialize a list for formatted words
     formatted_words = []
+    i = 0
     
-    # Capitalize words based on specific conditions
-    for i, word in enumerate(words):
-        # If the word starts with "non", "mid", or "bi", capitalize it (e.g., "Non-" becomes "Non")
-        if any(word.lower().startswith(prefix) for prefix in ("non", "mid", "bi")):
-            formatted_words.append(word.capitalize())
-        # Capitalize all other words unless they are minor words
+    while i < len(words):
+        word = words[i].lower()
+        
+        # Handle 'LA' specifically
+        if word == "la":
+            formatted_words.append("LA")
+        # Handle exception words with hyphenation
+        elif word in exception_words and i < len(words) - 1:
+            formatted_words.append(f"{word.capitalize()}-{words[i + 1].capitalize()}")
+            i += 1  # Skip the next word as it's already processed
+        # Handle minor words
+        elif word in minor_words:
+            formatted_words.append(word if i != 0 and i != len(words) - 1 else word.capitalize())
+        # Capitalize alphabetic words; retain numbers
         else:
-            formatted_words.append(word if word.lower() in minor_words else word.capitalize())
-    
-    # Join the formatted words into a single string
-    formatted_text = " ".join(formatted_words)
-    # Replace the capitalization for "Non-", "Mid-", "Bi-" if needed
-    formatted_text = re.sub(r"(?<=\w)(?=\b(?:Non|Mid|Bi)-)", "-", formatted_text)
-    # Remove space after "Non ", "Mid ", "Bi " and replace it with a hyphen
-    formatted_text = re.sub(r"(Non|Mid|Bi)\s", r"\1-", formatted_text)
-    # Special case: Handle "Sign and Trade" as a unique exception
-    formatted_text = re.sub(r"Sign and Trade", "Sign-and-Trade", formatted_text)
+            formatted_words.append(word.capitalize() if word.isalpha() else word)
+        
+        i += 1
 
-    return formatted_text
+    # Join the formatted words with spaces
+    formatted_words = " ".join(formatted_words)
+    # Special case: Replace "Sign and Trade" with "Sign-and-Trade"
+    formatted_words = re.sub("Sign and Trade", "Sign-and-Trade", formatted_words)
+
+    return formatted_words
