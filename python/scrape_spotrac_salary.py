@@ -61,6 +61,7 @@ def safe_request(session, url):
 
 # Extract season headers (e.g., "2024-25", "2023-24") from the team's salary table
 def extract_season_headers(session, team):
+    team_name = utils.format_text(team)
     url = f"https://www.spotrac.com/nba/{team}/yearly"  # Team-specific salary data URL
     response = safe_request(session, url)  # Make a safe HTTP request
     if response:
@@ -72,9 +73,9 @@ def extract_season_headers(session, team):
                 headers = [th.get_text(strip=True) for th in header_row.find_all("th")]  # Get header texts
                 season_headers = [header for header in headers if re.match(r"^\d{4}-\d{2}$", header)]  # Match season format
                 if season_headers:
-                    logging.info(f"Season headers extracted for team: {team}")  # Log success
+                    logging.info(f"Season headers extracted for team: {team_name}")  # Log success
                     return season_headers
-    logging.warning(f"Failed to extract headers for team: {team}")  # Log failure
+    logging.warning(f"Failed to extract headers for team: {team_name}")  # Log failure
     return []
 
 # Extract player data (name, position, salary, etc.) from the salary table of the team
