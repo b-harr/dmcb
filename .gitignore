@@ -1,4 +1,6 @@
+# Folders
+secrets/*
+
+# Files
 .DS_Store
 .env
-secrets/*
-*.log
