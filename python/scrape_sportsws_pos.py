@@ -70,6 +70,10 @@ def main():
     
     # Display the filtered DataFrame
     logging.info("Final filtered data is ready.")
+
+    # Sort the DataFrame by 'Player Key'
+    logging.info("Sorting data by 'Player Key'.")
+    filtered_df = filtered_df.sort_values(by="Player Key")
     
     # Save to a new CSV file
     output_dir = "python/data"
