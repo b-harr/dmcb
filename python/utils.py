@@ -50,5 +50,4 @@ def format_text(text):
     formatted_words = " ".join(formatted_words)
     # Special case: Replace "Sign and Trade" with "Sign-and-Trade"
     formatted_words = re.sub("Sign and Trade", "Sign-and-Trade", formatted_words)
-
     return formatted_words
