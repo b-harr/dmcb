@@ -92,7 +92,7 @@ def main():
         pd.DataFrame([scraped_row]).to_csv(output_csv, mode="a", header=False, index=False, encoding="utf-8")
 
         # Log progress
-        logger.info(f"Processed {idx + 1}/{len(unique_links)} players ({((idx + 1) / len(unique_links)) * 100:.2f}%): {player_name}")
+        logger.info(f"Processed {idx + 1}/{len(unique_links)} players ({((idx + 1) / len(unique_links)) * 100:.2f}%) - {player_name}")
 
     logger.info(f"Data saved to file: {output_csv}")
 
