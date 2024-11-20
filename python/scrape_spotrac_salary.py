@@ -42,7 +42,7 @@ all_data = []
 # Set up a persistent session for making HTTP requests
 def get_session():
     session = requests.Session()
-    session.headers.update({"User-Agent": "Mozilla/5.0"})  # Set user-agent for the request
+    session.headers.update({"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"})  # Set user-agent for the request
     return session
 
 # Safe request function to handle HTTP errors and return the response
