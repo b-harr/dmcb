@@ -58,7 +58,7 @@ def main():
     
     # Split the 'Tail' column into 'Team' and 'Pos' columns
     logging.info("Splitting 'Tail' column into 'Team' and 'Pos'.")
-    df[['Team', 'Pos']] = df['Tail'].str.extract(r',\s*(\w+),\s*(\w+)')
+    df[['Team', 'Pos']] = df['Tail'].str.extract(r',\s*([\w*]+),\s*(\w+)')
     
     # Drop the 'Tail' column if no longer needed
     df = df.drop(columns=['Tail'])
