@@ -1,5 +1,6 @@
 # Folders
-secrets/*
+/secrets/
+__pycache__/
 
 # Files
 .DS_Store
