@@ -9,6 +9,8 @@ from oauth2client.service_account import ServiceAccountCredentials
 import gspread
 import logging
 import utils
+import json
+import datetime
 
 # Configure logging to track script execution and errors
 logging.basicConfig(
@@ -25,8 +27,8 @@ load_dotenv()
 
 # Retrieve environment variables
 creds_path = os.getenv("GOOGLE_SHEETS_CREDENTIALS")
-google_sheets_url = os.getenv("GOOGLE_SHEETS_URL")
-sheet_name = os.getenv("SHEET_NAME")
+google_sheets_url = "https://docs.google.com/spreadsheets/d/1NgAl7GSl3jfehz4Sb3SmR_k1-QtQFm55fBPb3QOGYYw"
+sheet_name = "Stats"
 numeric_columns = os.getenv("NUMERIC_COLUMNS", "PTS,TRB,AST,STL,BLK,TOV,PF,G,MP").split(",")
 
 # Ensure Google Sheets credentials and URL are provided
@@ -54,6 +56,15 @@ def main():
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
     }
+
+    # Load service account email
+    try:
+        with open(creds_path, 'r') as f:
+            service_account_info = json.load(f)
+            service_account_email = service_account_info.get("client_email", "Unknown Service Account")
+    except Exception as e:
+        logger.error(f"Error loading service account email: {e}")
+        return
 
     # Fetch the data using retry logic
     response = fetch_data_with_retry(url, headers)
@@ -136,8 +147,10 @@ def main():
 
         # Clear and update the sheet
         sheet.clear()
+        today = datetime.datetime.now().strftime("%-m/%-d/%Y %-I:%M %p")
+        sheet.update([[f"Last updated {today} by {service_account_email}"]], "A1")
         data_to_write = [df.columns.tolist()] + df.values.tolist()
-        sheet.update(data_to_write, "A1")
+        sheet.update(data_to_write, "A2")
 
         # Log progress and errors for monitoring script execution
         logger.info(f"Data successfully written to the '{sheet_name}' sheet.")
