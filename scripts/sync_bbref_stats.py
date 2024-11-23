@@ -1,5 +1,4 @@
 import logging
-from config import load_config
 import sys
 import os
 
@@ -8,9 +7,10 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
+from config import load_config
 from utils.data_fetcher import fetch_data, parse_html
 from utils.data_processor import add_fantasy_stats
-from utils.google_sheets import update_google_sheet
+from utils.google_sheets import update_sheet
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -34,7 +34,7 @@ def main():
     logger.info(f"Data successfully written to the file: {config['output_csv']}")
     
     # Update Google Sheets
-    update_google_sheet(processed_data, config)
+    update_sheet(processed_data, config)
     logger.info("Google Sheets updated successfully.")
 
 if __name__ == "__main__":

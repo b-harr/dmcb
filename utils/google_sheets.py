@@ -5,7 +5,7 @@ import logging
 
 logger = logging.getLogger()
 
-def update_google_sheet(df, config):
+def update_sheet(df, config):
     scope = ["https://www.googleapis.com/auth/spreadsheets"]
     creds = ServiceAccountCredentials.from_json_keyfile_name(config["creds_path"], scope)
     client = gspread.authorize(creds)
