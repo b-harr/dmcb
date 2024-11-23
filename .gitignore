@@ -5,4 +5,3 @@ __pycache__/
 # Files
 .DS_Store
 .env
-*.pyc
