@@ -1,7 +1,16 @@
 import logging
 from config import load_config
-import pandas as pd
-from utils import fetch_data, parse_html, process_data, update_google_sheet
+import sys
+import os
+
+# Dynamically add the project root to PYTHONPATH
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+
+from utils.data_fetcher import fetch_data, parse_html
+from utils.data_processor import add_fantasy_stats
+from utils.google_sheets import update_google_sheet
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -18,7 +27,7 @@ def main():
     data_frame = parse_html(html_content, config["numeric_columns"])
     
     # Process the data
-    processed_data = process_data(data_frame, config["numeric_columns"])
+    processed_data = add_fantasy_stats(data_frame, config["numeric_columns"])
     
     # Save to CSV
     processed_data.to_csv(config["output_csv"], index=False)
