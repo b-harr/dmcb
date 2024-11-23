@@ -2,16 +2,6 @@ import pandas as pd
 import utils
 
 def add_fantasy_stats(df, numeric_columns):
-    """
-    Process the DataFrame by cleaning, sorting, and adding fantasy basketball stats.
-    
-    Parameters:
-        df (pd.DataFrame): The input DataFrame containing basketball player data.
-        numeric_columns (list): List of column names expected to contain numeric values.
-
-    Returns:
-        pd.DataFrame: Processed DataFrame with added fantasy stats.
-    """
     # Remove rows for "League Average" and drop rows with missing "Player" values
     df = df[df["Player"] != "League Average"].dropna(subset=["Player"])
     
