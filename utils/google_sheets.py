@@ -9,6 +9,8 @@ def update_sheet(df, config):
     scope = ["https://www.googleapis.com/auth/spreadsheets"]
     creds = ServiceAccountCredentials.from_json_keyfile_name(config["creds_path"], scope)
     client = gspread.authorize(creds)
+    
+    # Open the spreadsheet by URL and then select the sheet dynamically using the sheet name from config
     spreadsheet = client.open_by_url(config["google_sheets_url"])
     sheet = spreadsheet.worksheet(config["sheet_name"])
     

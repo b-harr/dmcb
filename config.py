@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 import pandas as pd
 
-def load_config():
+def load_config(sheet_name="Stats"):
     load_dotenv()
     return {
         "bbref_stats_url": "https://www.basketball-reference.com/leagues/NBA_2025_totals.html",
@@ -11,7 +11,7 @@ def load_config():
         },
         "creds_path": os.getenv("GOOGLE_SHEETS_CREDENTIALS"),
         "google_sheets_url": os.getenv("GOOGLE_SHEETS_URL"),
-        "sheet_name": "Stats",
+        "sheet_name": sheet_name,  # Use dynamic sheet name passed as argument
         "numeric_columns": "PTS,TRB,AST,STL,BLK,TOV,PF,G,MP".split(","),
         "output_csv": os.path.join("data", "bbref_stats.csv")
     }

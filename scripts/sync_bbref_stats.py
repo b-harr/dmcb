@@ -19,8 +19,8 @@ logger = logging.getLogger()
 def main():
     logger.info("The script started successfully.")
     
-    # Load configuration
-    config = load_config()
+    # Load configuration and specify the sheet name for this script
+    config = load_config(sheet_name="Stats")  # Specify the sheet name to update here
     
     # Fetch and parse data
     html_content = fetch_data(config["bbref_stats_url"], config["headers"])
@@ -33,9 +33,9 @@ def main():
     processed_data.to_csv(config["output_csv"], index=False)
     logger.info(f"Data successfully written to the file: {config['output_csv']}")
     
-    # Update Google Sheets
+    # Update Google Sheets with the processed data
     update_sheet(processed_data, config)
-    logger.info("Google Sheets updated successfully.")
+    logger.info(f"Google Sheets '{config['sheet_name']}' updated successfully.")
 
 if __name__ == "__main__":
     main()
