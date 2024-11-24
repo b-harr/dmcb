@@ -74,8 +74,8 @@ dmcb/
 │   └── scripts.log                 # Log file for all scripts  
 ├── requirements.txt                # Python dependencies  
 ├── scripts/                        # Directory for individual Python scripts  
-│   ├── sync_bbref_stats.py         # Syncs Basketball Reference stats to DMCB Google Sheets  
 │   ├── get_spotrac_contracts.py    # Scrapes Spotrac contracts to a local CSV  
+│   ├── sync_bbref_stats.py         # Syncs Basketball Reference stats to DMCB Google Sheets  
 │   ├── sync_contract_types.py      # Syncs contract types to Sheets  
 │   └── sync_sportsws_positions.py  # Syncs Sports.ws player positions to Sheets  
 ├── utils/                          # Directory for utility modules  
