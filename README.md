@@ -61,33 +61,38 @@ python3 scripts/sync_bbref_stats.py
 
 ```
 dmcb/  
-├── .env                   # Environment variables (excluded via .gitignore)  
-├── .gitignore             # Git ignore rules  
-├── README.md              # Project documentation  
-├── config.py              # Shared configuration file (should go here)  
-├── data/                  # Directory for storing output data  
-│   ├── bbref_stats.csv    # Basketball Reference statistics data  
-│   ├── spotrac_contracts.csv # Spotrac contract data  
-│   └── ...                # Additional data files as needed  
-├── logs/                  # Directory for log files  
-│   └── script.log         # Log file for all scripts  
-├── requirements.txt       # Python dependencies  
-├── scripts/               # Directory for individual Python scripts  
-│   ├── sync_bbref_stats.py      # Syncs Basketball Reference stats  
-│   ├── get_spotrac_contracts.py # Scrapes Spotrac contracts  
-│   ├── sync_contract_types.py   # Syncs contract types  
-│   ├── sync_sportsws_positions.py # Syncs Sports.ws player positions  
-├── utils/                 # Directory for utility modules  
-│   ├── __init__.py        # Makes utils a package  
-│   └── utils.py           # Shared utility functions  
-└── tests/                 # Directory for unit tests  
-    ├── __init__.py        # Makes tests a package  
-    └── test_utils.py      # Tests for utility functions  
+├── .env                            # Environment variables (excluded via .gitignore)  
+├── .gitignore                      # Git ignore rules  
+├── README.md                       # Project documentation  
+├── config.py                       # Shared configuration file  
+├── data/                           # Directory for storing output data  
+│   ├── bbref_stats.csv             # Basketball Reference statistics data  
+│   ├── contract_types.csv          # Spotrac contract type data by player  
+│   ├── spotrac_contracts.csv       # Spotrac contract data by NBA team  
+│   └── sportsws_positions.csv      # Sports.ws default positions  
+├── logs/                           # Directory for log files  
+│   └── scripts.log                 # Log file for all scripts  
+├── requirements.txt                # Python dependencies  
+├── scripts/                        # Directory for individual Python scripts  
+│   ├── sync_bbref_stats.py         # Syncs Basketball Reference stats to DMCB Google Sheets  
+│   ├── get_spotrac_contracts.py    # Scrapes Spotrac contracts to a local CSV  
+│   ├── sync_contract_types.py      # Syncs contract types to Sheets  
+│   └── sync_sportsws_positions.py  # Syncs Sports.ws player positions to Sheets  
+├── utils/                          # Directory for utility modules  
+│   ├── __init__.py                 # Makes utils a package  
+│   ├── data_fetcher.py             # Fetches data and parses html  
+│   ├── data_processor.py           # Processes DMCB fantasy stats  
+│   ├── google_sheets.py            # Authenticates and writes to Google Sheets  
+│   └── utils.py                    # Shared utility functions to format text  
+└── tests/                          # Directory for unit tests  
+    ├── __init__.py                 # Makes tests a package  
+    └── test_utils.py               # Tests for utility functions  
 ```
 
 ---
 
 ## Metrics Processed
+`sync_bbref_stats.py`
 - **Fantasy Points (FP)**: Calculated as `PTS + TRB + AST + STL + BLK - TOV - PF`.
 - **Fantasy Points Per Game (FPPG)**: Average fantasy points per game (`FP / G`).
 - **Fantasy Points Per Minute (FPPM)**: Average fantasy points per minute (`FP / MP`).

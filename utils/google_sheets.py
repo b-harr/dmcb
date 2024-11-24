@@ -1,9 +1,6 @@
-import gspread
 from oauth2client.service_account import ServiceAccountCredentials
+import gspread
 import datetime
-import logging
-
-logger = logging.getLogger()
 
 def update_sheet(df, config):
     scope = ["https://www.googleapis.com/auth/spreadsheets"]
