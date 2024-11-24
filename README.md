@@ -61,10 +61,11 @@ python3 scripts/sync_bbref_stats.py
 
 ```
 dmcb/  
+├── README.md                       # Project documentation  
 ├── .env                            # Environment variables (excluded via .gitignore)  
 ├── .gitignore                      # Git ignore rules  
-├── README.md                       # Project documentation  
 ├── config.py                       # Shared configuration file  
+├── requirements.txt                # Python dependencies  
 ├── data/                           # Directory for storing output data  
 │   ├── bbref_stats.csv             # Basketball Reference statistics data  
 │   ├── contract_types.csv          # Spotrac contract type data by player  
@@ -72,7 +73,6 @@ dmcb/
 │   └── sportsws_positions.csv      # Sports.ws default positions  
 ├── logs/                           # Directory for log files  
 │   └── scripts.log                 # Log file for all scripts  
-├── requirements.txt                # Python dependencies  
 ├── scripts/                        # Directory for individual Python scripts  
 │   ├── get_spotrac_contracts.py    # Scrapes Spotrac contracts to a local CSV  
 │   ├── sync_bbref_stats.py         # Syncs Basketball Reference stats to DMCB Google Sheets  
