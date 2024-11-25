@@ -3,7 +3,7 @@
 ## Project Summary: NBA Fantasy Basketball Stats Automation
 This project is focused on automating the process of fetching, processing, and exporting NBA player statistics from Basketball-Reference for use in a fantasy basketball league hosted on Sports.ws. The processed data includes custom fantasy metrics and is synchronized with a Google Sheets document for easy sharing and analysis.
 
-# bbref_stats_sync
+# sync_bbref_stats
 
 A Python script to scrape player statistics from Basketball-Reference, process the data for fantasy basketball analysis, and sync the results to a Google Sheet.
 
@@ -14,6 +14,24 @@ A Python script to scrape player statistics from Basketball-Reference, process t
 - Cleans, processes, and calculates advanced metrics (e.g., Fantasy Points, FPPG, FPPM).
 - Outputs a CSV file for local storage.
 - Automatically updates a Google Sheet with the processed data.
+
+---
+
+# sync_sportsws_positions
+
+A Python script to scrape player positions from Sports.ws and sync the results to a Google Sheet.
+
+---
+
+# get_spotrac_contracts
+
+A Python script to scrape team contracts from Spotrac, process the data, and save the output as a CSV file.
+
+---
+
+# get_contract_types
+
+A Python script to scrape player contract types from Spotrac, process the data, and save the output as a CSV file.
 
 ---
 
