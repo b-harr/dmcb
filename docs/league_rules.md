@@ -23,14 +23,14 @@ Resources:
 Number of Teams: 16 teams
 
 Roster Size:
-12 active players (minimum)
-3 free agent spots
-2 two-way players
+* 12 active players (minimum)
+* 3 free agent spots
+* 2 two-way players
 
 Starting Positions:
-96 Guard minutes
-96 Forward minutes
-48 Center minutes
+* 96 Guard minutes
+* 96 Forward minutes
+* 48 Center minutes
 
 ## 3. Scoring System
 
