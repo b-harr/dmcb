@@ -51,11 +51,11 @@ def scrape_player_data(player_link, player_key, player_name):
 
 def main():
     # Define paths and filenames
-    input_dir = "python/data"
-    input_file = "spotrac_salary.csv"
+    input_dir = "data"
+    input_file = "spotrac_contracts.csv"
     input_csv = os.path.join(input_dir, input_file)
 
-    output_dir = "python/data"
+    output_dir = "data"
     output_file = "contract_types.csv"
     output_csv = os.path.join(output_dir, output_file)
 
