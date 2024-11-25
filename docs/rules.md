@@ -13,8 +13,9 @@ Competition Committee:
 * Rules & Compliance Director: Christopher Heiligenstein (@St9er)
 * Treasurer: Robert Ramon (@Rizzy (Austin))
 
-Slack: dreamsmoreycanbuy.slack.com
-Google Sheets: https://docs.google.com/spreadsheets/d/1NgAl7GSl3jfehz4Sb3SmR_k1-QtQFm55fBPb3QOGYYw
+Resources:
+* Slack: dreamsmoreycanbuy.slack.com
+* Google Sheets: https://docs.google.com/spreadsheets/d/1NgAl7GSl3jfehz4Sb3SmR_k1-QtQFm55fBPb3QOGYYw
 
 ## 2. Teams & Rosters
 
