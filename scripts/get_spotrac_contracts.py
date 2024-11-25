@@ -30,8 +30,8 @@ teams = [
 ]
 
 # Define the directory and filename for saving the CSV file
-output_dir = "python/data"  # Directory to store the output
-output_file = "spotrac_salary.csv"  # Output CSV filename
+output_dir = "data"  # Directory to store the output
+output_file = "spotrac_contracts.csv"  # Output CSV filename
 
 # Generate the full path to the CSV file (ensures cross-platform compatibility)
 output_csv = os.path.join(output_dir, output_file)

@@ -103,8 +103,8 @@ def main():
     df = df.sort_values(by="Player Key")
     
     # Save to a new CSV file
-    output_dir = "python/data"
-    output_file = "sportsws_pos_data.csv"
+    output_dir = "data"
+    output_file = "sportsws_positions.csv"
     os.makedirs(output_dir, exist_ok=True)  # Create directory if it doesn't exist
     output_csv = os.path.join(output_dir, output_file)
     

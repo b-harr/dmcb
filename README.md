@@ -64,29 +64,17 @@ dmcb/
 ├── README.md                       # Project documentation  
 ├── .env                            # Environment variables (excluded via .gitignore)  
 ├── .gitignore                      # Git ignore rules  
-├── config.py                       # Shared configuration file  
 ├── requirements.txt                # Python dependencies  
 ├── data/                           # Directory for storing output data  
 │   ├── bbref_stats.csv             # Basketball Reference statistics data  
 │   ├── contract_types.csv          # Spotrac contract type data by player  
-│   ├── spotrac_contracts.csv       # Spotrac contract data by NBA team  
-│   └── sportsws_positions.csv      # Sports.ws default positions  
-├── logs/                           # Directory for log files  
-│   └── scripts.log                 # Log file for all scripts  
-├── scripts/                        # Directory for individual Python scripts  
-│   ├── get_spotrac_contracts.py    # Scrapes Spotrac contracts to a local CSV  
-│   ├── sync_bbref_stats.py         # Syncs Basketball Reference stats to DMCB Google Sheets  
-│   ├── sync_contract_types.py      # Syncs contract types to Sheets  
-│   └── sync_sportsws_positions.py  # Syncs Sports.ws player positions to Sheets  
-├── utils/                          # Directory for utility modules  
-│   ├── __init__.py                 # Makes utils a package  
-│   ├── data_fetcher.py             # Fetches data and parses html  
-│   ├── data_processor.py           # Processes DMCB fantasy stats  
-│   ├── google_sheets.py            # Authenticates and writes to Google Sheets  
-│   └── utils.py                    # Shared utility functions to format text  
-└── tests/                          # Directory for unit tests  
-    ├── __init__.py                 # Makes tests a package  
-    └── test_utils.py               # Tests for utility functions  
+│   ├── sportsws_positions.csv      # Sports.ws default positions  
+│   └── spotrac_contracts.csv       # Spotrac contract data by NBA team  
+└── scripts/                        # Directory for individual Python scripts  
+    ├── get_contract_types.py       # Scrapes contract types to a local CSV  
+    ├── get_spotrac_contracts.py    # Scrapes Spotrac contracts to a local CSV  
+    ├── sync_bbref_stats.py         # Syncs Basketball Reference stats to DMCB Google Sheets  
+    └── sync_sportsws_positions.py  # Syncs Sports.ws player positions to DMCB Google Sheets  
 ```
 
 ---
