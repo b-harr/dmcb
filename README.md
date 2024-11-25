@@ -79,20 +79,25 @@ python3 scripts/sync_bbref_stats.py
 
 ```
 dmcb/  
-├── README.md                       # Project documentation  
-├── .env                            # Environment variables (excluded via .gitignore)  
-├── .gitignore                      # Git ignore rules  
-├── requirements.txt                # Python dependencies  
 ├── data/                           # Directory for storing output data  
 │   ├── bbref_stats.csv             # Basketball Reference statistics data  
 │   ├── contract_types.csv          # Spotrac contract type data by player  
 │   ├── sportsws_positions.csv      # Sports.ws default positions  
 │   └── spotrac_contracts.csv       # Spotrac contract data by NBA team  
-└── scripts/                        # Directory for individual Python scripts  
-    ├── get_contract_types.py       # Scrapes contract types to a local CSV  
-    ├── get_spotrac_contracts.py    # Scrapes Spotrac contracts to a local CSV  
-    ├── sync_bbref_stats.py         # Syncs Basketball Reference stats to DMCB Google Sheets  
-    └── sync_sportsws_positions.py  # Syncs Sports.ws player positions to DMCB Google Sheets  
+├── docs/                           # Directory for storing output data  
+│   ├── dmcb_logo.png               # DMCB "Riz" logo
+│   └── league_rules.md             # DMCB league rules  
+├── scripts/                        # Directory for individual Python scripts  
+│   ├── get_contract_types.py       # Scrapes contract types to CSV  
+│   ├── get_spotrac_contracts.py    # Scrapes Spotrac contracts to CSV  
+│   ├── sync_bbref_stats.py         # Syncs Basketball Reference stats to Google Sheets  
+│   ├── sync_sportsws_positions.py  # Syncs Sports.ws player positions to Google Sheets  
+│   └── utils.py                    # Helper functions to process text  
+├── secrets/                        # Directory for secrets files (excluded via .gitignore)  
+├── .env                            # Environment variables (excluded via .gitignore)  
+├── .gitignore                      # Git ignore rules  
+├── README.md                       # Project documentation  
+└── requirements.txt                # Python dependencies  
 ```
 
 ---
