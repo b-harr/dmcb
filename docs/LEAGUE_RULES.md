@@ -7,11 +7,11 @@ Type of League: Points-per-minute-based, Salary Cap Dynasty
 Platform: Sports.ws
 
 Competition Committee:
-Commissioner: Sam Fraser (@Sam Antonio)
-Draft & Operations Director: Brian Harrison (@B-Har)
-League Historian & Tournament Director: Andrew Casillas (@Andrew)
-Rules & Compliance Director: Christopher Heiligenstein (@St9er)
-Treasurer: Robert Ramon (@Rizzy (Austin))
+* Commissioner: Sam Fraser (@Sam Antonio)
+* Draft & Operations Director: Brian Harrison (@B-Har)
+* League Historian & Tournament Director: Andrew Casillas (@Andrew)
+* Rules & Compliance Director: Christopher Heiligenstein (@St9er)
+* Treasurer: Robert Ramon (@Rizzy (Austin))
 
 Slack: dreamsmoreycanbuy.slack.com
 Google Sheets: https://docs.google.com/spreadsheets/d/1NgAl7GSl3jfehz4Sb3SmR_k1-QtQFm55fBPb3QOGYYw
