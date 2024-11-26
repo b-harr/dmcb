@@ -1,8 +1,16 @@
 import unicodedata
 import re
 
-# Clean a player's name and generate a unique key for consistent cross-site merging
 def make_player_key(name):
+    """
+    Cleans a player's name and generates a unique key for consistent cross-site merging.
+
+    Args:
+        name (str): The player's full name.
+
+    Returns:
+        str: A normalized, cleaned key for the player's name.
+    """
     normalized_name = unicodedata.normalize("NFD", name).encode("ascii", "ignore").decode("utf-8")  # Remove accents
     cleaned_name = normalized_name.lower().strip()  # Convert to lowercase and trim spaces
     cleaned_name = re.sub(r"\s+", "-", cleaned_name)  # Replace spaces with hyphens
@@ -10,23 +18,28 @@ def make_player_key(name):
     player_key = re.sub(r"-(sr|jr|ii|iii|iv|v|vi|vii)$", "", cleaned_name)  # Remove common suffixes
     return player_key
 
-# Capitalizes specific prefixes and applies title case to the rest of the text
 def format_text(text):
+    """
+    Capitalizes specific prefixes and applies title case to the rest of the text.
+
+    Args:
+        text (str): The input text to format.
+
+    Returns:
+        str or None: The formatted text, or None if the input is None.
+    """
     # List of minor words that should not be capitalized unless they are at the beginning or end
-    minor_words = {"and", "or", "the", "in", "at", "for", "to", "by", "with", "a", "an", "of", "on"}
-    exception_words = {"non", "mid", "bi"}
+    minor_words = {"and", "or", "the", "in", "at", "for", "to", "by", "with", "a", "an", "of", "on", "vs"}
+    hyphenated_words = {"non", "mid", "bi"}
     
-    # If the text is None, return None
     if text is None:
         return None
 
     # Split the text into words by spaces or hyphens
     words = re.split(r"[-\s]", text)
-    
-    # Initialize a list for formatted words
     formatted_words = []
     i = 0
-    
+
     while i < len(words):
         word = words[i].lower()
         
@@ -34,7 +47,7 @@ def format_text(text):
         if word == "la":
             formatted_words.append("LA")
         # Handle exception words with hyphenation
-        elif word in exception_words and i < len(words) - 1:
+        elif word in hyphenated_words and i < len(words) - 1:
             formatted_words.append(f"{word.capitalize()}-{words[i + 1].capitalize()}")
             i += 1  # Skip the next word as it's already processed
         # Handle minor words
@@ -51,3 +64,15 @@ def format_text(text):
     # Special case: Replace "Sign and Trade" with "Sign-and-Trade"
     formatted_words = re.sub("Sign and Trade", "Sign-and-Trade", formatted_words)
     return formatted_words
+
+
+# Example usage (commented out):
+if __name__ == "__main__":
+    # Test make_player_key
+    print(make_player_key("LeBron James Jr."))
+    print(make_player_key("José Álvarez III"))
+    
+    # Test format_text
+    print(format_text("sign and trade deal"))
+    print(format_text("LA Lakers vs non-stop"))
+    print(format_text("Non taxpayer bi annual Mid Level Exception"))
