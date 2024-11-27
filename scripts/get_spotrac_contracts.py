@@ -1,20 +1,38 @@
 import os
+import sys
+import logging
+from dotenv import load_dotenv
+import pandas as pd
 import requests
 import re
-import pandas as pd
 from bs4 import BeautifulSoup
-import logging
-import utils
 
-# Set up logging for tracking errors and steps in data processing
+# Get the root project directory (2 levels up from the current script)
+base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# Append the base_dir to sys.path to make sure modules can be imported
+sys.path.append(base_dir)
+
+# Import custom modules for the script
+import config
+from utils.google_sheets_manager import GoogleSheetsManager
+from utils.csv_handler import CSVHandler
+from utils.data_fetcher import fetch_data, parse_html
+from utils.text_formatter import make_player_key, format_text
+
+# Configure logging to capture detailed script execution and errors
 logging.basicConfig(
-    level=logging.INFO,  # Log all INFO level messages and above
+    level=logging.INFO,  # Log messages with level INFO and above
     format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger()
 
-# Log the start message with timestamp and timezone
+# Log the script start with a timestamp to track execution
 logger.info("The script started successfully.")
+
+# Load environment variables from the .env file
+load_dotenv()
+logger.info("Environment variables loaded successfully.")
 
 # List of NBA teams to scrape salary data for (from Spotrac)
 teams = [
@@ -30,11 +48,7 @@ teams = [
 ]
 
 # Define the directory and filename for saving the CSV file
-output_dir = "data"  # Directory to store the output
-output_file = "spotrac_contracts.csv"  # Output CSV filename
-
-# Generate the full path to the CSV file (ensures cross-platform compatibility)
-output_csv = os.path.join(output_dir, output_file)
+output_csv = config.spotrac_contracts_path
 
 # List to store all player data scraped from the teams
 all_data = []
@@ -61,7 +75,6 @@ def safe_request(session, url):
 
 # Extract season headers (e.g., "2024-25", "2023-24") from the team's salary table
 def extract_season_headers(session, team):
-    team_name = utils.format_text(team)
     url = f"https://www.spotrac.com/nba/{team}/yearly"  # Team-specific salary data URL
     response = safe_request(session, url)  # Make a safe HTTP request
     if response:
@@ -73,15 +86,15 @@ def extract_season_headers(session, team):
                 headers = [th.get_text(strip=True) for th in header_row.find_all("th")]  # Get header texts
                 season_headers = [header for header in headers if re.match(r"^\d{4}-\d{2}$", header)]  # Match season format
                 if season_headers:
-                    logging.info(f"Season headers extracted for team: {team_name}")  # Log success
+                    logging.info(f"Season headers extracted for team: {team}")  # Log success
                     return season_headers
-    logging.warning(f"Failed to extract headers for team: {team_name}")  # Log failure
+    logging.warning(f"Failed to extract headers for team: {team}")  # Log failure
     return []
 
 # Extract player data (name, position, salary, etc.) from the salary table of the team
 def extract_player_data(session, team, season_headers):
     url = f"https://www.spotrac.com/nba/{team}/yearly"  # Team-specific salary data URL
-    team_name = utils.format_text(team)  # Clean the team name
+    team_name = format_text(team)  # Clean the team name
     response = safe_request(session, url)  # Get the team data with safe_request
     if not response:
         return []
@@ -89,7 +102,7 @@ def extract_player_data(session, team, season_headers):
     soup = BeautifulSoup(response.text, "html.parser")  # Parse HTML response
     table = soup.select_one("table")  # Find the first table on the page
     if not table:
-        logging.warning(f"No table found for team {team_name}")  # Log if no table found
+        logging.warning(f"No table found for team {team}")  # Log if no table found
         return []
     
     rows = table.find_all("tr")  # Find all rows in the table
@@ -107,7 +120,7 @@ def extract_player_data(session, team, season_headers):
         
         player_name = player_name_tag.get_text(strip=True)  # Get player name text
         player_link = player_name_tag["href"]  # Get player link
-        player_key = utils.make_player_key(player_name)  # Generate a unique key for the player
+        player_key = make_player_key(player_name)  # Generate a unique key for the player
         position = cols[1].get_text(strip=True)  # Get player position
         age = cols[2].get_text(strip=True)  # Get player age
 
@@ -152,9 +165,9 @@ def scrape_and_save_data():
     # Scrape player data for all teams
     all_data = []
     for idx, team in enumerate(teams):
-        team_name = utils.format_text(team)
+        team_name = format_text(team)
         progress = (idx + 1) / len(teams) * 100  # Calculate progress
-        logging.info(f"Processed {idx+1}/{len(teams)} teams ({progress:.2f}%) - {team_name}")  # Log progress with percentage
+        logging.info(f"Processed {idx+1}/{len(teams)} teams ({progress:.2f}%) - {team}")  # Log progress with percentage
         team_data = extract_player_data(session, team, season_headers)  # Extract player data
         all_data.extend(team_data)
 
