@@ -87,7 +87,7 @@ def main(year=2025):
     logger.info("Sorted DataFrame by 'Player Key' and 'Team'.")
 
     # Drop duplicates based on 'Player Key', keeping the first occurrence
-    #df = df.drop_duplicates(subset='Player Key', keep='first')
+    df = df.drop_duplicates(subset='Player Key', keep='first')
     logger.info("Removed individual teams when more than one.")
 
     # Convert specified numeric columns to proper numeric types for calculations
