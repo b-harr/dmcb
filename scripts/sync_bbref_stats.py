@@ -41,7 +41,7 @@ def main(year=2025):
     """
     Main function to fetch, process, and store NBA player stats for the given year.
     It fetches data from Basketball-Reference, processes it, calculates fantasy points,
-    and stores the result both in a CSV file and Google Sheets.
+    and stores the result both in a CSV file and Google Sheets (only for the default year).
     """
     # Construct the URL for the requested year's player stats page on Basketball-Reference
     url = f"https://www.basketball-reference.com/leagues/NBA_{year}_totals.html"
@@ -86,6 +86,10 @@ def main(year=2025):
     df = df.sort_values(by=["Player Key", "Team"])
     logger.info("Sorted DataFrame by 'Player Key' and 'Team'.")
 
+    # Drop duplicates based on 'Player Key', keeping the first occurrence
+    #df = df.drop_duplicates(subset='Player Key', keep='first')
+    logger.info("Removed individual teams when more than one.")
+
     # Convert specified numeric columns to proper numeric types for calculations
     df[numeric_columns] = df[numeric_columns].apply(pd.to_numeric, errors="coerce")
     logger.info(f"Converted numeric columns: {numeric_columns} to numeric types.")
@@ -112,36 +116,47 @@ def main(year=2025):
         return
 
     # Define the file path where the processed data will be saved
-    output_csv = config.bbref_stats_path
-    logger.info(f"Saving data to CSV file: {output_csv}")
+    if year == 2025:  # Only sync to Google Sheets for the default year
+        output_csv = config.bbref_stats_path
+        logger.info(f"Saving data to CSV file: {output_csv}")
+        # Save the processed data to a CSV file
+        try:
+            CSVHandler.write_csv(output_csv, df.values.tolist(), headers=df.columns.tolist())
+            logger.info(f"Data successfully written to the CSV file: {output_csv}")
+        except Exception as e:
+            logger.error(f"Error saving data to CSV: {e}")
+            return
 
-    # Save the processed data to a CSV file
-    try:
-        CSVHandler.write_csv(output_csv, df.values.tolist(), headers=df.columns.tolist())
-        logger.info(f"Data successfully written to the CSV file: {output_csv}")
-    except Exception as e:
-        logger.error(f"Error saving data to CSV: {e}")
-        return
+        # Authenticate and update the Google Sheets with the processed data
+        try:
+            # Get the current timestamp to indicate when the data was last updated
+            timestamp = logging.Formatter('%(asctime)s').format(logging.LogRecord("", 0, "", 0, "", [], None))  # Get the current timestamp
+            
+            # Initialize Google Sheets manager and clear existing data in the sheet
+            sheets_manager = GoogleSheetsManager()
+            sheets_manager.clear_data(sheet_name="Stats")
+            logger.info(f"Cleared existing data in Google Sheets '{sheet_name}'.")
 
-    # Authenticate and update the Google Sheets with the processed data
-    try:
-        # Get the current timestamp to indicate when the data was last updated
-        timestamp = logging.Formatter('%(asctime)s').format(logging.LogRecord("", 0, "", 0, "", [], None))  # Get the current timestamp
-        
-        # Initialize Google Sheets manager and clear existing data in the sheet
-        sheets_manager = GoogleSheetsManager()
-        sheets_manager.clear_data(sheet_name="Stats")
-        logger.info(f"Cleared existing data in Google Sheets '{sheet_name}'.")
+            # Write the timestamp to Google Sheets
+            sheets_manager.write_data([[f"Last updated {timestamp} by {config.service_account_email}"]], sheet_name="Stats", start_cell="A1")
+            logger.info("Wrote timestamp to Google Sheets.")
 
-        # Write the timestamp to Google Sheets
-        sheets_manager.write_data([[f"Last updated {timestamp} by {config.service_account_email}"]], sheet_name="Stats", start_cell="A1")
-        logger.info("Wrote timestamp to Google Sheets.")
-
-        # Write the processed data to the 'Stats' sheet
-        sheets_manager.write_data([df.columns.tolist()] + df.values.tolist(), sheet_name="Stats", start_cell="A2")
-        logger.info(f"Data successfully written to the '{sheet_name}' sheet.")
-    except Exception as e:
-        logger.error(f"Error updating Google Sheets: {e}")
+            # Write the processed data to the 'Stats' sheet
+            sheets_manager.write_data([df.columns.tolist()] + df.values.tolist(), sheet_name="Stats", start_cell="A2")
+            logger.info(f"Data successfully written to the '{sheet_name}' sheet.")
+        except Exception as e:
+            logger.error(f"Error updating Google Sheets: {e}")
+    
+    else:
+        # Generate a dynamic alternate file path using the year
+        alternate_output_path = f"data/bbref_stats_{year}.csv"  # Path for alternate CSV output
+        logger.info(f"Saving data to alternate CSV file: {alternate_output_path}")
+        try:
+            CSVHandler.write_csv(alternate_output_path, df.values.tolist(), headers=df.columns.tolist())
+            logger.info(f"Data successfully written to alternate CSV file: {alternate_output_path}")
+        except Exception as e:
+            logger.error(f"Error saving data to alternate CSV: {e}")
 
 if __name__ == "__main__":
-    main()
+    #main()
+    main(year=2024)
