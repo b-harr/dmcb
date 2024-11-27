@@ -2,10 +2,6 @@ import os
 import sys
 import logging
 from dotenv import load_dotenv
-import pandas as pd
-import requests
-import re
-from bs4 import BeautifulSoup
 
 # Get the root project directory (2 levels up from the current script)
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -30,6 +26,11 @@ logger.info("The script started successfully.")
 # Load environment variables from the .env file
 load_dotenv()
 logger.info("Environment variables loaded successfully.")
+
+import pandas as pd
+import requests
+import re
+from bs4 import BeautifulSoup
 
 # List of NBA teams to scrape salary data for (from Spotrac)
 teams = [

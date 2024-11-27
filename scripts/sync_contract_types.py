@@ -1,16 +1,44 @@
 import os
-import requests
-import pandas as pd
-from bs4 import BeautifulSoup
-import utils
+import sys
 import logging
+from dotenv import load_dotenv
 
-# Set up logging for tracking errors and steps in data processing
+# Get the root project directory (2 levels up from the current script)
+base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# Append the base_dir to sys.path to ensure modules can be imported
+sys.path.append(base_dir)
+
+# Import custom modules for the script
+import config
+from utils.google_sheets_manager import GoogleSheetsManager
+from utils.text_formatter import format_text
+
+# Configure logging to capture detailed script execution and errors
 logging.basicConfig(
-    level=logging.INFO,  # Log all INFO level messages and above
+    level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger()
+
+# Log the script start with a timestamp to track execution
+logger.info("The script started successfully.")
+
+# Load environment variables from the .env file
+load_dotenv()
+logger.info("Environment variables loaded successfully.")
+
+import requests
+import pandas as pd
+from bs4 import BeautifulSoup
+
+# Retrieve necessary configuration values from the config module
+google_sheets_url = config.google_sheets_url
+sheet_name = "Contract Types"  # Name of the sheet where data will be written
+
+# Define what data to read and write
+input_csv = config.spotrac_contracts_path
+output_csv = config.contract_types_path
 
 # Function to scrape player data from the player's individual page
 def scrape_player_data(player_link, player_key, player_name):
@@ -30,7 +58,7 @@ def scrape_player_data(player_link, player_key, player_name):
         )
 
         # Format and clean the extracted contract data
-        cleaned_value = utils.format_text(signed_using_value)
+        cleaned_value = format_text(signed_using_value)
 
         return {
             "Player": player_name,
@@ -49,16 +77,7 @@ def scrape_player_data(player_link, player_key, player_name):
             "Signed Using": None,
         }
 
-def main():
-    # Define paths and filenames
-    input_dir = "data"
-    input_file = "spotrac_contracts.csv"
-    input_csv = os.path.join(input_dir, input_file)
-
-    output_dir = "data"
-    output_file = "contract_types.csv"
-    output_csv = os.path.join(output_dir, output_file)
-
+def scrape_data():
     logger.info(f"Starting script to scrape player data from {input_csv}")
 
     try:
@@ -96,5 +115,46 @@ def main():
 
     logger.info(f"Data saved to file: {output_csv}")
 
+def update_google_sheets():
+    # Read the scraped data
+    df = pd.read_csv(output_csv)
+
+    # Handle NaN values before writing to Google Sheets
+    df = df.fillna('')  # Replace NaN values with empty strings (or use any other placeholder like 'N/A' or 0)
+
+    # Define API scope for Google Sheets to enable read/write operations
+    scope = ["https://www.googleapis.com/auth/spreadsheets"]
+
+    # Authenticate and update the Google Sheets with the processed data
+    try:
+        # Get the current timestamp to indicate when the data was last updated
+        timestamp = logging.Formatter('%(asctime)s').format(logging.LogRecord("", 0, "", 0, "", [], None))  # Get the current timestamp
+        
+        # Initialize Google Sheets manager and clear existing data in the sheet
+        sheets_manager = GoogleSheetsManager()
+        sheets_manager.clear_data(sheet_name)
+        logger.info(f"Cleared existing data in Google Sheets '{sheet_name}'.")
+
+        # Write the timestamp to Google Sheets
+        sheets_manager.write_data([[f"Last updated {timestamp} by {config.service_account_email}"]], sheet_name, start_cell="A1")
+        logger.info("Wrote timestamp to Google Sheets.")
+
+        # Write the processed data to the 'Contract Types' sheet
+        sheets_manager.write_data([df.columns.tolist()] + df.values.tolist(), sheet_name, start_cell="A2")
+        logger.info(f"Data successfully written to the '{sheet_name}' sheet.")
+    except Exception as e:
+        logger.error(f"Error updating Google Sheets: {e}")
+
+def main(update_data=True,update_sheet=True):
+    # Call scrape_data() to pull the data
+    if update_data:
+        scrape_data()
+
+    # Update Google Sheets only if specified
+    if update_sheet:
+        update_google_sheets()
+
 if __name__ == "__main__":
+    # Call main() and pass True if you want to update Google Sheets, False otherwise
+    #main(update_data=False,update_sheet=True)  # Change to False if you don't want to update Google Sheets
     main()

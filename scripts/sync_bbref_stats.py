@@ -2,7 +2,6 @@ import os
 import sys
 import logging
 from dotenv import load_dotenv
-import pandas as pd
 
 # Get the root project directory (2 levels up from the current script)
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -36,6 +35,8 @@ google_sheets_url = config.google_sheets_url
 sheet_name = "Stats"  # Name of the sheet where data will be written
 numeric_columns = "PTS,TRB,AST,STL,BLK,TOV,PF,G,MP".split(",")  # Columns to be used for numerical calculations
 logger.debug(f"Using numeric columns: {numeric_columns}")
+
+import pandas as pd
 
 def main(year=2025):
     """
