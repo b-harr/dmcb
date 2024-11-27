@@ -15,9 +15,6 @@ sys.path.append(base_dir)
 
 # Import custom modules for the script
 import config
-from utils.google_sheets_manager import GoogleSheetsManager
-from utils.csv_handler import CSVHandler
-from utils.data_fetcher import fetch_data, parse_html
 from utils.text_formatter import make_player_key, format_text
 
 # Configure logging to capture detailed script execution and errors
