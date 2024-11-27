@@ -158,5 +158,5 @@ def main(year=2025):
             logger.error(f"Error saving data to alternate CSV: {e}")
 
 if __name__ == "__main__":
-    #main()
-    main(year=2024)
+    main()
+    #main(year=2024)
