@@ -85,8 +85,9 @@ def parse_html(html_content):
             
             # Append the row's data to the list
             data.append(row_data)
-            df = pd.DataFrame(data, columns=headers)
-            return df
+    
+    # After processing all rows, create the DataFrame with the adjusted headers
+    return pd.DataFrame(data, columns=headers)
 
 # Now 'data' will contain the player stats along with their corresponding links.
 
