@@ -12,4 +12,5 @@ bbref_stats_path = os.path.join(data_dir, 'bbref_stats.csv')
 sportsws_positions_path = os.path.join(data_dir, 'sportsws_positions.csv')
 contract_types_path = os.path.join(data_dir, 'contract_types.csv')
 
-# And any other paths you need
+google_sheets_url = "https://docs.google.com/spreadsheets/d/1NgAl7GSl3jfehz4Sb3SmR_k1-QtQFm55fBPb3QOGYYw"
+service_account_email = "gchelp@dmcb-442123.iam.gserviceaccount.com"

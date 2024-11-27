@@ -14,6 +14,7 @@ base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(base_dir)
 
 # Now import your modules
+import config
 import utils.google_sheets_manager
 import utils.data_fetcher
 import utils.csv_handler
@@ -33,7 +34,7 @@ logger.info("The script started successfully.")
 load_dotenv()
 
 # Retrieve environment variables
-google_sheets_url = "https://docs.google.com/spreadsheets/d/1NgAl7GSl3jfehz4Sb3SmR_k1-QtQFm55fBPb3QOGYYw"
+google_sheets_url = config.google_sheets_url
 sheet_name = "Stats"
 numeric_columns = "PTS,TRB,AST,STL,BLK,TOV,PF,G,MP".split(",")
 
@@ -95,9 +96,10 @@ def main():
     # Authenticate and update Google Sheets via google_sheets_manager
     try:
         timestamp = logging.Formatter('%(asctime)s').format(logging.LogRecord("", 0, "", 0, "", [], None))  # Get the current timestamp
-        utils.google_sheets_manager.GoogleSheetsManager.clear_data(df, sheet_name="Stats")
-        utils.google_sheets_manager.write_data([[f"Last updated {timestamp} by B-Har"]], "A1")
-        utils.google_sheets_manager.write_data(df, sheet_name="Stats", start_cell="A2")
+        sheets_manager = utils.google_sheets_manager.GoogleSheetsManager()
+        sheets_manager.clear_data(sheet_name="Stats")
+        sheets_manager.write_data([[f"Last updated {timestamp} by {config.service_account_email}"]], sheet_name="Stats", start_cell="A1")
+        sheets_manager.write_data([df.columns.tolist()] + df.values.tolist(), sheet_name="Stats", start_cell="A2")
         logger.info(f"Data successfully written to the '{sheet_name}' sheet.")
     except Exception as e:
         logger.error(f"Error updating Google Sheets: {e}")

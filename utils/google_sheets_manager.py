@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 import gspread
 import logging
+import json
 
 # Set up module-level logging to track the operations of the Google Sheets manager
 logger = logging.getLogger(__name__)
@@ -36,11 +37,18 @@ class GoogleSheetsManager:
             self.gc = gspread.service_account(filename=GOOGLE_SHEETS_CREDENTIALS)
             # Open the Google Sheets document by URL
             self.sheet = self.gc.open_by_url(GOOGLE_SHEETS_URL)
-            logger.info("Successfully connected to Google Sheets.")
+
+            # Load the credentials JSON to extract the service account email
+            with open(GOOGLE_SHEETS_CREDENTIALS, 'r') as f:
+                credentials = json.load(f)
+                self.service_account_email = credentials.get("client_email")
+                
+            logger.info(f"Successfully connected to Google Sheets. Service Account Email: {self.service_account_email}")
         except Exception as e:
             # Log an error if authentication or connection fails
             logger.error(f"Failed to initialize GoogleSheetsManager: {e}")
             raise
+
 
     def get_worksheet(self, sheet_name=None):
         """
@@ -133,6 +141,23 @@ class GoogleSheetsManager:
         except Exception as e:
             # Log an error if clearing data fails
             logger.error(f"Error clearing data in worksheet '{sheet_name or SHEET_NAME}': {e}")
+            raise
+
+    def insert_service_account_email(self, sheet_name=None):
+        """
+        Inserts the service account email into cell A1 of the specified worksheet.
+        
+        Args:
+            sheet_name (str, optional): The worksheet name. Defaults to 'Sheet1'.
+        """
+        try:
+            # Prepare data to insert
+            data = [[f"Service Account Email: {self.service_account_email}"]]
+            # Write the service account email to cell A1
+            self.write_data(data, sheet_name=sheet_name, start_cell="A1")
+            logger.info(f"Service account email inserted into A1 of worksheet '{sheet_name or SHEET_NAME}'.")
+        except Exception as e:
+            logger.error(f"Error inserting service account email into A1: {e}")
             raise
 
 
