@@ -45,12 +45,11 @@ def main(year=2025):
     """
     # Construct the URL for the requested year's player stats page on Basketball-Reference
     url = f"https://www.basketball-reference.com/leagues/NBA_{year}_totals.html"
-    logger.info(f"Fetching data from URL: {url}")
-    
     # Set the request headers for fetching data
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
     }
+    logger.info(f"Fetching data from URL: {url}")
 
     # Fetch the HTML data from the Basketball-Reference website
     try:
