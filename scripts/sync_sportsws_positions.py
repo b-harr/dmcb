@@ -1,47 +1,48 @@
 import os
-import requests
-from lxml import html
-import pandas as pd
-import re
-import utils
+import sys
 import logging
 from dotenv import load_dotenv
-from oauth2client.service_account import ServiceAccountCredentials
-import gspread
-import datetime
-import json
 
-# Set up logging for tracking errors and steps in data processing
+# Get the root project directory (2 levels up from the current script)
+base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# Append the base_dir to sys.path to ensure modules can be imported
+sys.path.append(base_dir)
+
+# Import custom modules for the script
+import config
+from utils.google_sheets_manager import GoogleSheetsManager
+from utils.text_formatter import make_player_key
+
+# Configure logging to capture detailed script execution and errors
 logging.basicConfig(
-    level=logging.INFO,  # Log all INFO level messages and above
+    level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger()
 
-# Load environment variables
+# Log the script start with a timestamp to track execution
+logger.info("The script started successfully.")
+
+# Load environment variables from the .env file
 load_dotenv()
+logger.info("Environment variables loaded successfully.")
 
-# Retrieve environment variables
-creds_path = os.getenv("GOOGLE_SHEETS_CREDENTIALS")
-google_sheets_url = "https://docs.google.com/spreadsheets/d/1NgAl7GSl3jfehz4Sb3SmR_k1-QtQFm55fBPb3QOGYYw"
-sheet_name = "Positions"
+# Retrieve necessary configuration values from the config module
+google_sheets_url = config.google_sheets_url
+sheet_name = "Positions"  # Name of the sheet where data will be written
 
-# Ensure Google Sheets credentials and URL are provided
-if not creds_path or not google_sheets_url:
-    raise ValueError("Google Sheets credentials or URL is not properly set.")
+import pandas as pd
+import requests
+import re
+from lxml import html
+
+# Define the directory and filename for saving the CSV file
+output_csv = config.sportsws_positions_path
 
 def main():
     # Log the start message with timestamp and timezone
     logger.info("The script started successfully.")
-    
-    # Load service account email
-    try:
-        with open(creds_path, 'r') as f:
-            service_account_info = json.load(f)
-            service_account_email = service_account_info.get("client_email", "Unknown Service Account")
-    except Exception as e:
-        logger.error(f"Error loading service account email: {e}")
-        return
 
     # Define the URL
     url = "https://sports.ws/nba/stats"
@@ -72,7 +73,7 @@ def main():
         name = player.text.strip() if player.text else ""
         link = "https://sports.ws" + player.get('href')
         key = re.sub("https://sports.ws/nba/", "", link)
-        key = utils.make_player_key(key)
+        key = make_player_key(key)
         tail = player.tail.strip() if player.tail else ""
         
         player_data.append({"Name": name, "Player Link": link, "Player Key": key, "Tail": tail})
@@ -102,34 +103,28 @@ def main():
     logging.info("Sorting data by 'Player Key'.")
     df = df.sort_values(by="Player Key")
     
-    # Save to a new CSV file
-    output_dir = "data"
-    output_file = "sportsws_positions.csv"
-    os.makedirs(output_dir, exist_ok=True)  # Create directory if it doesn't exist
-    output_csv = os.path.join(output_dir, output_file)
-    
     df.to_csv(output_csv, index=False)
-    logging.info(f"Data saved to {output_file}.")
+    logging.info(f"Data saved to {output_csv}.")
 
     # Define API scope for Google Sheets to enable read/write operations
     scope = ["https://www.googleapis.com/auth/spreadsheets"]
 
-    # Authenticate with Google Sheets API, clear the existing sheet, and write the updated data
+    # Authenticate and update the Google Sheets with the processed data
     try:
-        # Authenticate and access the spreadsheet
-        creds = ServiceAccountCredentials.from_json_keyfile_name(creds_path, scope)
-        client = gspread.authorize(creds)
-        spreadsheet = client.open_by_url(google_sheets_url)
-        sheet = spreadsheet.worksheet(sheet_name)
+        # Get the current timestamp to indicate when the data was last updated
+        timestamp = logging.Formatter('%(asctime)s').format(logging.LogRecord("", 0, "", 0, "", [], None))  # Get the current timestamp
+        
+        # Initialize Google Sheets manager and clear existing data in the sheet
+        sheets_manager = GoogleSheetsManager()
+        sheets_manager.clear_data(sheet_name)
+        logger.info(f"Cleared existing data in Google Sheets '{sheet_name}'.")
 
-        # Write the timestamp for automation
-        sheet.clear()
-        today = datetime.datetime.now().strftime("%-m/%-d/%Y %-I:%M %p")
-        sheet.update([[f"Last updated {today} by {service_account_email}"]], "A1")
+        # Write the timestamp to Google Sheets
+        sheets_manager.write_data([[f"Last updated {timestamp} by {config.service_account_email}"]], sheet_name, start_cell="A1")
+        logger.info("Wrote timestamp to Google Sheets.")
 
-        # Write DataFrame to Google Sheets
-        data_to_write = [df.columns.tolist()] + df.values.tolist()  # Include headers
-        sheet.update(data_to_write, "A2")
+        # Write the processed data to the 'Stats' sheet
+        sheets_manager.write_data([df.columns.tolist()] + df.values.tolist(), sheet_name, start_cell="A2")
         logger.info(f"Data successfully written to the '{sheet_name}' sheet.")
     except Exception as e:
         logger.error(f"Error updating Google Sheets: {e}")
