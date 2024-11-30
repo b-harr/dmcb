@@ -13,7 +13,7 @@ sys.path.append(base_dir)
 import config
 from utils.csv_handler import CSVHandler
 from utils.google_sheets_manager import GoogleSheetsManager
-from utils.data_fetcher import fetch_data, parse_html
+#from utils.data_fetcher import fetch_data, parse_html
 from utils.text_formatter import make_player_key, format_text
 
 # Configure logging to capture detailed script execution and errors
@@ -35,6 +35,8 @@ import re
 import pandas as pd
 from bs4 import BeautifulSoup
 from lxml import html
+from time import sleep
+import random
 
 # Retrieve necessary configuration values from the config module
 google_sheets_url = config.google_sheets_url
@@ -218,6 +220,88 @@ def get_spotrac_contracts(update_csv=True, update_sheets=False, sheet_name="Cont
 
     if update_sheets == True:
         return
+
+def fetch_data(url, headers, retries=3, delay=2):
+    """
+    Fetch data from the given URL with retry logic.
+
+    Args:
+        url (str): The URL to fetch data from.
+        headers (dict): HTTP headers to include in the request.
+        retries (int): Number of retry attempts if the request fails.
+        delay (int): Delay between retry attempts in seconds.
+
+    Returns:
+        str: The content of the response if successful.
+    """
+    for i in range(retries):
+        try:
+            response = requests.get(url, headers=headers)
+            if response.status_code == 200:
+                return response.content
+            else:
+                logger.warning(f"Failed attempt {i + 1}, status code: {response.status_code}")
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Attempt {i + 1} failed: {e}")
+        sleep(delay + random.uniform(0, 1))  # Add a slight random delay to avoid rate limiting
+    raise Exception("Max retries reached. Unable to fetch data.")
+
+def parse_html(html_content):
+    """
+    Parse the HTML content and extract player stats into a pandas DataFrame.
+
+    Args:
+        html_content (str): The raw HTML content to parse.
+
+    Returns:
+        pd.DataFrame: A DataFrame containing the player stats data.
+    """
+    soup = BeautifulSoup(html_content, "html.parser")
+    table = soup.find("table", {"id": "totals_stats"})
+    if not table:
+        raise ValueError("Table not found. Ensure the page structure has not changed.")
+    
+    headers = [th.get_text() for th in table.find("thead").find_all("th")][1:]
+    
+    # Add extra columns for the player and team links
+    headers.extend(["Player Link", "Team Link"])
+    
+    rows = table.find("tbody").find_all("tr")
+    
+    # Initialize an empty list to store the data
+    data = []
+
+    for row in rows:
+        if row.find("td"):  # Skip rows that do not contain data
+            row_data = [td.get_text() for td in row.find_all("td")]  # Get text from each 'td' element
+            
+            # Find all anchor ('a') tags in the row
+            links = row.find_all("a")
+            
+            player_link = None
+            team_link = None
+            
+            # Loop through all the links and check if they correspond to a player or a team
+            for link in links:
+                href = link.get("href")
+                
+                # Check if the link is a player link (contains '/players/')
+                if "/players/" in href:
+                    player_link = "https://www.basketball-reference.com" + href
+                    
+                # Check if the link is a team link (contains '/teams/')
+                elif "/teams/" in href:
+                    team_link = "https://www.basketball-reference.com" + href
+            
+            # Add the player and team links to the row data
+            row_data.append(player_link)
+            row_data.append(team_link)
+            
+            # Append the row's data to the list
+            data.append(row_data)
+    
+    # After processing all rows, create the DataFrame with the adjusted headers
+    return pd.DataFrame(data, columns=headers)
 
 """
 Get Basketball-Reference NBA totals (defaults to current year, but can be run for previous seasons)
@@ -486,7 +570,7 @@ def scrape_player_data(player_link, player_key, player_name):
         }
 
 def get_contract_types(update_csv=True, update_sheets=False, sheet_name="Contract Types"):
-    input_csv = config.contract_types_path
+    input_csv = config.spotrac_contracts_path
     output_csv = config.contract_types_path
 
     logger.info(f"Starting script to scrape player data from {input_csv}")
@@ -556,8 +640,7 @@ def get_contract_types(update_csv=True, update_sheets=False, sheet_name="Contrac
             logger.error(f"Error updating Google Sheets: {e}")
 
 if __name__ == "__main__":
-    get_spotrac_contracts(update_csv=False, update_sheets=False)
-    get_bbref_stats(update_csv=False, update_sheets=False, sheet_name="Stats")
-    get_sportsws_positions(update_csv=False, update_sheets=False)
-    get_contract_types(update_csv=False, update_sheets=True, sheet_name="Contract Types")
-
+    get_spotrac_contracts(update_csv=True, update_sheets=False)
+    get_bbref_stats(update_csv=True, update_sheets=False, sheet_name="Stats")
+    get_sportsws_positions(update_csv=True, update_sheets=False, sheet_name="Positions")
+    get_contract_types(update_csv=False, update_sheets=False, sheet_name="Contract Types")
