@@ -145,7 +145,7 @@ def update_google_sheets():
     except Exception as e:
         logger.error(f"Error updating Google Sheets: {e}")
 
-def main(update_data=True,update_sheet=True):
+def main(update_data=False, update_sheet=True):
     # Call scrape_data() to pull the data
     if update_data:
         scrape_data()
