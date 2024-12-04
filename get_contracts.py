@@ -19,11 +19,11 @@ def main(update_csv=True, update_sheets=False, sheet_name="Contracts"):
         team_data = team_data.sort_values(by="Player Key", ignore_index=True)
         
         # Reorder columns to ensure the data is in the correct order (Player, Player Link, Player Key, Team, etc.)
-        column_order = ["Player", "Player Link", "Player Key", "Team", "Team Link", "Age", "Position"] + [col for col in team_data.columns if col.startswith("20")]
+        column_order = ["Player", "Player Link", "Player Key", "Team", "Team Link", "Position", "Age"] + [col for col in team_data.columns if col.startswith("20")]
         team_data = team_data[column_order]
 
     if update_csv == True:
-        team_data.to_csv("data/contracts.csv", mode="w", index=False, encoding="utf-8")
+        team_data.to_csv("data/spotrac_contracts.csv", mode="w", index=False, encoding="utf-8")
 
     if update_sheets == True:
         sheets_manager = GoogleSheetsManager()
