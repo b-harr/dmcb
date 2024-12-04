@@ -65,6 +65,52 @@ def format_text(text):
     formatted_words = re.sub("Sign and Trade", "Sign-and-Trade", formatted_words)
     return formatted_words
 
+def make_title_case(text):
+    """
+    Capitalizes specific prefixes and applies title case to the rest of the text.
+
+    Args:
+        text (str): The input text to format.
+
+    Returns:
+        str or None: The formatted text, or None if the input is None.
+    """
+    # List of minor words that should not be capitalized unless they are at the beginning or end
+    minor_words = {"and", "or", "the", "in", "at", "for", "to", "by", "with", "a", "an", "of", "on", "vs"}
+    hyphenated_words = {"non", "mid", "bi"}
+    
+    if text is None:
+        return None
+
+    # Split the text into words by spaces or hyphens
+    words = re.split(r"[-\s]", text)
+    formatted_words = []
+    i = 0
+
+    while i < len(words):
+        word = words[i].lower()
+        
+        # Handle 'LA' specifically
+        if word == "la":
+            formatted_words.append("LA")
+        # Handle exception words with hyphenation
+        elif word in hyphenated_words and i < len(words) - 1:
+            formatted_words.append(f"{word.capitalize()}-{words[i + 1].capitalize()}")
+            i += 1  # Skip the next word as it's already processed
+        # Handle minor words
+        elif word in minor_words:
+            formatted_words.append(word if i != 0 and i != len(words) - 1 else word.capitalize())
+        # Capitalize alphabetic words; retain numbers
+        else:
+            formatted_words.append(word.capitalize() if word.isalpha() else word)
+        
+        i += 1
+
+    # Join the formatted words with spaces
+    formatted_words = " ".join(formatted_words)
+    # Special case: Replace "Sign and Trade" with "Sign-and-Trade"
+    formatted_words = re.sub("Sign and Trade", "Sign-and-Trade", formatted_words)
+    return formatted_words
 
 # Example usage (commented out):
 if __name__ == "__main__":
