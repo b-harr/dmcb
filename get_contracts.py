@@ -1,4 +1,4 @@
-from scripts.scrape_spotrac import scrape_all_teams
+from scripts.scrape_spotrac_teams import scrape_all_teams
 from utils.text_formatter import make_player_key, make_title_case
 from utils.google_sheets_manager import GoogleSheetsManager
 
