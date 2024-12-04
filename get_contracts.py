@@ -31,4 +31,4 @@ def main(update_csv=True, update_sheets=False):
 
 # Main execution block
 if __name__ == "__main__":
-    main(update_csv=True, update_sheets=False)
+    main()
