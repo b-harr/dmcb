@@ -14,7 +14,6 @@ load_dotenv()
 # Constants loaded from the .env file, which include Google Sheets credentials and the target sheet URL
 GOOGLE_SHEETS_CREDENTIALS = os.getenv("GOOGLE_SHEETS_CREDENTIALS")
 GOOGLE_SHEETS_URL = os.getenv("GOOGLE_SHEETS_URL")
-SHEET_NAME = os.getenv("SHEET_NAME", "Sheet1")  # Default to "Sheet1" if not specified in .env
 
 class GoogleSheetsManager:
     """
@@ -65,7 +64,7 @@ class GoogleSheetsManager:
         """
         try:
             # Use the provided sheet name or default to SHEET_NAME
-            sheet_name = sheet_name or SHEET_NAME
+            sheet_name = sheet_name
             worksheet = self.sheet.worksheet(sheet_name)
             logger.info(f"Accessed worksheet: {sheet_name}")
             return worksheet
@@ -92,11 +91,11 @@ class GoogleSheetsManager:
             worksheet = self.get_worksheet(sheet_name)
             # Retrieve all values from the worksheet
             data = worksheet.get_all_values()
-            logger.info(f"Read {len(data)} rows from worksheet '{sheet_name or SHEET_NAME}'.")
+            logger.info(f"Read {len(data)} rows from worksheet '{sheet_name}'.")
             return data
         except Exception as e:
             # Log an error if reading data fails
-            logger.error(f"Error reading data from worksheet '{sheet_name or SHEET_NAME}': {e}")
+            logger.error(f"Error reading data from worksheet '{sheet_name}': {e}")
             raise
 
     def write_data(self, data, sheet_name=None, start_cell="A1"):
@@ -116,10 +115,10 @@ class GoogleSheetsManager:
             worksheet = self.get_worksheet(sheet_name)
             # Update the sheet with the data starting from the specified cell
             worksheet.update(start_cell, data)
-            logger.info(f"Written data to worksheet '{sheet_name or SHEET_NAME}' starting at '{start_cell}'.")
+            logger.info(f"Written data to worksheet '{sheet_name}' starting at '{start_cell}'.")
         except Exception as e:
             # Log an error if writing data fails
-            logger.error(f"Error writing data to worksheet '{sheet_name or SHEET_NAME}': {e}")
+            logger.error(f"Error writing data to worksheet '{sheet_name}': {e}")
             raise
 
     def clear_data(self, sheet_name=None):
@@ -137,10 +136,10 @@ class GoogleSheetsManager:
             worksheet = self.get_worksheet(sheet_name)
             # Clear all contents of the worksheet
             worksheet.clear()
-            logger.info(f"Cleared data from worksheet '{sheet_name or SHEET_NAME}'.")
+            logger.info(f"Cleared data from worksheet '{sheet_name}'.")
         except Exception as e:
             # Log an error if clearing data fails
-            logger.error(f"Error clearing data in worksheet '{sheet_name or SHEET_NAME}': {e}")
+            logger.error(f"Error clearing data in worksheet '{sheet_name}': {e}")
             raise
 
     def insert_service_account_email(self, sheet_name=None):
@@ -155,11 +154,10 @@ class GoogleSheetsManager:
             data = [[f"Service Account Email: {self.service_account_email}"]]
             # Write the service account email to cell A1
             self.write_data(data, sheet_name=sheet_name, start_cell="A1")
-            logger.info(f"Service account email inserted into A1 of worksheet '{sheet_name or SHEET_NAME}'.")
+            logger.info(f"Service account email inserted into A1 of worksheet '{sheet_name}'.")
         except Exception as e:
             logger.error(f"Error inserting service account email into A1: {e}")
             raise
-
 
 # Example usage (for testing or manual execution)
 if __name__ == "__main__":
@@ -170,6 +168,3 @@ if __name__ == "__main__":
     print("Reading data from the sheet...")
     data = sheets_manager.read_data(sheet_name="Stats")
     print(data)
-
-    # Example: Write data to a new worksheet "Copy of Stats"
-    # sheets_manager.write_data([["Test"]], sheet_name="Copy of Stats", start_cell="A1")
