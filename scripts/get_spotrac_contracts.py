@@ -161,14 +161,13 @@ def extract_player_data(session, team, season_headers):
     
     return team_data
 
-# Main function to scrape data for all teams and return the DataFrame
-def main():
+# Main function to scrape data for all teams and save to CSV
+def scrape_and_save_data():
     """
-    Scrapes salary data for all teams, processes the data, and returns a pandas DataFrame.
-    The DataFrame includes player names, links, positions, ages, and the first 5 years of salary data.
+    Scrapes salary data for all teams, processes the data, and saves it to a CSV file.
+    The CSV includes player names, links, positions, ages, and the first 5 years of salary data.
     """
     session = get_session()
-    
     # Try extracting the season headers (representing the salary years)
     season_headers = []
     for team in teams:
@@ -181,6 +180,8 @@ def main():
     
     # Headers include the player details and first 5 salary years
     headers = ["Player", "Player Link", "Player Key", "Team", "Team Link", "Position", "Age"] + season_headers[:5]  # Limit to first 5 seasons
+    pd.DataFrame(columns=headers).to_csv(output_csv, index=False, mode="w", encoding="utf-8")
+    logging.info(f"CSV header written to {output_csv}")
 
     # Collect all player data across teams
     all_data = []
@@ -191,20 +192,14 @@ def main():
         all_data.extend(team_data)
 
     # Log after all teams are processed
-    logging.info("All teams processed. Creating player data frame...")
+    logging.info("All teams processed. Sorting player data...")
 
-    # Create a pandas DataFrame
-    data_frame = pd.DataFrame(all_data, columns=headers)
-
-    # Sort the DataFrame by the "Player Key" column
-    data_frame = data_frame.sort_values(by="Player Key")
-
-    # Log the sorting completion
-    logging.info("Player data sorted by Player Key.")
-
-    return data_frame
+    # Sort player data by player name (Player Key)
+    sorted_data = sorted(all_data, key=lambda x: x[2].lower())
+    # Write the sorted data to CSV
+    pd.DataFrame(sorted_data, columns=headers).to_csv(output_csv, index=False, mode="w", encoding="utf-8")
+    logging.info(f"Data processing completed. Data successfully written to the file: {output_csv}")
 
 if __name__ == "__main__":
-    # Run the scraping and get the data as a DataFrame
-    data_frame = main()
-    print(data_frame.head())  # Example usage: display the first few rows
+    # Run the scraping and data-saving process
+    scrape_and_save_data()
