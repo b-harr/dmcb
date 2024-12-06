@@ -142,23 +142,6 @@ class GoogleSheetsManager:
             logger.error(f"Error clearing data in worksheet '{sheet_name}': {e}")
             raise
 
-    def insert_service_account_email(self, sheet_name=None):
-        """
-        Inserts the service account email into cell A1 of the specified worksheet.
-        
-        Args:
-            sheet_name (str, optional): The worksheet name. Defaults to 'Sheet1'.
-        """
-        try:
-            # Prepare data to insert
-            data = [[f"Service Account Email: {self.service_account_email}"]]
-            # Write the service account email to cell A1
-            self.write_data(data, sheet_name=sheet_name, start_cell="A1")
-            logger.info(f"Service account email inserted into A1 of worksheet '{sheet_name}'.")
-        except Exception as e:
-            logger.error(f"Error inserting service account email into A1: {e}")
-            raise
-
 # Example usage (for testing or manual execution)
 if __name__ == "__main__":
     # Initialize the GoogleSheetsManager instance
