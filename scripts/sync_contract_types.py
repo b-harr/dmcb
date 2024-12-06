@@ -12,7 +12,7 @@ sys.path.append(base_dir)
 # Import custom modules for the script
 import config
 from utils.google_sheets_manager import GoogleSheetsManager
-from utils.text_formatter import format_text
+from utils.text_formatter import make_title_case
 
 # Configure logging to capture detailed script execution and errors
 logging.basicConfig(
@@ -58,7 +58,7 @@ def scrape_player_data(player_link, player_key, player_name):
         )
 
         # Format and clean the extracted contract data
-        cleaned_value = format_text(signed_using_value)
+        cleaned_value = make_title_case(signed_using_value)
 
         return {
             "Player": player_name,
