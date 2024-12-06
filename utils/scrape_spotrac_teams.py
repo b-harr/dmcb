@@ -116,7 +116,7 @@ def scrape_all_teams():
     return combined_data
 
 # Main execution block
-if __name__ == "__main__":   
+if __name__ == "__main__":
     # Scrape contract data for all teams and store the result in a DataFrame
     contracts_df = scrape_all_teams()
     print(contracts_df.head())  # Print the first few rows of the DataFrame for verification
