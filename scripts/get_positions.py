@@ -69,5 +69,5 @@ def main(update_csv=True, update_sheets=False, sheet_name="Positions"):
             logger.error(f"Error updating Google Sheets: {e}")
 
 if __name__ == "__main__":
-    main(update_sheets=True)
+    main(update_csv=True, update_sheets=True)
     

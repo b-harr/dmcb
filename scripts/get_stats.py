@@ -120,15 +120,15 @@ def main(year=2025, update_csv=True, update_sheets=False, sheet_name="Stats"):
             logger.info(f"Cleared existing data in Google Sheets '{sheet_name}'.")
 
             # Write the timestamp to Google Sheets
-            sheets_manager.write_data([[f"Last updated {timestamp} by {sheets_manager.service_account_email}"]], sheet_name="Stats", start_cell="A1")
+            sheets_manager.write_data([[f"Last updated {timestamp} by {sheets_manager.service_account_email}"]], sheet_name=sheet_name, start_cell="A1")
             logger.info("Wrote timestamp to Google Sheets.")
 
             # Write the processed data to the 'Stats' sheet
-            sheets_manager.write_data([df.columns.tolist()] + df.values.tolist(), sheet_name="Stats", start_cell="A2")
+            sheets_manager.write_data([df.columns.tolist()] + df.values.tolist(), sheet_name=sheet_name, start_cell="A2")
             logger.info(f"Data successfully written to the '{sheet_name}' sheet.")
         except Exception as e:
             logger.error(f"Error updating Google Sheets: {e}")
 
 if __name__ == "__main__":
-    main(update_sheets=True)
+    main(update_csv=True, update_sheets=True)
     #main(year=2024)

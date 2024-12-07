@@ -21,7 +21,7 @@ from utils.scrape_spotrac import scrape_all_teams
 from utils.text_formatter import make_player_key, make_title_case
 from utils.google_sheets_manager import GoogleSheetsManager
 
-def main(update_csv=True, update_sheets=False):
+def main(update_csv=True, update_sheets=False, sheet_name="Contracts"):
     df = scrape_all_teams()
 
     if df is not None:
@@ -46,10 +46,10 @@ def main(update_csv=True, update_sheets=False):
 
     if update_sheets == True:
         sheets_manager = GoogleSheetsManager()
-        sheets_manager.write_data([df.columns.tolist()] + df.values.tolist(), sheet_name="Contracts", start_cell="A1")
+        sheets_manager.write_data([df.columns.tolist()] + df.values.tolist(), sheet_name=sheet_name, start_cell="A1")
 
 # Main execution block
 if __name__ == "__main__":
-    main()
+    main(update_csv=True, update_sheets=False)
     print(__file__)  # Print the full path to the current file
     #print(os.path.basename(__file__))  # Print only the file name
