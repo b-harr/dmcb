@@ -115,6 +115,28 @@ def scrape_all_teams():
 
     return combined_data
 
+# Function to scrape player data from the player's individual page
+def scrape_player_contracts(url):
+    try:
+        # Send a GET request to the player's page and parse the HTML content
+        response = requests.get(url)
+        soup = BeautifulSoup(response.content, "html.parser")
+
+        # CSS selector to find the "Signed Using" contract information
+        signed_using_selector = "#contracts > div > div > div.contract-wrapper.mb-5 > div.contract-details.row.m-0 > div:nth-child(5) > div.label"
+        signed_using_element = soup.select_one(signed_using_selector)
+
+        # Extract contract info
+        signed_using_value = (
+            signed_using_element.find_next_sibling().get_text().strip()
+            if signed_using_element else None
+        )
+
+        return signed_using_value
+
+    except Exception as e:
+        return None
+
 # Main execution block
 if __name__ == "__main__":
     # Scrape contract data for all teams and store the result in a DataFrame

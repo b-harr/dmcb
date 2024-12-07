@@ -17,7 +17,7 @@ os.makedirs(output_dir, exist_ok=True)
 # Define the full file path for the CSV file
 output_csv = os.path.join(output_dir, output_file)
 
-from utils.scrape_spotrac_teams import scrape_all_teams
+from utils.scrape_spotrac import scrape_all_teams
 from utils.text_formatter import make_player_key, make_title_case
 from utils.google_sheets_manager import GoogleSheetsManager
 

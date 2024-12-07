@@ -29,7 +29,7 @@ logger = logging.getLogger()
 # Log the script start with a timestamp to track execution
 logger.info("The script started successfully.")
 
-from utils.scrape_bbref_stats import scrape_nba_totals
+from utils.scrape_bbref import scrape_nba_totals
 from utils.text_formatter import make_player_key
 from utils.google_sheets_manager import GoogleSheetsManager
 
