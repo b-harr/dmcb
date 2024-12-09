@@ -96,7 +96,7 @@ def main(year=2025, update_csv=True, update_sheets=False, sheet_name="Stats"):
 
             # Add a timestamp to indicate when the sheet was last updated
             timestamp = logging.Formatter('%(asctime)s').format(logging.LogRecord("", 0, "", 0, "", [], None))
-            sheets_manager.write_data([[f"Last updated {timestamp}"]], sheet_name=sheet_name, start_cell="A1")
+            sheets_manager.write_data([[f"Last updated {timestamp} by {sheets_manager.service_account_email}"]], sheet_name=sheet_name, start_cell="A1")
             logger.info("Added timestamp to Google Sheets.")
 
             # Write the processed DataFrame to Google Sheets
