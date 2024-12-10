@@ -1,0 +1,17 @@
+2024-12-10 17:21:40,125 - INFO - Script execution started.
+2024-12-10 17:21:41,191 - INFO - Generated 'Player Key' column.
+2024-12-10 17:21:41,201 - INFO - Sorted data and removed duplicate players.
+2024-12-10 17:21:41,204 - INFO - Processed numeric columns: ['PTS', 'TRB', 'AST', 'STL', 'BLK', 'TOV', 'PF', 'G', 'MP'].
+2024-12-10 17:21:41,205 - INFO - Calculated fantasy metrics (FP, FPPG, FPPM, MPG, FPR).
+2024-12-10 17:21:41,211 - INFO - Data saved to CSV: data/bbref_stats.csv
+2024-12-10 17:21:41,211 - INFO - Initializing GoogleSheetsManager...
+2024-12-10 17:21:41,850 - INFO - Successfully connected to Google Sheets. Service Account Email: gchelp@dmcb-442123.iam.gserviceaccount.com
+2024-12-10 17:21:42,546 - INFO - Accessed worksheet: Stats
+2024-12-10 17:21:43,014 - INFO - Cleared data from worksheet 'Stats'.
+2024-12-10 17:21:43,014 - INFO - Cleared existing data in Google Sheets: Stats
+2024-12-10 17:21:43,532 - INFO - Accessed worksheet: Stats
+2024-12-10 17:21:45,362 - INFO - Written data to worksheet 'Stats' starting at 'A1'.
+2024-12-10 17:21:45,362 - INFO - Added timestamp to Google Sheets.
+2024-12-10 17:21:45,721 - INFO - Accessed worksheet: Stats
+2024-12-10 17:21:46,722 - INFO - Written data to worksheet 'Stats' starting at 'A2'.
+2024-12-10 17:21:46,723 - INFO - Data successfully written to Google Sheets: Stats
