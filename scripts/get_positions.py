@@ -75,7 +75,7 @@ def main(update_csv=True, update_sheets=False, sheet_name="Positions"):
 
             # Write the timestamp to the top of the sheet
             sheets_manager.write_data(
-                [[f"Last updated {timestamp} by {sheets_manager.service_account_email}"]],
+                [[f"Last updated {timestamp} by {sheets_manager.service_account_email} from {os.path.basename(__file__)}"]],
                 sheet_name=sheet_name,
                 start_cell="A1"
             )

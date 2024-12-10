@@ -113,7 +113,7 @@ def main(update_csv=False, update_sheets=True, sheet_name="Contract Types"):
             logger.info(f"Cleared existing data in Google Sheets '{sheet_name}'.")
 
             # Write the timestamp to Google Sheets
-            sheets_manager.write_data([[f"Last updated {timestamp} by {sheets_manager.service_account_email}"]], sheet_name=sheet_name, start_cell="A1")
+            sheets_manager.write_data([[f"Last updated {timestamp} by {sheets_manager.service_account_email} from {os.path.basename(__file__)}"]], sheet_name=sheet_name, start_cell="A1")
             logger.info("Wrote timestamp to Google Sheets.")
 
             # Write the processed data (CSV content) to the Google Sheets 'Contract Types' sheet
