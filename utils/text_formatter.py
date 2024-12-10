@@ -9,7 +9,7 @@ def make_player_key(name):
         name (str): The player's full name.
 
     Returns:
-        str: A normalized, cleaned key for the player's name.
+        str: A normalized, cleaned key for the player's name without suffixes.
     """
     normalized_name = unicodedata.normalize("NFD", name).encode("ascii", "ignore").decode("utf-8")  # Remove accents
     cleaned_name = normalized_name.lower().strip()  # Convert to lowercase and trim spaces
@@ -18,7 +18,7 @@ def make_player_key(name):
     player_key = re.sub(r"-(sr|jr|ii|iii|iv|v|vi|vii)$", "", cleaned_name)  # Remove common suffixes
     return player_key
 
-def format_text(text):
+def make_title_case(text):
     """
     Capitalizes specific prefixes and applies title case to the rest of the text.
 
@@ -65,7 +65,6 @@ def format_text(text):
     formatted_words = re.sub("Sign and Trade", "Sign-and-Trade", formatted_words)
     return formatted_words
 
-
 # Example usage (commented out):
 if __name__ == "__main__":
     # Test make_player_key
@@ -73,6 +72,6 @@ if __name__ == "__main__":
     print(make_player_key("José Álvarez III"))
     
     # Test format_text
-    print(format_text("sign and trade deal"))
-    print(format_text("LA Lakers vs non-stop"))
-    print(format_text("Non taxpayer bi annual Mid Level Exception"))
+    print(make_title_case("sign and trade deal"))
+    print(make_title_case("LA Lakers vs non-stop"))
+    print(make_title_case("Non taxpayer bi annual Mid Level Exception"))
