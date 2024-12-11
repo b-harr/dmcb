@@ -1,5 +1,6 @@
 # Folders
 /secrets/
+logs/
 __pycache__/
 
 # Files

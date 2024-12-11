@@ -3,7 +3,7 @@
 ## Project Summary: NBA Fantasy Basketball Stats Automation
 This project is focused on automating the process of fetching, processing, and exporting NBA player statistics from Basketball-Reference for use in a fantasy basketball league hosted on Sports.ws. The processed data includes custom fantasy metrics and is synchronized with a Google Sheets document for easy sharing and analysis.
 
-# sync_bbref_stats
+# get_stats
 
 A Python script to scrape player statistics from Basketball-Reference, process the data for fantasy basketball analysis, and sync the results to a Google Sheet.
 
@@ -17,13 +17,13 @@ A Python script to scrape player statistics from Basketball-Reference, process t
 
 ---
 
-# sync_sportsws_positions
+# get_positions
 
 A Python script to scrape player positions from Sports.ws and sync the results to a Google Sheet.
 
 ---
 
-# get_spotrac_contracts
+# get_contracts
 
 A Python script to scrape team contracts from Spotrac, process the data, and save the output as a CSV file.
 
@@ -89,7 +89,7 @@ dmcb/
 ├── docs/                           # Directory for storing output data  
 │   ├── dmcb_logo.png               # DMCB "Riz" logo  
 │   └── league_rules.md             # DMCB league rules  
-├── logs/                           # Directory for storing output logs  
+├── logs/                           # Directory for storing output logs (excluded via .gitignore)  
 │   ├── get_stats_error.log         # Error logs  
 │   └── get_stats.log               # Execution logs  
 ├── notebooks/                      # Directory for storing Google Colab Jupyter notebooks  
