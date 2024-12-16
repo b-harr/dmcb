@@ -26,7 +26,7 @@ from utils.scrape_spotrac import scrape_all_teams
 from utils.text_formatter import make_player_key, make_title_case
 from utils.google_sheets_manager import GoogleSheetsManager
 
-def main(update_csv=True, update_sheets=False, sheet_name="Contracts"):
+def main(update_csv=True, update_sheets=False, sheet_name="Contracts", data_range="A1:L541"):
     """
     Main function to scrape Spotrac data, process it, and optionally save it to a CSV file
     and/or update Google Sheets.
@@ -86,9 +86,20 @@ def main(update_csv=True, update_sheets=False, sheet_name="Contracts"):
     if update_sheets:
         logging.info(f"Updating Google Sheets: {sheet_name}")
         try:
+            # Generate a timestamp for logging and data tracking
+            timestamp = logging.Formatter('%(asctime)s').format(logging.LogRecord("", 0, "", 0, "", [], None))
+
+            # Initialize the Google Sheets manager and clear the target range
             sheets_manager = GoogleSheetsManager()
+            sheets_manager.clear_range(sheet_name=sheet_name, range_to_clear=data_range)
+
+            # Write the processed data frame to the sheet starting from cell A1
             sheets_manager.write_data([df.columns.tolist()] + df.values.tolist(), sheet_name=sheet_name, start_cell="A1")
             logging.info("Google Sheets updated successfully.")
+
+            # Write the timestamp to Google Sheets
+            sheets_manager.write_data([[f"Last updated {timestamp} by {sheets_manager.service_account_email} from {os.path.basename(__file__)}"]], sheet_name=sheet_name, start_cell="Z2")
+            logging.info("Wrote timestamp to Google Sheets.")
         except Exception as e:
             logging.error(f"Failed to update Google Sheets: {e}")
 
@@ -96,5 +107,5 @@ def main(update_csv=True, update_sheets=False, sheet_name="Contracts"):
 # Main execution block
 if __name__ == "__main__":
     logging.info("Starting Spotrac data sync script...")
-    main(update_csv=True, update_sheets=False)
+    main(update_csv=True, update_sheets=True)
     logging.info(f"Script execution completed: {__file__}")
