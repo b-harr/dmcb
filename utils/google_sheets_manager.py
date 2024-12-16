@@ -142,12 +142,43 @@ class GoogleSheetsManager:
             logger.error(f"Error clearing data in worksheet '{sheet_name}': {e}")
             raise
 
+    def clear_range(self, range_to_clear, sheet_name=None):
+        """
+        Clears a specific range of data in a worksheet.
+        
+        Args:
+            range_to_clear (str): The range to clear (e.g., "A1:C10").
+            sheet_name (str, optional): The worksheet name to clear the range from. Defaults to 'Sheet1'.
+        
+        Raises:
+            Exception: If clearing the range from the worksheet fails.
+        """
+        try:
+            # Get the worksheet object
+            worksheet = self.get_worksheet(sheet_name)
+            # Clear the specified range
+            worksheet.batch_clear([range_to_clear])
+            logger.info(f"Cleared range '{range_to_clear}' in worksheet '{sheet_name}'.")
+        except Exception as e:
+            # Log an error if clearing the range fails
+            logger.error(f"Error clearing range '{range_to_clear}' in worksheet '{sheet_name}': {e}")
+            raise
+
 # Example usage (for testing or manual execution)
 if __name__ == "__main__":
     # Initialize the GoogleSheetsManager instance
     sheets_manager = GoogleSheetsManager()
 
     # Example: Read data from the "Stats" worksheet
-    print("Reading data from the sheet...")
-    data = sheets_manager.read_data(sheet_name="Stats")
-    print(data)
+    #print("Reading data from the sheet...")
+    #data = sheets_manager.read_data(sheet_name="Stats")
+    #print(data)
+
+    # Specify the range to clear and the sheet name
+    sheet_name = "Contracts"
+    range_to_clear = "A2:L541"
+
+    # Clear the range
+    print(f"Clearing range {range_to_clear} in sheet {sheet_name}...")
+    sheets_manager.clear_range(range_to_clear, sheet_name)
+    print("Range cleared successfully.")
