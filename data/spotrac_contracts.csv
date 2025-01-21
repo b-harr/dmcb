@@ -158,7 +158,6 @@ Emanuel Miller,https://www.spotrac.com/nba/player/_/id/94538,emanuel-miller,Chic
 Emoni Bates,https://www.spotrac.com/nba/player/_/id/84475,emoni-bates,Cleveland Cavaliers,https://www.spotrac.com/nba/cleveland-cavaliers/yearly,SG,21,Two-Way,RFA,,,
 Enrique Freeman,https://www.spotrac.com/nba/player/_/id/93958,enrique-freeman,Indiana Pacers,https://www.spotrac.com/nba/indiana-pacers/yearly,PF,24,Two-Way,RFA,,,
 Eric Gordon,https://www.spotrac.com/nba/player/_/id/6116,eric-gordon,Philadelphia 76ers,https://www.spotrac.com/nba/philadelphia-76ers/yearly,SG,36,$3303771,$3468960,UFA,,
-Eugene Omoruyi,https://www.spotrac.com/nba/player/_/id/74300,eugene-omoruyi,Toronto Raptors,https://www.spotrac.com/nba/toronto-raptors/yearly,SF,27,$117939,,,,
 Evan Mobley,https://www.spotrac.com/nba/player/_/id/74110,evan-mobley,Cleveland Cavaliers,https://www.spotrac.com/nba/cleveland-cavaliers/yearly,PF,23,$11227657,$38661750,$41754690,$44847630,$47940570
 Franz Wagner,https://www.spotrac.com/nba/player/_/id/74115,franz-wagner,Orlando Magic,https://www.spotrac.com/nba/orlando-magic/yearly,SF,23,$7007092,$38661750,$41754690,$44847630,$47940570
 Fred VanVleet,https://www.spotrac.com/nba/player/_/id/20778,fred-vanvleet,Houston Rockets,https://www.spotrac.com/nba/houston-rockets/yearly,PG,30,$42846615,$44886930,UFA,,
@@ -399,6 +398,7 @@ Ochai Agbaji,https://www.spotrac.com/nba/player/_/id/78124,ochai-agbaji,Toronto 
 OG Anunoby,https://www.spotrac.com/nba/player/_/id/23618,og-anunoby,New York Knicks,https://www.spotrac.com/nba/new-york-knicks/yearly,SF,27,$36637932,$39568966,$42500000,$45431034,$48362068
 Olivier-Maxence Prosper,https://www.spotrac.com/nba/player/_/id/84439,olivier-maxence-prosper,Dallas Mavericks,https://www.spotrac.com/nba/dallas-mavericks/yearly,PF,22,$2870400,$3007080,$5259383,RFA,
 Onyeka Okongwu,https://www.spotrac.com/nba/player/_/id/70648,onyeka-okongwu,Atlanta Hawks,https://www.spotrac.com/nba/atlanta-hawks/yearly,C,24,$14000000,$15000000,$16100000,$16880000,UFA
+Orlando Robinson,https://www.spotrac.com/nba/player/_/id/78309,orlando-robinson,Toronto Raptors,https://www.spotrac.com/nba/toronto-raptors/yearly,C,24,$117939,,,,
 Oscar Tshiebwe,https://www.spotrac.com/nba/player/_/id/84732,oscar-tshiebwe,Utah Jazz,https://www.spotrac.com/nba/utah-jazz/yearly,PF,25,Two-Way,RFA,,,
 Oso Ighodaro,https://www.spotrac.com/nba/player/_/id/93953,oso-ighodaro,Phoenix Suns,https://www.spotrac.com/nba/phoenix-suns/yearly,C,22,$1157153,$1955377,$2296271,$2486995,UFA
 Ousmane Dieng,https://www.spotrac.com/nba/player/_/id/78118,ousmane-dieng,Oklahoma City Thunder,https://www.spotrac.com/nba/oklahoma-city-thunder/yearly,SF,21,$5027040,$6670882,RFA,,
@@ -488,7 +488,7 @@ Trendon Watford,https://www.spotrac.com/nba/player/_/id/74232,trendon-watford,Br
 Trentyn Flowers,https://www.spotrac.com/nba/player/_/id/95276,trentyn-flowers,LA Clippers,https://www.spotrac.com/nba/la-clippers/yearly,F,19,Two-Way,RFA,,,
 Trevelin Queen,https://www.spotrac.com/nba/player/_/id/70720,trevelin-queen,Orlando Magic,https://www.spotrac.com/nba/orlando-magic/yearly,SG,27,Two-Way,RFA,,,
 Trey Alexander,https://www.spotrac.com/nba/player/_/id/94483,trey-alexander,Denver Nuggets,https://www.spotrac.com/nba/denver-nuggets/yearly,SG,21,Two-Way,RFA,,,
-Trey Jemison,https://www.spotrac.com/nba/player/_/id/86044,trey-jemison,Los Angeles Lakers,https://www.spotrac.com/nba/los-angeles-lakers/yearly,PF,25,Two-Way,RFA,,,
+Trey Jemison,https://www.spotrac.com/nba/player/_/id/86044,trey-jemison,Los Angeles Lakers,https://www.spotrac.com/nba/los-angeles-lakers/yearly,PF,25,Two-Way,Two-Way,RFA,,
 Trey Lyles,https://www.spotrac.com/nba/player/_/id/17840,trey-lyles,Sacramento Kings,https://www.spotrac.com/nba/sacramento-kings/yearly,PF,29,$8000000,UFA,,,
 Trey Murphy III,https://www.spotrac.com/nba/player/_/id/74124,trey-murphy,New Orleans Pelicans,https://www.spotrac.com/nba/new-orleans-pelicans/yearly,SF,24,$5159855,$25000000,$27000000,$29000000,$31000000
 Tristan Da Silva,https://www.spotrac.com/nba/player/_/id/91759,tristan-da-silva,Orlando Magic,https://www.spotrac.com/nba/orlando-magic/yearly,SF,23,$3628440,$3809520,$3991200,$6138466,RFA
@@ -523,4 +523,4 @@ Zach LaVine,https://www.spotrac.com/nba/player/_/id/15365,zach-lavine,Chicago Bu
 Zeke Nnaji,https://www.spotrac.com/nba/player/_/id/70664,zeke-nnaji,Denver Nuggets,https://www.spotrac.com/nba/denver-nuggets/yearly,PF,24,$8888889,$8177778,$7466667,$7466667,UFA
 Ziaire Williams,https://www.spotrac.com/nba/player/_/id/74117,ziaire-williams,Brooklyn Nets,https://www.spotrac.com/nba/brooklyn-nets/yearly,SF,23,$6133005,RFA,,,
 Zion Williamson,https://www.spotrac.com/nba/player/_/id/31558,zion-williamson,New Orleans Pelicans,https://www.spotrac.com/nba/new-orleans-pelicans/yearly,PF,24,$36725670,$39446090,$42166510,$44886930,UFA
-Zyon Pullin,https://www.spotrac.com/nba/player/_/id/94457,zyon-pullin,Memphis Grizzlies,https://www.spotrac.com/nba/memphis-grizzlies/yearly,PG,23,Two-Way,RFA,,,
+Zyon Pullin,https://www.spotrac.com/nba/player/_/id/94457,zyon-pullin,Memphis Grizzlies,https://www.spotrac.com/nba/memphis-grizzlies/yearly,PG,23,Two-Way,Two-Way,RFA,,
