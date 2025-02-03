@@ -91,7 +91,7 @@ B. Hyland,https://sports.ws/nba/bones-hyland,bones-hyland,LAC,G
 B. Buie,https://sports.ws/nba/boo-buie,boo-buie,*FA,G
 B. Wanamaker,https://sports.ws/nba/brad-wanamaker,brad-wanamaker,*FA,G
 B. Beal,https://sports.ws/nba/bradley-beal,bradley-beal,PHX,GF
-B. Carlson,https://sports.ws/nba/branden-carlson,branden-carlson,OKC,F
+B. Carlson,https://sports.ws/nba/branden-carlson,branden-carlson,*FA,F
 B. Podziemski,https://sports.ws/nba/brandin-podziemski,brandin-podziemski,GSW,G
 B. Boston Jr.,https://sports.ws/nba/brandon-boston,brandon-boston,NOP,GF
 B. Clarke,https://sports.ws/nba/brandon-clarke,brandon-clarke,MEM,F
@@ -263,7 +263,7 @@ D. DiVincenzo,https://sports.ws/nba/donte-divincenzo,donte-divincenzo,MIN,GF
 D. Finney-Smith,https://sports.ws/nba/dorian-finney-smith,dorian-finney-smith,LAL,F
 D. McDermott,https://sports.ws/nba/doug-mcdermott,doug-mcdermott,SAC,GF
 D. Green,https://sports.ws/nba/draymond-green,draymond-green,GSW,F
-D. Eubanks,https://sports.ws/nba/drew-eubanks,drew-eubanks,UTA,C
+D. Eubanks,https://sports.ws/nba/drew-eubanks,drew-eubanks,LAC,C
 D. Peterson,https://sports.ws/nba/drew-peterson,drew-peterson,BOS,F
 D. Timme,https://sports.ws/nba/drew-timme,drew-timme,*FA,F
 D. Smith,https://sports.ws/nba/dru-smith,dru-smith,MIA,G
@@ -460,7 +460,7 @@ J. Galloway,https://sports.ws/nba/jaylin-galloway,jaylin-galloway,*FA,F
 J. Williams,https://sports.ws/nba/jaylin-williams,jaylin-williams,OKC,C
 J. Tyson,https://sports.ws/nba/jaylon-tyson,jaylon-tyson,CLE,G
 J. Tatum,https://sports.ws/nba/jayson-tatum,jayson-tatum,BOS,F
-J. Gortman,https://sports.ws/nba/jazian-gortman,jazian-gortman,DAL,G
+J. Gortman,https://sports.ws/nba/jazian-gortman,jazian-gortman,*FA,G
 J. Davison,https://sports.ws/nba/jd-davison,jd-davison,BOS,G
 N. Williams,https://sports.ws/nba/jeenathan-williams,jeenathan-williams,HOU,G
 J. Dowtin Jr.,https://sports.ws/nba/jeff-dowtin,jeff-dowtin,PHI,G
@@ -611,7 +611,7 @@ K. Filipowski,https://sports.ws/nba/kyle-filipowski,kyle-filipowski,UTA,C
 K. Guy,https://sports.ws/nba/kyle-guy,kyle-guy,*FA,G
 K. Kuzma,https://sports.ws/nba/kyle-kuzma,kyle-kuzma,WAS,F
 K. Lowry,https://sports.ws/nba/kyle-lowry,kyle-lowry,PHI,G
-K. Kelley,https://sports.ws/nba/kylor-kelley,kylor-kelley,LAL,C
+K. Kelley,https://sports.ws/nba/kylor-kelley,kylor-kelley,DAL,C
 K. Irving,https://sports.ws/nba/kyrie-irving,kyrie-irving,DAL,G
 K. George,https://sports.ws/nba/kyshawn-george,kyshawn-george,WAS,G
 K. Okpala,https://sports.ws/nba/kz-okpala,kz-okpala,*FA,F
@@ -704,7 +704,7 @@ M. Norris,https://sports.ws/nba/miles-norris,miles-norris,*FA,F
 M. Robinson,https://sports.ws/nba/mitchell-robinson,mitchell-robinson,NYK,C
 M. Oni,https://sports.ws/nba/miye-oni,miye-oni,MEM,F
 M. Walker,https://sports.ws/nba/mj-walker,mj-walker,*FA,GF
-M. Bamba,https://sports.ws/nba/mohamed-bamba,mohamed-bamba,LAC,C
+M. Bamba,https://sports.ws/nba/mohamed-bamba,mohamed-bamba,UTA,C
 M. King,https://sports.ws/nba/mojave-king,mojave-king,*FA,G
 M. Morris,https://sports.ws/nba/monte-morris,monte-morris,PHX,G
 M. Harrell,https://sports.ws/nba/montrezl-harrell,montrezl-harrell,*FA,C
@@ -771,7 +771,7 @@ P. Beverley,https://sports.ws/nba/patrick-beverley,patrick-beverley,*FA,G
 P. McCaw,https://sports.ws/nba/patrick-mccaw,patrick-mccaw,*FA,F
 P. Patterson,https://sports.ws/nba/patrick-patterson,patrick-patterson,*FA,FC
 P. Williams,https://sports.ws/nba/patrick-williams,patrick-williams,CHI,F
-P. Mills,https://sports.ws/nba/patty-mills,patty-mills,UTA,G
+P. Mills,https://sports.ws/nba/patty-mills,patty-mills,LAC,G
 P. George,https://sports.ws/nba/paul-george,paul-george,PHI,F
 P. Millsap,https://sports.ws/nba/paul-millsap,paul-millsap,*FA,FC
 P. Reed,https://sports.ws/nba/paul-reed,paul-reed,DET,C
@@ -783,7 +783,7 @@ P. Cornelie,https://sports.ws/nba/petr-cornelie,petr-cornelie,*FA,FC
 P. Watson,https://sports.ws/nba/peyton-watson,peyton-watson,DEN,F
 P. Dozier,https://sports.ws/nba/pj-dozier,pj-dozier,*FA,GF
 P. Hall,https://sports.ws/nba/pj-hall,pj-hall,DEN,F
-P. Tucker,https://sports.ws/nba/pj-tucker,pj-tucker,LAC,F
+P. Tucker,https://sports.ws/nba/pj-tucker,pj-tucker,UTA,F
 P. Washington,https://sports.ws/nba/pj-washington,pj-washington,DAL,F
 P. Achiuwa,https://sports.ws/nba/precious-achiuwa,precious-achiuwa,NYK,FC
 Q. Grimes,https://sports.ws/nba/quentin-grimes,quentin-grimes,DAL,G
