@@ -37,7 +37,6 @@ Ayo Dosunmu,https://www.spotrac.com/nba/player/_/id/74145,ayo-dosunmu,Chicago Bu
 Bam Adebayo,https://www.spotrac.com/nba/player/_/id/23609,bam-adebayo,Miami Heat,https://www.spotrac.com/nba/miami-heat/yearly,C,27,$34848340,$37096620,$51033600,$55116288,$59198976
 Baylor Scheierman,https://www.spotrac.com/nba/player/_/id/91780,baylor-scheierman,Boston Celtics,https://www.spotrac.com/nba/boston-celtics/yearly,SG,24,$2494320,$2619000,$2744040,$4952993,RFA
 Ben Sheppard,https://www.spotrac.com/nba/player/_/id/84440,ben-sheppard,Indiana Pacers,https://www.spotrac.com/nba/indiana-pacers/yearly,SF,23,$2663880,$2790720,$5031669,RFA,
-Ben Simmons,https://www.spotrac.com/nba/player/_/id/20206,ben-simmons,Brooklyn Nets,https://www.spotrac.com/nba/brooklyn-nets/yearly,PG,28,$40338144,UFA,,,
 Bennedict Mathurin,https://www.spotrac.com/nba/player/_/id/78115,bennedict-mathurin,Indiana Pacers,https://www.spotrac.com/nba/indiana-pacers/yearly,SG,22,$7245720,$9187573,RFA,,
 Bilal Coulibaly,https://www.spotrac.com/nba/player/_/id/82317,bilal-coulibaly,Washington Wizards,https://www.spotrac.com/nba/washington-wizards/yearly,SF,20,$6945240,$7275600,$9240012,RFA,
 Blake Wesley,https://www.spotrac.com/nba/player/_/id/78132,blake-wesley,San Antonio Spurs,https://www.spotrac.com/nba/san-antonio-spurs/yearly,SG,21,$2624280,$4726328,RFA,,
@@ -156,6 +155,7 @@ Emanuel Miller,https://www.spotrac.com/nba/player/_/id/94538,emanuel-miller,Chic
 Emoni Bates,https://www.spotrac.com/nba/player/_/id/84475,emoni-bates,Cleveland Cavaliers,https://www.spotrac.com/nba/cleveland-cavaliers/yearly,SG,21,Two-Way,RFA,,,
 Enrique Freeman,https://www.spotrac.com/nba/player/_/id/93958,enrique-freeman,Indiana Pacers,https://www.spotrac.com/nba/indiana-pacers/yearly,PF,24,Two-Way,RFA,,,
 Eric Gordon,https://www.spotrac.com/nba/player/_/id/6116,eric-gordon,Philadelphia 76ers,https://www.spotrac.com/nba/philadelphia-76ers/yearly,SG,36,$3303771,$3468960,UFA,,
+Ethan Thompson,https://www.spotrac.com/nba/player/_/id/74413,ethan-thompson,Orlando Magic,https://www.spotrac.com/nba/orlando-magic/yearly,SG,25,Two-Way,RFA,,,
 Evan Mobley,https://www.spotrac.com/nba/player/_/id/74110,evan-mobley,Cleveland Cavaliers,https://www.spotrac.com/nba/cleveland-cavaliers/yearly,PF,23,$11227657,$38661750,$41754690,$44847630,$47940570
 Franz Wagner,https://www.spotrac.com/nba/player/_/id/74115,franz-wagner,Orlando Magic,https://www.spotrac.com/nba/orlando-magic/yearly,SF,23,$7007092,$38661750,$41754690,$44847630,$47940570
 Fred VanVleet,https://www.spotrac.com/nba/player/_/id/20778,fred-vanvleet,Houston Rockets,https://www.spotrac.com/nba/houston-rockets/yearly,PG,30,$42846615,$44886930,UFA,,
@@ -469,7 +469,7 @@ Tim Hardaway Jr.,https://www.spotrac.com/nba/player/_/id/13337,tim-hardaway,Detr
 T.J. McConnell,https://www.spotrac.com/nba/player/_/id/18252,tj-mcconnell,Indiana Pacers,https://www.spotrac.com/nba/indiana-pacers/yearly,PG,32,$9300000,$10200000,$11000000,$11800000,$11800000
 Tobias Harris,https://www.spotrac.com/nba/player/_/id/8070,tobias-harris,Detroit Pistons,https://www.spotrac.com/nba/detroit-pistons/yearly,PF,32,$25365854,$26634146,UFA,,
 Tolu Smith III,https://www.spotrac.com/nba/player/_/id/95591,tolu-smith,Detroit Pistons,https://www.spotrac.com/nba/detroit-pistons/yearly,F,24,Two-Way,RFA,,,
-Torrey Craig,https://www.spotrac.com/nba/player/_/id/24230,torrey-craig,Boston Celtics,https://www.spotrac.com/nba/boston-celtics/yearly,SF,34,$791818,UFA,,,
+Torrey Craig,https://www.spotrac.com/nba/player/_/id/24230,torrey-craig,Boston Celtics,https://www.spotrac.com/nba/boston-celtics/yearly,SF,34,$779820,UFA,,,
 Tosan Evbuomwan,https://www.spotrac.com/nba/player/_/id/85500,tosan-evbuomwan,Brooklyn Nets,https://www.spotrac.com/nba/brooklyn-nets/yearly,SG,23,Two-Way,Two-Way,RFA,,
 Toumani Camara,https://www.spotrac.com/nba/player/_/id/84478,toumani-camara,Portland Trail Blazers,https://www.spotrac.com/nba/portland-trail-blazers/yearly,PF,24,$1891857,$2221677,$2406205,UFA,
 Trae Young,https://www.spotrac.com/nba/player/_/id/26971,trae-young,Atlanta Hawks,https://www.spotrac.com/nba/atlanta-hawks/yearly,PG,26,$43031940,$45999660,$48967380,UFA,

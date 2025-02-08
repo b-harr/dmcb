@@ -107,5 +107,5 @@ def main(update_csv=True, update_sheets=False, sheet_name="Contracts", data_rang
 # Main execution block
 if __name__ == "__main__":
     logging.info("Starting Spotrac data sync script...")
-    main(update_csv=True, update_sheets=False)
+    main(update_csv=True, update_sheets=True)
     logging.info(f"Script execution completed: {__file__}")
