@@ -72,6 +72,10 @@ def main(year=2025, update_csv=True, update_sheets=False, sheet_name="Stats"):
         df["MPG"] = (df["MP"] / df["G"]).round(1)  # Minutes Per Game
         df["FPR"] = ((df["FP"] ** 2) / (df["G"] * df["MP"])).round(1)  # Fantasy Point Rating = FPPG * FPPM = (FP ** 2) / (G * MP)
         logger.info("Calculated fantasy metrics (FP, FPPG, FPPM, MPG, FPR).")
+        # Replace NaN and infinite values with 0
+        df = df.replace([float('inf'), float('-inf')], 0).fillna(0)
+        logger.info("Replaced NaN and infinite values with 0.")
+
     except Exception as e:
         logger.error(f"Error during metric calculations: {e}")
         return
