@@ -26,7 +26,7 @@ A. Smailagic,https://sports.ws/nba/alen-smailagic,alen-smailagic,*FA,FC
 A. Caruso,https://sports.ws/nba/alex-caruso,alex-caruso,OKC,G
 A. Ducas,https://sports.ws/nba/alex-ducas,alex-ducas,OKC,G
 A. Fudge,https://sports.ws/nba/alex-fudge,alex-fudge,*FA,F
-A. Len,https://sports.ws/nba/alex-len,alex-len,WAS,C
+A. Len,https://sports.ws/nba/alex-len,alex-len,LAL,C
 A. Reese,https://sports.ws/nba/alex-reese,alex-reese,OKC,FC
 A. Sarr,https://sports.ws/nba/alex-sarr,alex-sarr,WAS,FC
 A. McKinnie,https://sports.ws/nba/alfonzo-mckinnie,alfonzo-mckinnie,*FA,F
@@ -73,10 +73,10 @@ B. Stinson,https://sports.ws/nba/barney-stinson,barney-stinson,*FA,G
 B. Scheierman,https://sports.ws/nba/baylor-scheierman,baylor-scheierman,BOS,F
 B. McLemore,https://sports.ws/nba/ben-mclemore,ben-mclemore,*FA,G
 B. Sheppard,https://sports.ws/nba/ben-sheppard,ben-sheppard,IND,GF
-B. Simmons,https://sports.ws/nba/ben-simmons,ben-simmons,BKN,G
+B. Simmons,https://sports.ws/nba/ben-simmons,ben-simmons,LAC,G
 B. Mathurin,https://sports.ws/nba/bennedict-mathurin,bennedict-mathurin,IND,F
 B. Coulibaly,https://sports.ws/nba/bilal-coulibaly,bilal-coulibaly,WAS,GF
-B. Biyombo,https://sports.ws/nba/bismack-biyombo,bismack-biyombo,*FA,FC
+B. Biyombo,https://sports.ws/nba/bismack-biyombo,bismack-biyombo,SAS,FC
 B. Johnson,https://sports.ws/nba/bj-johnson,bj-johnson,*FA,GF
 B. Griffin,https://sports.ws/nba/blake-griffin,blake-griffin,*FA,FC
 B. Hinson,https://sports.ws/nba/blake-hinson,blake-hinson,LAL,G
@@ -87,7 +87,7 @@ B. Klintman,https://sports.ws/nba/bobi-klintman,bobi-klintman,DET,F
 B. Bogdanovic,https://sports.ws/nba/bogdan-bogdanovic,bogdan-bogdanovic,LAC,GF
 B. Bogdanovic,https://sports.ws/nba/bojan-bogdanovic,bojan-bogdanovic,BKN,F
 B. Bol,https://sports.ws/nba/bol-bol,bol-bol,PHX,FC
-B. Hyland,https://sports.ws/nba/bones-hyland,bones-hyland,ATL,G
+B. Hyland,https://sports.ws/nba/bones-hyland,bones-hyland,*FA,G
 B. Buie,https://sports.ws/nba/boo-buie,boo-buie,*FA,G
 B. Wanamaker,https://sports.ws/nba/brad-wanamaker,brad-wanamaker,*FA,G
 B. Beal,https://sports.ws/nba/bradley-beal,bradley-beal,PHX,GF
@@ -153,8 +153,8 @@ C. Paul,https://sports.ws/nba/chris-paul,chris-paul,SAS,G
 C. Silva,https://sports.ws/nba/chris-silva,chris-silva,*FA,F
 C. Braun,https://sports.ws/nba/christian-braun,christian-braun,DEN,GF
 C. Koloko,https://sports.ws/nba/christian-koloko,christian-koloko,LAL,C
-C. Wood,https://sports.ws/nba/christian-wood,christian-wood,LAL,F
-C. Okeke,https://sports.ws/nba/chuma-okeke,chuma-okeke,PHI,GF
+C. Wood,https://sports.ws/nba/christian-wood,christian-wood,*FA,F
+C. Okeke,https://sports.ws/nba/chuma-okeke,chuma-okeke,*FA,GF
 C. Elleby,https://sports.ws/nba/cj-elleby,cj-elleby,*FA,F
 C. McCollum,https://sports.ws/nba/cj-mccollum,cj-mccollum,NOP,G
 C. Miles,https://sports.ws/nba/cj-miles,cj-miles,*FA,G
@@ -174,14 +174,14 @@ C. Joseph,https://sports.ws/nba/cory-joseph,cory-joseph,ORL,G
 C. Porter,https://sports.ws/nba/craig-porter,craig-porter,CLE,G
 C. Felicio,https://sports.ws/nba/cristiano-felicio,cristiano-felicio,*FA,C
 D. Plowden,https://sports.ws/nba/daeqwon-plowden,daeqwon-plowden,ATL,GF
-D. Nix,https://sports.ws/nba/daishen-nix,daishen-nix,MIN,G
+D. Nix,https://sports.ws/nba/daishen-nix,daishen-nix,SAC,G
 D. Mathias,https://sports.ws/nba/dakota-mathias,dakota-mathias,*FA,G
 D. Banton,https://sports.ws/nba/dalano-banton,dalano-banton,POR,G
 D. Terry,https://sports.ws/nba/dalen-terry,dalen-terry,CHI,GF
 D. Knecht,https://sports.ws/nba/dalton-knecht,dalton-knecht,LAL,F
 D. Jones,https://sports.ws/nba/damian-jones,damian-jones,*FA,C
 D. Lillard,https://sports.ws/nba/damian-lillard,damian-lillard,MIL,G
-D. Baugh,https://sports.ws/nba/damion-baugh,damion-baugh,*FA,G
+D. Baugh,https://sports.ws/nba/damion-baugh,damion-baugh,CHA,G
 D. Lee,https://sports.ws/nba/damion-lee,damion-lee,PHX,GF
 D. Dotson,https://sports.ws/nba/damyean-dotson,damyean-dotson,*FA,G
 D. Russell,https://sports.ws/nba/dangelo-russell,dangelo-russell,BKN,G
@@ -206,7 +206,7 @@ D. Duke Jr.,https://sports.ws/nba/david-duke,david-duke,SAS,F
 D. Johnson,https://sports.ws/nba/david-johnson,david-johnson,*FA,G
 D. Jones,https://sports.ws/nba/david-jones,david-jones,*FA,F
 D. Nwaba,https://sports.ws/nba/david-nwaba,david-nwaba,*FA,F
-D. Roddy,https://sports.ws/nba/david-roddy,david-roddy,*FA,F
+D. Roddy,https://sports.ws/nba/david-roddy,david-roddy,PHI,F
 D. Mitchell,https://sports.ws/nba/davion-mitchell,davion-mitchell,MIA,G
 D. Bertans,https://sports.ws/nba/davis-bertans,davis-bertans,*FA,FC
 D. Reed,https://sports.ws/nba/davon-reed,davon-reed,*FA,GF
@@ -371,7 +371,7 @@ I. Stevens,https://sports.ws/nba/isaiah-stevens,isaiah-stevens,MIA,G
 I. Stewart,https://sports.ws/nba/isaiah-stewart,isaiah-stewart,DET,FC
 I. Thomas,https://sports.ws/nba/isaiah-thomas,isaiah-thomas,*FA,G
 I. Todd,https://sports.ws/nba/isaiah-todd,isaiah-todd,*FA,FC
-I. Wong,https://sports.ws/nba/isaiah-wong,isaiah-wong,CHA,G
+I. Wong,https://sports.ws/nba/isaiah-wong,isaiah-wong,*FA,G
 I. Smith,https://sports.ws/nba/ish-smith,ish-smith,*FA,G
 I. Wainright,https://sports.ws/nba/ish-wainright,ish-wainright,*FA,F
 I. Kamagate,https://sports.ws/nba/ismael-kamagate,ismael-kamagate,*FA,G
@@ -392,7 +392,7 @@ J. McDaniels,https://sports.ws/nba/jaden-mcdaniels,jaden-mcdaniels,MIN,F
 J. Springer,https://sports.ws/nba/jaden-springer,jaden-springer,*FA,G
 J. Crowder,https://sports.ws/nba/jae-crowder,jae-crowder,SAC,F
 J. Tate,https://sports.ws/nba/jaesean-tate,jaesean-tate,HOU,GF
-J. Okafor,https://sports.ws/nba/jahlil-okafor,jahlil-okafor,*FA,C
+J. Okafor,https://sports.ws/nba/jahlil-okafor,jahlil-okafor,IND,C
 J. Ramsey,https://sports.ws/nba/jahmius-ramsey,jahmius-ramsey,*FA,G
 J. Echenique,https://sports.ws/nba/jaime-echenique,jaime-echenique,*FA,C
 J. Jaquez Jr.,https://sports.ws/nba/jaime-jaquez,jaime-jaquez,MIA,GF
@@ -456,9 +456,9 @@ J. Adams,https://sports.ws/nba/jaylen-adams,jaylen-adams,*FA,G
 J. Brown,https://sports.ws/nba/jaylen-brown,jaylen-brown,BOS,GF
 J. Clark,https://sports.ws/nba/jaylen-clark,jaylen-clark,MIN,G
 J. Hoard,https://sports.ws/nba/jaylen-hoard,jaylen-hoard,*FA,FC
-J. Martin,https://sports.ws/nba/jaylen-martin,jaylen-martin,*FA,F
+J. Martin,https://sports.ws/nba/jaylen-martin,jaylen-martin,WAS,F
 J. Morris,https://sports.ws/nba/jaylen-morris,jaylen-morris,*FA,G
-J. Nowell,https://sports.ws/nba/jaylen-nowell,jaylen-nowell,*FA,G
+J. Nowell,https://sports.ws/nba/jaylen-nowell,jaylen-nowell,WAS,G
 J. Wells,https://sports.ws/nba/jaylen-wells,jaylen-wells,MEM,F
 J. Galloway,https://sports.ws/nba/jaylin-galloway,jaylin-galloway,*FA,F
 J. Williams,https://sports.ws/nba/jaylin-williams,jaylin-williams,OKC,C
@@ -527,7 +527,7 @@ J. Hart,https://sports.ws/nba/josh-hart,josh-hart,NYK,F
 J. Jackson,https://sports.ws/nba/josh-jackson,josh-jackson,*FA,F
 J. Minott,https://sports.ws/nba/josh-minott,josh-minott,MIN,F
 J. Okogie,https://sports.ws/nba/josh-okogie,josh-okogie,CHA,GF
-J. Richardson,https://sports.ws/nba/josh-richardson,josh-richardson,UTA,G
+J. Richardson,https://sports.ws/nba/josh-richardson,josh-richardson,*FA,G
 J. Primo,https://sports.ws/nba/joshua-primo,joshua-primo,*FA,G
 J. Holiday,https://sports.ws/nba/jrue-holiday,jrue-holiday,BOS,G
 J. Thor,https://sports.ws/nba/jt-thor,jt-thor,CLE,FC
@@ -667,7 +667,7 @@ M. Sasser,https://sports.ws/nba/marcus-sasser,marcus-sasser,DET,G
 M. Smart,https://sports.ws/nba/marcus-smart,marcus-smart,WAS,G
 M. Beauchamp,https://sports.ws/nba/marjon-beauchamp,marjon-beauchamp,LAC,GF
 M. Williams,https://sports.ws/nba/mark-williams,mark-williams,CHA,C
-M. Fultz,https://sports.ws/nba/markelle-fultz,markelle-fultz,*FA,G
+M. Fultz,https://sports.ws/nba/markelle-fultz,markelle-fultz,SAC,G
 M. Morris,https://sports.ws/nba/markieff-morris,markieff-morris,LAL,FC
 M. Simonovic,https://sports.ws/nba/marko-simonovic,marko-simonovic,*FA,FC
 M. Nowell,https://sports.ws/nba/markquis-nowell,markquis-nowell,*FA,G
@@ -759,7 +759,7 @@ O. Prosper,https://sports.ws/nba/oliviermaxence-prosper,oliviermaxence-prosper,D
 O. Yurtseven,https://sports.ws/nba/omer-yurtseven,omer-yurtseven,*FA,C
 O. Bitim,https://sports.ws/nba/onuralp-bitim,onuralp-bitim,CHI,F
 O. Okongwu,https://sports.ws/nba/onyeka-okongwu,onyeka-okongwu,ATL,C
-O. Robinson,https://sports.ws/nba/orlando-robinson,orlando-robinson,*FA,C
+O. Robinson,https://sports.ws/nba/orlando-robinson,orlando-robinson,TOR,C
 O. Tshiebwe,https://sports.ws/nba/oscar-tshiebwe,oscar-tshiebwe,UTA,FC
 O. Brissett,https://sports.ws/nba/oshae-brissett,oshae-brissett,*FA,F
 O. Ighodaro,https://sports.ws/nba/oso-ighodaro,oso-ighodaro,PHX,F
@@ -770,7 +770,7 @@ P. Banchero,https://sports.ws/nba/paolo-banchero,paolo-banchero,ORL,F
 P. Siakam,https://sports.ws/nba/pascal-siakam,pascal-siakam,IND,F
 P. Connaughton,https://sports.ws/nba/pat-connaughton,pat-connaughton,MIL,GF
 P. Spencer,https://sports.ws/nba/pat-spencer,pat-spencer,GSW,G
-P. Baldwin Jr.,https://sports.ws/nba/patrick-baldwin,patrick-baldwin,SAS,FC
+P. Baldwin Jr.,https://sports.ws/nba/patrick-baldwin,patrick-baldwin,*FA,FC
 P. Beverley,https://sports.ws/nba/patrick-beverley,patrick-beverley,*FA,G
 P. McCaw,https://sports.ws/nba/patrick-mccaw,patrick-mccaw,*FA,F
 P. Patterson,https://sports.ws/nba/patrick-patterson,patrick-patterson,*FA,FC
@@ -862,7 +862,7 @@ S. Milton,https://sports.ws/nba/shake-milton,shake-milton,LAL,G
 S. Buchanan,https://sports.ws/nba/shaq-buchanan,shaq-buchanan,*FA,G
 S. Harrison,https://sports.ws/nba/shaquille-harrison,shaquille-harrison,*FA,G
 S. Cooper,https://sports.ws/nba/sharife-cooper,sharife-cooper,*FA,G
-S. Cissoko,https://sports.ws/nba/sidy-cissoko,sidy-cissoko,*FA,F
+S. Cissoko,https://sports.ws/nba/sidy-cissoko,sidy-cissoko,POR,F
 S. Fontecchio,https://sports.ws/nba/simone-fontecchio,simone-fontecchio,DET,F
 S. Thornwell,https://sports.ws/nba/sindarius-thornwell,sindarius-thornwell,*FA,GF
 S. Rice,https://sports.ws/nba/sirjabari-rice,sirjabari-rice,*FA,G
@@ -914,7 +914,7 @@ T. Smith,https://sports.ws/nba/tolu-smith,tolu-smith,DET,F
 T. Satoransky,https://sports.ws/nba/tomas-satoransky,tomas-satoransky,*FA,GF
 T. Bradley,https://sports.ws/nba/tony-bradley,tony-bradley,*FA,C
 T. Snell,https://sports.ws/nba/tony-snell,tony-snell,*FA,GF
-T. Craig,https://sports.ws/nba/torrey-craig,torrey-craig,*FA,F
+T. Craig,https://sports.ws/nba/torrey-craig,torrey-craig,BOS,F
 T. Evbuomwan,https://sports.ws/nba/tosan-evbuomwan,tosan-evbuomwan,BKN,F
 T. Camara,https://sports.ws/nba/toumani-camara,toumani-camara,POR,F
 T. Young,https://sports.ws/nba/trae-young,trae-young,ATL,G
