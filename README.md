@@ -3,7 +3,7 @@
 ## Project Summary: NBA Fantasy Basketball Stats Automation
 This project is focused on automating the process of fetching, processing, and exporting NBA player statistics from Basketball-Reference for use in a fantasy basketball league hosted on Sports.ws. The processed data includes custom fantasy metrics and is synchronized with a Google Sheets document for easy sharing and analysis.
 
-# sync_bbref_stats
+# get_stats
 
 A Python script to scrape player statistics from Basketball-Reference, process the data for fantasy basketball analysis, and sync the results to a Google Sheet.
 
@@ -17,13 +17,13 @@ A Python script to scrape player statistics from Basketball-Reference, process t
 
 ---
 
-# sync_sportsws_positions
+# get_positions
 
 A Python script to scrape player positions from Sports.ws and sync the results to a Google Sheet.
 
 ---
 
-# get_spotrac_contracts
+# get_contracts
 
 A Python script to scrape team contracts from Spotrac, process the data, and save the output as a CSV file.
 
@@ -70,7 +70,7 @@ GOOGLE_SHEETS_CREDENTIALS=path/to/credentials.json
 
 Run the script from the command line:
 ```bash
-python3 scripts/sync_bbref_stats.py
+python3 scripts/get_stats.py
 ```
 
 ---
@@ -80,20 +80,33 @@ python3 scripts/sync_bbref_stats.py
 ```
 dmcb/  
 ├── data/                           # Directory for storing output data  
+│   ├── bbref_archive/              # Basketball Reference archived statistics  
+│   │   └── NBA_{year}_totals.csv   # Basketball Reference statistics data  
 │   ├── bbref_stats.csv             # Basketball Reference statistics data  
 │   ├── contract_types.csv          # Spotrac contract type data by player  
 │   ├── sportsws_positions.csv      # Sports.ws default positions  
 │   └── spotrac_contracts.csv       # Spotrac contract data by NBA team  
 ├── docs/                           # Directory for storing output data  
-│   ├── dmcb_logo.png               # DMCB "Riz" logo
+│   ├── dmcb_logo.png               # DMCB "Riz" logo  
 │   └── league_rules.md             # DMCB league rules  
+├── logs/                           # Directory for storing output logs (excluded via .gitignore)  
+│   ├── get_stats_error.log         # Error logs  
+│   └── get_stats.log               # Execution logs  
+├── notebooks/                      # Directory for storing Google Colab Jupyter notebooks  
+│   └── dmcb_colab.ipynb            # Main Colab notebook  
 ├── scripts/                        # Directory for individual Python scripts  
 │   ├── get_contract_types.py       # Scrapes contract types to CSV  
-│   ├── get_spotrac_contracts.py    # Scrapes Spotrac contracts to CSV  
-│   ├── sync_bbref_stats.py         # Syncs Basketball Reference stats to Google Sheets  
-│   ├── sync_sportsws_positions.py  # Syncs Sports.ws player positions to Google Sheets  
-│   └── utils.py                    # Helper functions to process text  
+│   ├── get_contracts.py            # Scrapes Spotrac contracts to CSV  
+│   ├── get_positions.py            # Syncs Sports.ws player positions to Google Sheets  
+│   └── get_stats.py                # Syncs Basketball Reference stats to Google Sheets  
 ├── secrets/                        # Directory for secrets files (excluded via .gitignore)  
+├── utils/                          # Directory for individual Python utilities  
+│   ├── __init__.py                 # Makes scripts executable  
+│   ├── google_sheets_manager.py    # Manages connections to Google Sheets  
+│   ├── scrape_bbref.py             # Scrapes Basketball-Reference.com  
+│   ├── scrape_sportsws.py          # Scrapes Sports.ws  
+│   ├── scrape_spotrac.py           # Scrapes Spotrac.com NBA contracts  
+│   └── text_formatter.py           # Helper functions to process text  
 ├── .env                            # Environment variables (excluded via .gitignore)  
 ├── .gitignore                      # Git ignore rules  
 ├── README.md                       # Project documentation  
