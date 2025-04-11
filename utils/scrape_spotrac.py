@@ -9,7 +9,11 @@ def scrape_team_contracts(team):
     url = f"https://www.spotrac.com/nba/{team}/yearly"
     
     # Send a GET request to fetch the web page content
-    response = requests.get(url)
+    headers = {
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"
+}
+    response = requests.get(url, headers=headers)
+
     
     # Check if the request was successful (status code 200)
     if response.status_code != 200:
