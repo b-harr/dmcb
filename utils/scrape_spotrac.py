@@ -10,8 +10,8 @@ def scrape_team_contracts(team):
     
     # Send a GET request to fetch the web page content
     headers = {
-    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"
-}
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"
+    }
     response = requests.get(url, headers=headers)
 
     
@@ -121,9 +121,14 @@ def scrape_all_teams():
 
 # Function to scrape player data from the player's individual page
 def scrape_player_contracts(url):
+    # Send a GET request to fetch the web page content
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"
+    }
+
     try:
         # Send a GET request to the player's page and parse the HTML content
-        response = requests.get(url)
+        response = requests.get(url, headers=headers)
         soup = BeautifulSoup(response.content, "html.parser")
 
         # CSS selector to find the "Signed Using" contract information
@@ -150,3 +155,6 @@ if __name__ == "__main__":
     # Save the combined contract data to a CSV file for future use
     #contracts_df.to_csv("data/contracts.csv", mode="w", index=False, encoding="utf-8")
     #print("Data saved to data/contracts.csv")  # Confirm that the data was saved
+    player_df = scrape_player_contracts("https://www.spotrac.com/nba/player/_/id/15356")
+    print(player_df)
+    
