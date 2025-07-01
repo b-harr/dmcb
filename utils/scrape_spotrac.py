@@ -24,7 +24,7 @@ def scrape_team_contracts(team):
     soup = BeautifulSoup(response.content, "html.parser")
     
     # Locate the contracts table in the HTML content
-    table = soup.find("table", {"id": "table"})
+    table = soup.find("table", {"id": "dataTable-active"})
     if table is None:
         print(f"No contracts table found for {team}")
         return None
