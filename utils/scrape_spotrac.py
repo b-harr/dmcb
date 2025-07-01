@@ -23,72 +23,78 @@ def scrape_team_contracts(team):
     # Parse the HTML content of the page using BeautifulSoup
     soup = BeautifulSoup(response.content, "html.parser")
     
-    # Locate the contracts table in the HTML content
-    table = soup.find("table", {"id": "dataTable-active"})
-    if table is None:
-        print(f"No contracts table found for {team}")
-        return None
-    
-    # Extract column headers (e.g., player names, salary years) from the table
-    headers = [th.text.strip() for th in table.find_all("th")]
-    
-    # Identify headers corresponding to contract years (e.g., '2024', '2025', etc.)
-    season_headers = [h for h in headers if h.startswith("20")]  # Filter for headers starting with "20"
-    season_headers = season_headers[:5]  # Limit to the first 5 years of salary data (for 5 seasons)
-    
-    # Initialize an empty list to store player contract data
-    data = []
-    
-    # Iterate through each row in the table's body (tbody) to extract player information
-    for row in table.find("tbody").find_all("tr"):
-        # Get all the cells (columns) for the current row
-        cells = row.find_all("td")
-        
-        # Skip rows that don't contain enough data (likely non-player rows)
-        if len(cells) < 2:
-            continue
-        
-        # Extract the player's name and the link to their profile (if available)
-        player_tag = row.find("a")
-        player_name = player_tag.text.strip() if player_tag else "Unknown"
-        player_link = player_tag["href"] if player_tag else None
-        
-        # Extract the player's position and age from the respective columns
-        position = cells[1].text.strip()
-        age = cells[2].text.strip()
-        
-        # Extract contract values (salaries, UFA, RFA, etc.) from the remaining columns
-        contract_values = []
-        for col in cells[3:]:
-            cell_text = col.get_text(strip=True)
+    # Helper function to extract table data
+    def extract_table(table, season_headers):
+        data = []
+        for row in table.find("tbody").find_all("tr"):
+            # Get all the cells (columns) for the current row
+            cells = row.find_all("td")
             
-            # Check for special cases such as "Two-Way", "UFA", or "RFA" in the cell text
-            if "Two-Way" in cell_text:
-                contract_values.append("Two-Way")
-            elif "UFA" in cell_text:
-                contract_values.append("UFA")
-            elif "RFA" in cell_text:
-                contract_values.append("RFA")
-            else:
-                # Use regex to find salary values in the format "$1,000,000" or "$1M"
-                salary_matches = re.findall(r"\$\d{1,3}(?:,\d{3})*(?:\.\d{2})?", cell_text)
-                contract_values.extend([s.replace(",", "") for s in salary_matches])
+            # Skip rows that don't contain enough data (likely non-player rows)
+            if len(cells) < 2:
+                continue
+            
+            # Extract the player's name and the link to their profile (if available)
+            player_tag = row.find("a")
+            player_name = player_tag.text.strip() if player_tag else "Unknown"
+            player_link = player_tag["href"] if player_tag else None
+            
+            # Extract the player's position and age from the respective columns
+            position = cells[1].text.strip()
+            age = cells[2].text.strip()
+            
+            # Extract contract values (salaries, UFA, RFA, etc.) from the remaining columns
+            contract_values = []
+            for col in cells[3:]:
+                cell_text = col.get_text(strip=True)
+                
+                # Check for special cases such as "Two-Way", "UFA", or "RFA" in the cell text
+                if "Two-Way" in cell_text:
+                    contract_values.append("Two-Way")
+                elif "UFA" in cell_text:
+                    contract_values.append("UFA")
+                elif "RFA" in cell_text:
+                    contract_values.append("RFA")
+                else:
+                    # Use regex to find salary values in the format "$1,000,000" or "$1M"
+                    salary_matches = re.findall(r"\$\d{1,3}(?:,\d{3})*(?:\.\d{2})?", cell_text)
+                    contract_values.extend([s.replace(",", "") for s in salary_matches])
+            
+            # Limit the contract values to the first 5 seasons (to match season headers)
+            contract_values = contract_values[:5]
+            
+            # If there are fewer contract values than the number of seasons, pad with None
+            while len(contract_values) < len(season_headers):
+                contract_values.append(None)
+            
+            # Add the extracted data (player name, link, position, age, contract data) to the list
+            data.append([player_name, player_link, position, age] + contract_values)
         
-        # Limit the contract values to the first 5 seasons (to match season headers)
-        contract_values = contract_values[:5]
-        
-        # If there are fewer contract values than the number of seasons, pad with None
-        while len(contract_values) < len(season_headers):
-            contract_values.append(None)
-        
-        # Add the extracted data (player name, link, position, age, contract data) to the list
-        data.append([player_name, player_link, position, age] + contract_values)
-    
-    # Define the column names for the DataFrame
+        return data
+
+    # Find both tables
+    tables = []
+    for table_id in ["dataTable-active", "dataTable-pending"]:
+        table = soup.find("table", {"id": table_id})
+        if table is not None:
+            tables.append(table)
+
+    if not tables:
+        print(f"No contracts tables found for {team}")
+        return None
+
+    # Use headers from the first table found
+    headers = [th.text.strip() for th in tables[0].find_all("th")]
+    season_headers = [h for h in headers if h.startswith("20")]
+    season_headers = season_headers[:5]
+
+    # Extract data from all tables and combine
+    all_data = []
+    for table in tables:
+        all_data.extend(extract_table(table, season_headers))
+
     columns = ["Player", "Player Link", "Position", "Age"] + season_headers
-    
-    # Convert the collected data into a pandas DataFrame and return it
-    return pd.DataFrame(data, columns=columns)
+    return pd.DataFrame(all_data, columns=columns)
 
 # Function to scrape contract data for all teams in the 'teams' list
 def scrape_all_teams():
@@ -157,4 +163,3 @@ if __name__ == "__main__":
     #print("Data saved to data/contracts.csv")  # Confirm that the data was saved
     player_df = scrape_player_contracts("https://www.spotrac.com/nba/player/_/id/15356")
     print(player_df)
-    
