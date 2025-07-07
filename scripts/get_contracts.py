@@ -51,7 +51,7 @@ def main(update_csv=True, update_sheets=False, sheet_name="Contracts", data_rang
     logging.info("Processing scraped data...")
     try:
         # Exclude rows where Player is "Incomplete Roster Charge"
-        df = df[df["Player"] != "Incomplete Roster Charge"].copy()
+        df = df[df["Player"] != "Incomplete Roster Charge"]
 
         # Add derived columns for Player Key and Team Link
         df["Player Key"] = df["Player"].apply(make_player_key)

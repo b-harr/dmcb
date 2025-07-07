@@ -31,7 +31,7 @@ def main(update_csv=False, update_sheets=True, sheet_name="Contract Types"):
         logger.error(f"Failed to load salary data: {e}")
         exit()
 
-    active_data = salary_data[(salary_data["2024-25"] != "Two-Way") & (salary_data["2024-25"] != "-")]
+    active_data = salary_data[(salary_data["2025-26"] != "Two-Way") & (salary_data["2025-26"] != "-")]
     unique_links = active_data.drop_duplicates(subset=["Player Link", "Player Key"]).sort_values(by="Player Key")["Player Link"].tolist()
     logger.info(f"Found {len(unique_links)} unique player links to scrape")
 
