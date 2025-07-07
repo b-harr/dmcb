@@ -50,6 +50,9 @@ def main(update_csv=True, update_sheets=False, sheet_name="Contracts", data_rang
     # Process the DataFrame if valid data is returned
     logging.info("Processing scraped data...")
     try:
+        # Exclude rows where Player is "Incomplete Roster Charge"
+        df = df[df["Player"] != "Incomplete Roster Charge"].copy()
+
         # Add derived columns for Player Key and Team Link
         df["Player Key"] = df["Player"].apply(make_player_key)
         df["Team Link"] = df["Team"].apply(lambda team: f"https://www.spotrac.com/nba/{team}/yearly")
@@ -57,8 +60,8 @@ def main(update_csv=True, update_sheets=False, sheet_name="Contracts", data_rang
         # Format the Team column to Title Case
         df["Team"] = df["Team"].apply(make_title_case)
         
-        # Sort by Player Key for consistency
-        df = df.sort_values(by="Player Key", ignore_index=True)
+        # Sort by Player Key then Team for consistency
+        df = df.sort_values(by=["Player Key", "Team"], ignore_index=True)
         
         # Dynamically reorder columns
         required_columns = ["Player", "Player Link", "Player Key", "Team", "Team Link", "Position", "Age"]
