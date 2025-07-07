@@ -74,7 +74,7 @@ def scrape_team_contracts(team):
 
     # Find both tables
     tables = []
-    for table_id in ["dataTable-active", "dataTable-pending"]:
+    for table_id in ["dataTable-active", "dataTable-pending", "dataTable-cap-hold"]:
         table = soup.find("table", {"id": table_id})
         if table is not None:
             tables.append(table)
