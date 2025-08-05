@@ -3,6 +3,7 @@ import sys
 import logging
 import pandas as pd
 import time
+import re
 
 # Set up paths
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -85,6 +86,32 @@ def main(update_csv=False, update_sheets=True, sheet_name="Contract Types"):
                 f"({total_done}/{len(unique_links)} total, {percent_complete:.1f}%) "
                 f"- {player_name} | ETA: {eta_min:02d}:{eta_sec:02d}"
             )
+
+        # Dynamically determine the cutoff year from the first entry in salary_data["2025-26"]
+        try:
+            # Extract the first year from the column headers that look like a year
+            year_headers = [col for col in salary_data.columns if re.match(r"^\d{4}-\d{2}$", col)]
+            if year_headers:
+                first_year = int(year_headers[0][:4])
+            else:
+                # Fallback: try to extract from the first non-empty value in the column
+                first_year = int(str(salary_data["2025-26"].dropna().iloc[0])[:4])
+        except Exception as e:
+            logger.error(f"Could not determine cutoff year from salary_data['2025-26']: {e}")
+            first_year = 2025  # fallback to 2025
+
+        # Remove players where Signed Using is like YYYY / RFA or YYYY / UFA (case-insensitive), where YYYY is <= first_year
+        df = pd.read_csv(output_csv)
+        mask = ~df["Signed Using"].fillna("").str.match(
+            fr"^(19\d{{2}}|20[01]\d|20{str(first_year)[2:]})\s*/\s*(RFA|UFA)$", case=False
+        )
+        # More robust: match any year <= first_year
+        mask = ~df["Signed Using"].fillna("").str.match(
+            fr"^(\d{{4}})\s*/\s*(RFA|UFA)$", case=False
+        ) | (df["Signed Using"].fillna("").str.extract(r"^(\d{4})\s*/\s*(RFA|UFA)$")[0].astype(float) > first_year)
+        df = df[mask].copy()
+        df.to_csv(output_csv, index=False)
+        logger.info(f"Removed players with Signed Using like YYYY / RFA or YYYY / UFA (YYYY ≤ {first_year}) from output CSV.")
 
     if update_sheets:
         try:
