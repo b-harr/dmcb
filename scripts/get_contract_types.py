@@ -50,6 +50,16 @@ def main(update_csv=False, update_sheets=True, sheet_name="Contract Types"):
         already_scraped = len(already_scraped_links)
         logger.info(f"Resuming scrape — {already_scraped} players already scraped, {len(to_scrape)} remaining.")
 
+        # Restart from the beginning if all or more links have already been scraped
+        if already_scraped >= len(unique_links):
+            logger.info("All player links have already been scraped. Restarting from the beginning.")
+            os.remove(output_csv)
+            scraped_df = pd.DataFrame(columns=["Player", "Player Link", "Player Key", "Signed Using"])
+            already_scraped_links = set()
+            scraped_df.to_csv(output_csv, index=False)
+            to_scrape = unique_links
+            already_scraped = 0
+
         start_time = time.time()
         for idx, link in enumerate(to_scrape):
             player_row = active_data[active_data["Player Link"] == link].iloc[0]
@@ -100,22 +110,34 @@ def main(update_csv=False, update_sheets=True, sheet_name="Contract Types"):
             logger.error(f"Could not determine cutoff year from salary_data['2025-26']: {e}")
             first_year = 2025  # fallback to 2025
 
-        # Remove players where Signed Using is like YYYY / RFA or YYYY / UFA (case-insensitive), where YYYY is <= first_year
+        # Load the output CSV into a DataFrame
         df = pd.read_csv(output_csv)
-        mask = ~df["Signed Using"].fillna("").str.match(
-            fr"^(19\d{{2}}|20[01]\d|20{str(first_year)[2:]})\s*/\s*(RFA|UFA)$", case=False
-        )
-        # More robust: match any year <= first_year
-        mask = ~df["Signed Using"].fillna("").str.match(
-            fr"^(\d{{4}})\s*/\s*(RFA|UFA)$", case=False
-        ) | (df["Signed Using"].fillna("").str.extract(r"^(\d{4})\s*/\s*(RFA|UFA)$")[0].astype(float) > first_year)
-        df = df[mask].copy()
-        df.to_csv(output_csv, index=False)
+
+        # Extract year and contract type from 'Signed Using' column using regex
+        signed_using_info = df["Signed Using"].fillna("").str.extract(r"^(\d{4})\s*/\s*(RFA|UFA)$", flags=re.IGNORECASE)
+        signed_year = signed_using_info[0]
+        contract_type = signed_using_info[1]
+
+        # Safely convert signed_year to float for comparison, avoiding ValueError on NaN
+        signed_year_num = pd.to_numeric(signed_year, errors="coerce")
+        is_year_valid = signed_year_num.notna() & (signed_year_num <= first_year)
+        is_contract_type_rfa_ufa = contract_type.str.upper().isin(["RFA", "UFA"])
+
+        # Create a mask for rows to exclude (where both conditions are met)
+        exclude_mask = is_year_valid & is_contract_type_rfa_ufa
+
+        # Keep only rows that do not match the exclusion criteria
+        filtered_df = df[~exclude_mask].copy()
+
+        # Save the filtered DataFrame back to CSV
+        filtered_df.to_csv(output_csv, index=False)
         logger.info(f"Removed players with Signed Using like YYYY / RFA or YYYY / UFA (YYYY ≤ {first_year}) from output CSV.")
+        #df.to_csv(output_csv, index=False)
+        #logger.info(f"Removed players with Signed Using like YYYY / RFA or YYYY / UFA (YYYY ≤ {first_year}) from output CSV.")
 
     if update_sheets:
         try:
-            df = pd.read_csv(output_csv).fillna('')
+            df = df.fillna('')
             sheets_manager = GoogleSheetsManager()
             sheets_manager.clear_data(sheet_name=sheet_name)
             logger.info(f"Cleared existing data in Google Sheets '{sheet_name}'.")
