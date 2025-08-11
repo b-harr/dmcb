@@ -129,6 +129,9 @@ def main(update_csv=False, update_sheets=True, sheet_name="Contract Types"):
         # Keep only rows that do not match the exclusion criteria
         filtered_df = df[~exclude_mask].copy()
 
+        # Sort by Player Key before saving
+        filtered_df = filtered_df.sort_values(by="Player Key", ignore_index=True)
+
         # Save the filtered DataFrame back to CSV
         filtered_df.to_csv(output_csv, index=False)
         logger.info(f"Removed players with Signed Using like YYYY / RFA or YYYY / UFA (YYYY ≤ {first_year}) from output CSV.")
