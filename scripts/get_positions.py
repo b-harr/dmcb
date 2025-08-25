@@ -94,4 +94,4 @@ def main(update_csv=True, update_sheets=False, sheet_name="Positions"):
 
 if __name__ == "__main__":
     # Execute the main function with default settings
-    main(update_csv=True, update_sheets=True)
+    main(update_csv=True, update_sheets=False)
