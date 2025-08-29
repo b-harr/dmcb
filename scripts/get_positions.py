@@ -48,6 +48,9 @@ def main(update_csv=True, update_sheets=False, sheet_name="Positions"):
     # Step 2: Add a unique identifier for each player based on their Sports.ws link
     df["Player Key"] = df["Player Link"].str.replace("https://sports.ws/nba/", "").apply(make_player_key)
 
+    # Remove rows where Player Key contains "placeholder" (wildcard match, case-insensitive)
+    df = df[~df["Player Key"].str.contains("placeholder", case=False, na=False)].copy()
+
     # Step 3: Sort the data for consistent output and readability
     df = df.sort_values(by="Player Key", ignore_index=True)
 
