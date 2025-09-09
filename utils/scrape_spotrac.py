@@ -2,6 +2,10 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 import re
+import logging
+
+# Set up logging for the script
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 # Function to scrape contract data for a single team from Spotrac
 def scrape_team_contracts(team):
@@ -17,7 +21,7 @@ def scrape_team_contracts(team):
     
     # Check if the request was successful (status code 200)
     if response.status_code != 200:
-        print(f"Failed to fetch data for {team} (Status code: {response.status_code})")
+        logging.error(f"Failed to fetch data for {team} (Status code: {response.status_code})")
         return None
     
     # Parse the HTML content of the page using BeautifulSoup
@@ -80,7 +84,7 @@ def scrape_team_contracts(team):
             tables.append(table)
 
     if not tables:
-        print(f"No contracts tables found for {team}")
+        logging.warning(f"No contracts tables found for {team}")
         return None
 
     # Use headers from the first table found
@@ -112,7 +116,7 @@ def scrape_all_teams():
 
     all_data = []  # List to store DataFrames for each team's contract data
     for team in teams:
-        print(f"Scraping data for {team}...")
+        logging.info(f"Scraping data for {team}...")
         team_data = scrape_team_contracts(team)  # Scrape contract data for the current team
         
         # If the team data was successfully retrieved, process and add it to the list
