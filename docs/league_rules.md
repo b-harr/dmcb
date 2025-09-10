@@ -1,8 +1,64 @@
 # Dreams Morey Can Buy (DMCB) League Constitution
 
+---
+
+# Summary
+
+## 1. League Structure
+- 16 franchises, each run by a GM.
+- No divisions/conferences.
+- Season uses first 77 NBA games for matchups.
+
+## 2. Teams & Rosters
+- Roster: 12–15 standard players + up to 2 Two-Way Players (don’t count toward cap/roster).
+- Lineup: 96 Guard mins, 96 Forward mins, 48 Center mins per matchup (Sports.ws positions).
+- Two-Way contracts: separate slots, no cap hits unless converted.
+
+## 3. Contracts & Salary Cap
+- Salary cap: 1.5× NBA cap (auto-updates yearly).
+- Rookie contracts: 2 guaranteed years, follows NBA for years 3/4, then RFA.
+- Extensions: Granted if signed without entering UFA.
+- Waived players’ salary counts against cap unless claimed or waived by NBA.
+
+## 4. Draft & Free Agency
+- Includes rookies, UFAs, RFAs not kept by fantasy owner, and others not on a fantasy roster.
+- Free agents signed via waiver wire by notifying Commissioner.
+- Contract terms follow Section 2 rules.
+
+## 5. Trades
+- Trades need commissioner or league approval.
+- Must follow cap/roster rules.
+- Annual trade deadline.
+
+## 6. Waivers & Releases
+- Waived players on waivers for 48 hours.
+- Claims assume full contract.
+- Guaranteed salary counts against cap unless claimed.
+
+## 7. Playoffs & Matchups
+- 77-game season: 56 regular, 21 playoff (3 rounds × 7 games).
+- Matchups based on NBA schedule; lineups lock at start of each NBA game number.
+
+## 8. Salary Cap & Financial Rules
+
+## 9. Playoffs & Matchups
+
+## 10. Governance & Dispute Resolution
+- Commissioner oversees rules and disputes.
+- Rule changes by majority GM vote.
+
+## 11. Miscellaneous
+- League fees, conduct, and communication rules.
+- Historical honors tracked in Appendix.
+
+**Appendix:**  
+- Table of past champions, MVPs, and other honors.
+
+---
+
 ## Section 1 – League Structure
 
-* The **Dreams Morey Can Buy (DMCB) League** consists of **16 franchises**, each owned and operated by a General Manager (GM).
+* The **Dreams Morey Can Buy (DMCB) League** consists of **16 franchises**, each owned and operated by a General Manager (GM or "owner").
 * The league does not use divisions or conferences.
 * Each season is structured around the first 77 games of the NBA schedule (56 + 7*3) (see Section 2.2).
 * Franchise identity is tied to the **GM/owner**, not the team name. *Example: Stein rebrands annually but retains all history.*
@@ -77,13 +133,15 @@
 * **Options**: Team and Player Options are permitted, limited to one (1) year.
 * **Two-Way Contracts**: See 2.1 above.
 
-### 2.4 Salary Cap Structure
+## Section 3 - Contracts & Salary Cap
 
-* The DMCB operates under a **salary cap** (see Section 2.5).
+### 3.1 Salary Cap Structure
+
+* The DMCB operates under a **salary cap** (see Section 3.2).
 * Two-way contracts do not apply to the salary cap unless converted to standard contracts.
 * When a player is waived from a standard contract, any guaranteed salary continues to apply to the cap (unless another team claims the player).
 
-### 2.5 Contract Limits & Salary Cap
+### 3.2 Contract Limits & Salary Cap
 
 * **Salary Cap Basis**
 
@@ -93,15 +151,8 @@
 
 * **Team Salary**
 
-  * Teams may not exceed the cap except under permitted exceptions (see Section 2.4).
+  * Teams may not exceed the cap except under permitted exceptions (see Section 3.1).
   * Teams are not required to maintain a minimum payroll.
-
-* **Rookie Scale Contracts**
-
-  * Drafted players enter on rookie contracts using the NBA rookie salary scale.
-  * Rookie deals are guaranteed for **2 years**, with **team options for years 3 and 4**, and **qualifying offers** to establish restricted free agency.
-  * If an NBA franchise declines their team option, the player will be released from the corresponding fantasy roster.
-  * If an NBA franchise exercises their team option, the contract will be accepted in fantasy, and the owner will receive the player's Restricted Free Agency rights.
 
 * **Extensions**
 
@@ -116,6 +167,135 @@
 
   * Two-way players do not count against the salary cap unless converted to standard contracts.
   * If converted, their salary must fit within the team’s cap and roster limits.
+
+---
+
+## Section 4 – Draft & Free Agency
+
+* **4.1 Entry Draft Format**
+  * Annual draft typically held late Sep or early Oct.
+  * Draft order determined by previous season standings and lottery (8 non-playoff teams).
+
+* ***4.1.1 Historical Draft Dates**
+  * Mon, Sep 30, 2019
+  * Sun, Nov 29, 2020 (COVID)
+  * Sat, Oct 9, 2021
+  * Sat, Oct 1, 2022
+  * Sun, Oct 1, 2023
+  * Sun, Oct 6, 2024
+  * Sat, Oct 4, 2025
+
+* **4.2 Rookie Contracts**
+  * Drafted players enter on rookie contracts using the NBA rookie salary scale.
+  * Rookie deals are guaranteed for **2 years**, with **NBA team options for years 3 and 4**, but no **fantasy team options** to establish restricted free agency.
+  * * If an NBA franchise declines their team option, the player will be released from the corresponding fantasy roster.
+  * * If an NBA franchise exercises their team option, the contract will be accepted in fantasy, and the owner will receive the player's Restricted Free Agency rights.
+
+* **4.3 Draft Eligibility**
+  * Only players on the league spreadsheet Contracts tab are eligible for the DMCB Draft.
+  * Contracts include players signed to active NBA rosters according to Spotrac.com.
+
+* **4.4 Free Agent Eligibility**
+  * Any player not under contract in the DMCB is eligible for free agency.
+
+* **4.5 Free Agent Bidding**
+  * Free agents are signed via Sports.ws, but will be subjected to contract & salary cap rules.
+
+---
+
+## Section 5 – Trades
+
+* **5.1 Trade Approval**
+  * Trades must be approved by the Commissioner.
+
+* **5.2 Trade Restrictions**
+  * Trades may not violate salary cap or roster limits.
+
+* **5.3 Salary Matching**
+  * For teams not above the 2nd apron, total salaries must match within 25%.
+  * After the trade is processed,
+  * * For teams above the 1st apron: $Incoming < $Outgoing * 1.25 + $250K
+  * * For teams above the 2nd apron: $Incoming < $Outgoing
+
+* **5.4 Trade Deadline**
+  * Deadline set annually (e.g., NBA trade deadline).
+
+---
+
+## Section 6 – Waivers & Releases
+
+* **6.1 Waiver Process**
+  * Players released from contracts enter waivers for 48 hours.
+
+* **6.2 Waiver Claims**
+  * Teams may claim waived players, assuming remaining contract.
+
+* **6.3 Cap Implications**
+  * Guaranteed salary continues to count against the cap unless claimed.
+
+---
+
+## Section 7 – Extensions & Options
+
+* **7.1 Extension Eligibility**
+  * Players in the final year of a contract may be extended.
+
+* **7.2 Extension Terms**
+  * Up to 4 additional years, subject to max salary rules.
+
+* **7.3 Option Years**
+  * Only one option year (player or team) per contract.
+
+---
+
+## Section 8 – Salary Cap & Financial Rules
+
+* **8.1 Salary Cap Calculation**
+  * DMCB cap is 1.5× NBA cap, updates annually.
+
+* **8.2 Minimum Payroll**
+  * No minimum payroll required.
+
+* **8.3 Cap Exceptions**
+  * Specify any exceptions (e.g., Bird rights, injury exceptions).
+
+---
+
+## Section 9 – Playoffs & Matchups
+
+* **9.1 Playoff Format**
+  * 8 teams.
+  * 3 rounds, 7 games.
+  * Matchups: 1v8, 2v7, 3v6, 4v5.
+
+* **9.2 Tiebreakers**
+  * Seeding based on regular season W-L, tiebreaker highest FPPG.
+
+---
+
+## Section 10 – Governance & Dispute Resolution
+
+* **10.1 Commissioner Powers**
+  * Commissioner oversees league operations and rule enforcement.
+
+* **10.2 Rule Changes**
+  * Amendments require majority vote of GMs.
+
+* **10.3 Dispute Resolution**
+  * Disputes resolved by Commissioner or league vote.
+
+---
+
+## Section 11 – Miscellaneous
+
+* **11.1 League Fees**
+  * Specify any entry fees, prize structure, and payment deadlines.
+
+* **11.2 Owner Conduct**
+  * Expectations for GM behavior and sportsmanship.
+
+* **11.3 Communication**
+  * Official league communication channels.
 
 ---
 
