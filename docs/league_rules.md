@@ -57,7 +57,7 @@
 * **Matchup Mechanics**:
 
   * Matchups open on the first day any NBA team plays its designated numbered game and close once the last team has completed that same numbered game.
-  * Example: Your Sports.ws matchup for *Game 12* consists of every player’s 12th NBA game, even if those games occur on different days. For example, in 2024-25 [Boston|https://www.basketball-reference.com/teams/BOS/2025_games.html] was the first to play its 12th game on Mon, Nov 11, 2024, while [Denver|https://www.basketball-reference.com/teams/DEN/2025_games.html] was the last to play its 12th game on Sun, Nov 17, 2025. Fantasy rosters for Game 12 would lock at the start of the first game on Mon, Nov 11, 2024 at 7:00p, and Game 12 would become final at the end of the final game on Sun, Nov 17, 2025 at approx. 8:12p (ET).
+  * Example: Your Sports.ws matchup for *Game 12* consists of every player’s 12th NBA game, even if those games occur on different days. For example, in 2024-25 [Boston](https://www.basketball-reference.com/teams/BOS/2025_games.html) was the first to play its 12th game on Mon, Nov 11, 2024, while [Denver](https://www.basketball-reference.com/teams/DEN/2025_games.html) was the last to play its 12th game on Sun, Nov 17, 2025. Fantasy rosters for Game 12 would lock at the start of the first game on Mon, Nov 11, 2024 at 7:00p, and Game 12 would become final at the end of the final game on Sun, Nov 17, 2025 at approx. 8:12p (ET).
   * Real-time scoring is provided by Sports.ws for paid leagues and is subject to availability.
 
 * **Lineup Minutes Allocation**:
