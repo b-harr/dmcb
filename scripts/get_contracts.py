@@ -1,6 +1,7 @@
 import os
 import sys
 import logging
+import argparse
 
 # Set up logging for the script
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -109,6 +110,17 @@ def main(update_csv=True, update_sheets=False, sheet_name="Contracts", data_rang
 
 # Main execution block
 if __name__ == "__main__":
-    logging.info("Starting Spotrac data sync script...")
-    main(update_csv=True, update_sheets=False)
+    parser = argparse.ArgumentParser(description="Scrape, process, and export Spotrac NBA contract data.")
+    parser.add_argument("--update_csv", action="store_true", default=True, help="Save processed data to CSV (default: True).")
+    parser.add_argument("--update_sheets", action="store_true", default=False, help="Update Google Sheets with processed data (default: False).")
+    parser.add_argument("--sheet_name", type=str, default="Contracts", help="Google Sheets tab name to update.")
+    parser.add_argument("--data_range", type=str, default="A1:L541", help="Range to clear in Google Sheets before writing.")
+    args = parser.parse_args()
+
+    main(
+        update_csv=args.update_csv,
+        update_sheets=args.update_sheets,
+        sheet_name=args.sheet_name,
+        data_range=args.data_range
+    )
     logging.info(f"Script execution completed: {__file__}")

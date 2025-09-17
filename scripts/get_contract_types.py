@@ -4,6 +4,7 @@ import logging
 import pandas as pd
 import time
 import re
+import argparse
 
 # Set up paths
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -158,5 +159,14 @@ def main(update_csv=False, update_sheets=True, sheet_name="Contract Types"):
             logger.error(f"Error updating Google Sheets: {e}")
 
 if __name__ == "__main__":
-    main(update_csv=True, update_sheets=False)
-    # main(update_csv=False, update_sheets=True)
+    parser = argparse.ArgumentParser(description="Scrape and process NBA contract types.")
+    parser.add_argument("--update_csv", action="store_true", default=True, help="Save processed data to CSV (default: True).")
+    parser.add_argument("--update_sheets", action="store_true", default=False, help="Update Google Sheets with processed data (default: False).")
+    parser.add_argument("--sheet_name", type=str, default="Contract Types", help="Google Sheets tab name to update.")
+    args = parser.parse_args()
+
+    main(
+        update_csv=args.update_csv,
+        update_sheets=args.update_sheets,
+        sheet_name=args.sheet_name
+    )
