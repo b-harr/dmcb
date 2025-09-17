@@ -54,8 +54,8 @@ def main(update_csv=True, update_sheets=False, sheet_name="Positions"):
     # Step 3: Sort the data for consistent output and readability
     df = df.sort_values(by="Player Key", ignore_index=True)
 
-    # Step 4: Reorder columns for a clear, consistent structure
-    column_order = ["Name", "Player Link", "Player Key", "Team", "Position"]
+    # Step 4: Reorder columns for a clear, consistent structure (remove "Team")
+    column_order = ["Name", "Player Link", "Player Key", "Position"]
     df = df[column_order]
 
     # Save the processed data to a CSV file if requested
