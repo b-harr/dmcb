@@ -4,7 +4,15 @@ import logging
 import argparse
 
 # Set up logging for the script
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+log_file = os.path.join("logs", "get_contracts.log")
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    handlers=[
+        logging.FileHandler(log_file, mode="a", encoding="utf-8"),
+        logging.StreamHandler(sys.stdout)
+    ]
+)
 
 # Get the root project directory (2 levels up from the current script)
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
