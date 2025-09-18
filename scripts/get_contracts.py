@@ -118,6 +118,7 @@ def main(update_csv=True, update_sheets=False, sheet_name="Contracts", data_rang
 
 # Main execution block
 if __name__ == "__main__":
+    logging.info(f"Script execution started: {__file__}")
     parser = argparse.ArgumentParser(description="Scrape, process, and export Spotrac NBA contract data.")
     parser.add_argument("--update_csv", action="store_true", default=True, help="Save processed data to CSV (default: True).")
     parser.add_argument("--update_sheets", action="store_true", default=False, help="Update Google Sheets with processed data (default: False).")
