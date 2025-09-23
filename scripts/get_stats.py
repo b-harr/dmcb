@@ -22,7 +22,7 @@ logger = logging.getLogger()
 logger.info("Script execution started.")
 
 # Import required utilities
-from utils.scrape_bbref import scrape_nba_totals
+from utils.scrape_nba import scrape_nba_totals
 from utils.text_formatter import make_player_key
 from utils.google_sheets_manager import GoogleSheetsManager
 
