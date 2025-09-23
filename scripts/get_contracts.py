@@ -3,6 +3,7 @@ import sys
 import logging
 import argparse
 import re
+import pandas as pd
 
 # Set up logging for the script
 log_file = os.path.join("logs", "get_contracts.log")
@@ -46,79 +47,86 @@ def main(update_csv=True, update_sheets=False, sheet_name="Contracts", data_rang
         update_sheets (bool): Whether to update the data in Google Sheets.
         sheet_name (str): The name of the Google Sheets tab to update.
     """
-    logging.info("Starting data scrape from Spotrac...")
+    if not update_csv:
+        # Load existing CSV instead of scraping
+        try:
+            logging.info(f"Loading existing CSV: {output_csv}")
+            df = pd.read_csv(output_csv)
+        except FileNotFoundError:
+            logging.error(f"CSV file not found at {output_csv}. Cannot proceed with --no-update-csv.")
+            sys.exit(1)
+    else:
+        # Full scraping workflow
+        logging.info("Starting data scrape from Spotrac...")
+        try:
+            df = scrape_all_teams()
+            if df is None or df.empty:
+                raise ValueError("No data was returned from the scrape.")
+        except Exception as e:
+            logging.error(f"Data scrape failed: {e}")
+            sys.exit(1)
     
-    # Attempt to scrape data
-    try:
-        df = scrape_all_teams()
-        if df is None or df.empty:
-            raise ValueError("No data was returned from the scrape.")
-    except Exception as e:
-        logging.error(f"Data scrape failed: {e}")
-        sys.exit(1)
-    
-    # Process the DataFrame if valid data is returned
-    logging.info("Processing scraped data...")
-    try:
-        # Exclude rows where Player is "Incomplete Roster Charge"
-        df = df[df["Player"] != "Incomplete Roster Charge"]
+        # Process the DataFrame if valid data is returned
+        logging.info("Processing scraped data...")
+        try:
+            # Exclude rows where Player is "Incomplete Roster Charge"
+            df = df[df["Player"] != "Incomplete Roster Charge"]
 
-        # Add derived columns for Player Key and Team Link
-        df["Player Key"] = df["Player"].apply(make_player_key)
-        df["Team Link"] = df["Team"].apply(lambda team: f"https://www.spotrac.com/nba/{team}/yearly")
-        
-        # Format the Team column to Title Case
-        df["Team"] = df["Team"].apply(make_title_case)
-        
-        # Sort by Player Key then Team for consistency
-        df = df.sort_values(by=["Player Key", "Team"], ignore_index=True)
-        
-        # Dynamically reorder columns
-        required_columns = ["Player", "Player Link", "Player Key", "Team", "Team Link", "Position", "Age"]
-        dynamic_columns = [col for col in df.columns if col.startswith("20")]
-        column_order = required_columns + dynamic_columns
-        
-        missing_columns = [col for col in required_columns if col not in df.columns]
-        if missing_columns:
-            raise ValueError(f"Missing required columns: {missing_columns}")
-        
-        df = df[column_order]
+            # Add derived columns for Player Key and Team Link
+            df["Player Key"] = df["Player"].apply(make_player_key)
+            df["Team Link"] = df["Team"].apply(lambda team: f"https://www.spotrac.com/nba/{team}/yearly")
+            
+            # Format the Team column to Title Case
+            df["Team"] = df["Team"].apply(make_title_case)
+            
+            # Sort by Player Key then Team for consistency
+            df = df.sort_values(by=["Player Key", "Team"], ignore_index=True)
+            
+            # Dynamically reorder columns
+            required_columns = ["Player", "Player Link", "Player Key", "Team", "Team Link", "Position", "Age"]
+            dynamic_columns = [col for col in df.columns if col.startswith("20")]
+            column_order = required_columns + dynamic_columns
+            
+            missing_columns = [col for col in required_columns if col not in df.columns]
+            if missing_columns:
+                raise ValueError(f"Missing required columns: {missing_columns}")
+            
+            df = df[column_order]
 
-        # --- Add Cap Holds for Kuminga and Grimes before CSV output ---
-        import pandas as pd
-        extra_rows = [
-            [
-                "Jonathan Kuminga",
-                "https://www.spotrac.com/nba/player/_/id/74114/jonathan-kuminga",
-                "jonathan-kuminga",
-                "Golden State Warriors",
-                "https://www.spotrac.com/nba/golden-state-warriors/yearly",
-                "PF",
-                22,
-                "$22908921"
-            ],
-            [
-                "Quentin Grimes",
-                "https://www.spotrac.com/nba/player/_/id/74132/quentin-grimes",
-                "quentin-grimes",
-                "Philadelphia 76ers",
-                "https://www.spotrac.com/nba/philadelphia-76ers/yearly",
-                "SG",
-                25,
-                "$12890046"
+            # --- Add Cap Holds for Kuminga and Grimes before CSV output ---
+            extra_rows = [
+                [
+                    "Jonathan Kuminga",
+                    "https://www.spotrac.com/nba/player/_/id/74114/jonathan-kuminga",
+                    "jonathan-kuminga",
+                    "Golden State Warriors",
+                    "https://www.spotrac.com/nba/golden-state-warriors/yearly",
+                    "PF",
+                    22,
+                    "$22908921"
+                ],
+                [
+                    "Quentin Grimes",
+                    "https://www.spotrac.com/nba/player/_/id/74132/quentin-grimes",
+                    "quentin-grimes",
+                    "Philadelphia 76ers",
+                    "https://www.spotrac.com/nba/philadelphia-76ers/yearly",
+                    "SG",
+                    25,
+                    "$12890046"
+                ]
             ]
-        ]
-        # Ensure extra_rows has the same number of columns as df
-        while len(extra_rows[0]) < len(df.columns):
-            for row in extra_rows:
-                row.append("")
-        extra_df = pd.DataFrame(extra_rows, columns=df.columns)
-        df = pd.concat([df, extra_df], ignore_index=True)
-        # --- End add rows ---
+            # Ensure extra_rows has the same number of columns as df
+            while len(extra_rows[0]) < len(df.columns):
+                for row in extra_rows:
+                    row.append("")
+            extra_df = pd.DataFrame(extra_rows, columns=df.columns)
+            df = pd.concat([df, extra_df], ignore_index=True)
+            # --- End add rows ---
 
-    except Exception as e:
-        logging.error(f"Error during data processing: {e}")
-        sys.exit(1)
+        except Exception as e:
+            logging.error(f"Error during data processing: {e}")
+            sys.exit(1)
     
     # Save the processed data to a CSV file
     if update_csv:
@@ -129,10 +137,11 @@ def main(update_csv=True, update_sheets=False, sheet_name="Contracts", data_rang
             logging.error(f"Failed to save data to CSV: {e}")
     
     # Update the Google Sheets document if requested
-    if update_sheets:# Convert any column like '2025-26' to numeric if it has strings with $
+    if update_sheets:
         # Identify salary/year columns (those starting with '20', e.g., '2025-26')
         salary_cols = [col for col in df.columns if re.match(r"20\d{2}-\d{2}", col)]
 
+        # Convert any column like '2025-26' to numeric if it has strings with $
         for col in salary_cols:
             # Remove $ and commas, convert numeric values to float, leave text as-is
             df[col + "_numeric"] = pd.to_numeric(df[col].replace(r'[\$,]', '', regex=True), errors='coerce')
@@ -159,7 +168,6 @@ def main(update_csv=True, update_sheets=False, sheet_name="Contracts", data_rang
             logging.info("Wrote timestamp to Google Sheets.")
         except Exception as e:
             logging.error(f"Failed to update Google Sheets: {e}")
-
 
 # Main execution block
 if __name__ == "__main__":
@@ -210,7 +218,7 @@ if __name__ == "__main__":
         "--range",
         dest="data_range",
         type=str,
-        default="A1:L541",
+        default="A1:L751",
         help="Range to clear in Google Sheets before writing."
     )
 
