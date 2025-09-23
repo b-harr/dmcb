@@ -37,7 +37,7 @@ from utils.scrape_spotrac import scrape_all_teams
 from utils.text_formatter import make_player_key, make_title_case
 from utils.google_sheets_manager import GoogleSheetsManager
 
-def main(update_csv=True, update_sheets=False, sheet_name="Contracts", data_range="A1:L541"):
+def main(update_csv=True, update_sheets=False, sheet_name="Contracts", data_range="A1:L751"):
     """
     Main function to scrape Spotrac data, process it, and optionally save it to a CSV file
     and/or update Google Sheets.
