@@ -58,7 +58,7 @@
 
 ## Section 1 – League Structure
 
-* The **Dreams Morey Can Buy (DMCB) League** consists of **16 franchises**, each owned and operated by a General Manager (GM or "owner").
+* The **Dreams Morey Can Buy (DMCB) League** consists of **16 franchises**, each owned and operated by a General Manager ("GM" aka "Owner").
 * The league does not use divisions or conferences.
 * Each season is structured around the first 77 games of the NBA schedule (56 + 7*3) (see Section 2.2).
 * Franchise identity is tied to the **GM/owner**, not the team name. *Example: Stein rebrands annually but retains all history.*
@@ -123,7 +123,8 @@
     * **96 Guard (G) minutes**
     * **96 Forward (F) minutes**
     * **48 Center (C) minutes**
-  * Position eligibility is locked to **Sports.ws default designations**. No exceptions.
+  * Position eligibility is locked to **Sports.ws default designations**.
+  * **No exceptions** to Sports.ws positional eligibility will be granted.
 
 ### 2.3 Contract Types
 
@@ -162,6 +163,12 @@
 
   * Contracts may include **Player or Team Options** for **1 additional year**.
   * A contract may not include both a Player Option and Team Option.
+  * Owners must notify the Commissioner of exercised or declined Team Options by a league-set deadline (typically one week prior to the annual Draft). Failure to respond by the deadline will result in the contract being deemed accepted and the player retained.
+
+* **Restricted Free Agents (RFAs) and Cap Holds**
+
+  * If an NBA player is a Restricted Free Agent and has not signed by the DMCB Draft, Spotrac’s published Cap Hold will be applied to the fantasy team’s payroll until the NBA contract is signed.
+  * Upon signing, the Cap Hold will be replaced with the actual contract terms. Owners then have three (3) days to decide whether to keep or release the player. If no decision is communicated, the player is retained by default.
 
 * **Two-Way Contracts**
 
