@@ -2,6 +2,7 @@ import os
 import sys
 import logging
 import argparse
+import re
 
 # Set up logging for the script
 log_file = os.path.join("logs", "get_contracts.log")
@@ -128,7 +129,18 @@ def main(update_csv=True, update_sheets=False, sheet_name="Contracts", data_rang
             logging.error(f"Failed to save data to CSV: {e}")
     
     # Update the Google Sheets document if requested
-    if update_sheets:
+    if update_sheets:# Convert any column like '2025-26' to numeric if it has strings with $
+        # Identify salary/year columns (those starting with '20', e.g., '2025-26')
+        salary_cols = [col for col in df.columns if re.match(r"20\d{2}-\d{2}", col)]
+
+        for col in salary_cols:
+            # Remove $ and commas, convert numeric values to float, leave text as-is
+            df[col + "_numeric"] = pd.to_numeric(df[col].replace(r'[\$,]', '', regex=True), errors='coerce')
+            # Replace numeric values in the original column, leave non-numeric as text
+            df[col] = df[col + "_numeric"].combine_first(df[col])
+            # Drop temporary numeric helper column
+            df.drop(columns=[col + "_numeric"], inplace=True)
+
         logging.info(f"Updating Google Sheets: {sheet_name}")
         try:
             # Generate a timestamp for logging and data tracking
@@ -143,7 +155,7 @@ def main(update_csv=True, update_sheets=False, sheet_name="Contracts", data_rang
             logging.info("Google Sheets updated successfully.")
 
             # Write the timestamp to Google Sheets
-            sheets_manager.write_data([[f"Last updated {timestamp} by {sheets_manager.service_account_email} from {os.path.basename(__file__)}"]], sheet_name=sheet_name, start_cell="Z2")
+            sheets_manager.write_data([[f"{timestamp}"]], sheet_name=sheet_name, start_cell="AC2")
             logging.info("Wrote timestamp to Google Sheets.")
         except Exception as e:
             logging.error(f"Failed to update Google Sheets: {e}")
@@ -153,10 +165,55 @@ def main(update_csv=True, update_sheets=False, sheet_name="Contracts", data_rang
 if __name__ == "__main__":
     logging.info(f"Script execution started: {__file__}")
     parser = argparse.ArgumentParser(description="Scrape, process, and export Spotrac NBA contract data.")
-    parser.add_argument("--update_csv", action="store_true", default=True, help="Save processed data to CSV (default: True).")
-    parser.add_argument("--update_sheets", action="store_true", default=False, help="Update Google Sheets with processed data (default: False).")
-    parser.add_argument("--sheet_name", type=str, default="Contracts", help="Google Sheets tab name to update.")
-    parser.add_argument("--data_range", type=str, default="A1:L541", help="Range to clear in Google Sheets before writing.")
+
+    # Mutually exclusive group for CSV
+    csv_group = parser.add_mutually_exclusive_group()
+    csv_group.add_argument(
+        "--update-csv",
+        dest="update_csv",
+        action="store_true",
+        help="Save processed data to CSV (default)."
+    )
+    csv_group.add_argument(
+        "--no-update-csv",
+        dest="update_csv",
+        action="store_false",
+        help="Do not save processed data to CSV."
+    )
+    parser.set_defaults(update_csv=True)
+
+    # Mutually exclusive group for Google Sheets
+    sheets_group = parser.add_mutually_exclusive_group()
+    sheets_group.add_argument(
+        "--update-sheets",
+        dest="update_sheets",
+        action="store_true",
+        help="Update Google Sheets with processed data."
+    )
+    sheets_group.add_argument(
+        "--no-update-sheets",
+        dest="update_sheets",
+        action="store_false",
+        help="Do not update Google Sheets (default)."
+    )
+    parser.set_defaults(update_sheets=False)
+
+    # Other arguments
+    parser.add_argument(
+        "--sheet",
+        dest="sheet_name",
+        type=str,
+        default="Contracts",
+        help="Google Sheets tab name to update."
+    )
+    parser.add_argument(
+        "--range",
+        dest="data_range",
+        type=str,
+        default="A1:L541",
+        help="Range to clear in Google Sheets before writing."
+    )
+
     args = parser.parse_args()
 
     main(
