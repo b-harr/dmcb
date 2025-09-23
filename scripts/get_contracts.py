@@ -150,6 +150,10 @@ def main(update_csv=True, update_sheets=False, sheet_name="Contracts", data_rang
             # Drop temporary numeric helper column
             df.drop(columns=[col + "_numeric"], inplace=True)
 
+        # Clean up before updating Google Sheets
+        df = df.replace([pd.NA, None, float("inf"), float("-inf")], "")
+        df = df.fillna("")
+
         logging.info(f"Updating Google Sheets: {sheet_name}")
         try:
             # Generate a timestamp for logging and data tracking
