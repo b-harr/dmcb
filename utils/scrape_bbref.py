@@ -5,7 +5,16 @@ import pandas as pd
 def scrape_nba_totals(year):
     url = f"https://www.basketball-reference.com/leagues/NBA_{year}_totals.html"
 
-    response = requests.get(url)
+    headers = {
+        "User-Agent": (
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/117.0 Safari/537.36"
+        )
+    }
+
+    response = requests.get(url, headers=headers)
+    response.raise_for_status()  # raises HTTPError if 403/404/etc.
 
     soup = BeautifulSoup(response.content, "html.parser")
 
@@ -30,13 +39,11 @@ def scrape_nba_totals(year):
             
             # Find all anchor ('a') tags in the row
             links = row.find_all("a")
-            
-            player_link = None
-            team_link = None
+            player_link, team_link = None, None
             
             # Loop through all the links and check if they correspond to a player or a team
             for link in links:
-                href = link.get("href")
+                href = link.get("href", "")
                 
                 # Check if the link is a player link (contains '/players/')
                 if "/players/" in href:

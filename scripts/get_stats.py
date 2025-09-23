@@ -110,5 +110,53 @@ def main(year=2025, update_csv=True, update_sheets=False, sheet_name="Stats"):
             logger.error(f"Error updating Google Sheets: {e}")
 
 if __name__ == "__main__":
-    main(update_csv=True, update_sheets=True)
-    #main(year=2024)
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Scrape and export Sports.ws player positions.")
+
+    # Mutually exclusivea group for update_csv
+    csv_group = parser.add_mutually_exclusive_group()
+    csv_group.add_argument(
+        "--update_csv",
+        dest="update_csv",
+        action="store_true",
+        help="Save processed data to CSV (default)."
+    )
+    csv_group.add_argument(
+        "--no-update_csv",
+        dest="update_csv",
+        action="store_false",
+        help="Do not save processed data to CSV."
+    )
+    parser.set_defaults(update_csv=True)  # Default = True
+
+    # Mutually exclusive group for update_sheets
+    sheets_group = parser.add_mutually_exclusive_group()
+    sheets_group.add_argument(
+        "--update_sheets",
+        dest="update_sheets",
+        action="store_true",
+        help="Update Google Sheets with processed data."
+    )
+    sheets_group.add_argument(
+        "--no-update_sheets",
+        dest="update_sheets",
+        action="store_false",
+        help="Do not update Google Sheets with processed data (default)."
+    )
+    parser.set_defaults(update_sheets=False)  # Default = False
+
+    parser.add_argument(
+        "--sheet_name",
+        type=str,
+        default="Positions",
+        help="Google Sheets tab name to update (default: Positions)."
+    )
+
+    args = parser.parse_args()
+
+    main(
+        update_csv=args.update_csv,
+        update_sheets=args.update_sheets,
+        sheet_name=args.sheet_name
+    )
