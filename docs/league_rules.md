@@ -202,17 +202,17 @@ Points are awarded based on the minutes a player logs on the court, emphasizing 
 For example, a player who scores a point every minute gets 1 point per minute played.
 The system also adjusts for stats like rebounds, assists, steals, etc. in a points-per-minute fashion.
 
-FP = PTS + TRB + AST + STL + BLK - TOV - PF         FPPG = FP / G                           FPR = FPPG * FPPM
--------------------------------------------         -------------                           -----------------
-FP  = Fantasy Points                                FPPG = Fantasy Points Per Game          FPR = Fantasy Point Rating
-PTS = Points          (+1)                          FP = Fantasy Points                     FPPG = Fantasy Points Per Game
-TRB = Total Rebounds  (+1)                          G = Games                               FPPM = Fantasy Points Per Minute
-AST = Assists         (+1)
-STL = Steals          (+1)                          FPPM = FP / MP                          FPV = FPR / $1M
-BLK = Blocks          (+1)                          --------------                          ---------------
-TOV = Turnovers       (-1)                          FPPM = Fantasy Points Per Minute        FPV = Fantasy Point Value
-PF  = Personal Fouls  (-1)                          FP = Fantasy Points                     FPR = Fantasy Point Rating
-TF  = Technical Fouls (-1)                          MP = Minutes Played                     $1M = Salary (in millions)
+FP = PTS + TRB + AST + STL + BLK - TOV - PF         FPPG = FP / G                           FPR = FPPG * FPPM  
+-------------------------------------------         -------------                           -----------------  
+FP  = Fantasy Points                                FPPG = Fantasy Points Per Game          FPR = Fantasy Point Rating  
+PTS = Points          (+1)                          FP = Fantasy Points                     FPPG = Fantasy Points Per Game  
+TRB = Total Rebounds  (+1)                          G = Games                               FPPM = Fantasy Points Per Minute  
+AST = Assists         (+1)  
+STL = Steals          (+1)                          FPPM = FP / MP                          FPV = FPR / $1M  
+BLK = Blocks          (+1)                          --------------                          ---------------  
+TOV = Turnovers       (-1)                          FPPM = Fantasy Points Per Minute        FPV = Fantasy Point Value  
+PF  = Personal Fouls  (-1)                          FP = Fantasy Points                     FPR = Fantasy Point Rating  
+TF  = Technical Fouls (-1)                          MP = Minutes Played                     $1M = Salary (in millions)  
                                                     
 ---
 
