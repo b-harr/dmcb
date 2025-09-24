@@ -202,6 +202,7 @@ Points are awarded based on the minutes a player logs on the court, emphasizing 
 For example, a player who scores a point every minute gets 1 point per minute played.
 The system also adjusts for stats like rebounds, assists, steals, etc. in a points-per-minute fashion.
 
+```
 FP = PTS + TRB + AST + STL + BLK - TOV - PF - TF  
 ------------------------------------------------  
 FP  = Fantasy Points  
@@ -213,6 +214,7 @@ BLK = Blocks          (+1)
 TOV = Turnovers       (-1)  
 PF  = Personal Fouls  (-1)  
 TF  = Technical Fouls (-1)  
+```
 
 FPPG = FP / G  
 -------------  
