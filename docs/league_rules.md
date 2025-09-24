@@ -216,29 +216,37 @@ PF  = Personal Fouls  (-1)
 TF  = Technical Fouls (-1)  
 ```
 
+```
 FPPG = FP / G  
 -------------  
 FPPG = Fantasy Points Per Game  
 FP = Fantasy Points  
 G = Games  
+```
 
+```
 FPPM = FP / MP  
 --------------  
 FPPM = Fantasy Points Per Minute  
 FP = Fantasy Points  
 MP = Minutes Played  
+```
 
+```
 FPR = FPPG * FPPM  
 -----------------  
 FPR = Fantasy Point Rating  
 FPPG = Fantasy Points Per Game  
 FPPM = Fantasy Points Per Minute  
+```
 
+```
 FPV = FPR / $1M  
 ---------------  
 FPV = Fantasy Point Value  
 FPR = Fantasy Point Rating  
 $1M = Salary (in millions)  
+```
 
 ---
 
