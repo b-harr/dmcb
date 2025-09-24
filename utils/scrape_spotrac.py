@@ -151,19 +151,28 @@ def scrape_player_contracts(url):
             if signed_using_element else None
         )
 
-        return signed_using_value
+        # CSS selector to find the "Drafted" information
+        drafted_selector = "#main > section > article > div.row.m-0.mt-0.pb-3 > div.col-md-6 > div > div:nth-child(1) > span"
+        drafted_element = soup.select_one(drafted_selector)
+
+        drafted_value = (
+            drafted_element.get_text().strip()
+            if drafted_element else None
+        )
+
+        return signed_using_value, drafted_value
 
     except Exception as e:
-        return None
+        return None, None
 
-# Main execution block
+# Example usage
 if __name__ == "__main__":
     # Scrape contract data for all teams and store the result in a DataFrame
-    contracts_df = scrape_all_teams()
-    print(contracts_df.head())  # Print the first few rows of the DataFrame for verification
+    #contracts_df = scrape_all_teams()
+    # Display the first few rows of the combined DataFrame
+    #print(contracts_df.head())
     
-    # Save the combined contract data to a CSV file for future use
-    #contracts_df.to_csv("data/contracts.csv", mode="w", index=False, encoding="utf-8")
-    #print("Data saved to data/contracts.csv")  # Confirm that the data was saved
+    # Scrape contract data for a specific player (example)
     player_df = scrape_player_contracts("https://www.spotrac.com/nba/player/_/id/15356")
+    # Display the scraped contract information for the player
     print(player_df)

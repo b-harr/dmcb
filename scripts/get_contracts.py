@@ -4,6 +4,7 @@ import logging
 import argparse
 import re
 import pandas as pd
+import time
 
 # Set up logging for the script
 log_file = os.path.join("logs", "get_contracts.log")
@@ -157,7 +158,7 @@ def main(update_csv=True, update_sheets=False, sheet_name="Contracts", data_rang
         logging.info(f"Updating Google Sheets: {sheet_name}")
         try:
             # Generate a timestamp for logging and data tracking
-            timestamp = logging.Formatter('%(asctime)s').format(logging.LogRecord("", 0, "", 0, "", [], None))
+            timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
 
             # Initialize the Google Sheets manager and clear the target range
             sheets_manager = GoogleSheetsManager()

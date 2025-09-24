@@ -43,7 +43,7 @@ def main(update_csv=False, update_sheets=True, sheet_name="Contract Types"):
             scraped_df = pd.read_csv(output_csv)
             already_scraped_links = set(scraped_df["Player Link"].tolist())
         else:
-            scraped_df = pd.DataFrame(columns=["Player", "Player Link", "Player Key", "Signed Using"])
+            scraped_df = pd.DataFrame(columns=["Player", "Player Link", "Player Key", "Signed Using", "Drafted"])
             already_scraped_links = set()
             scraped_df.to_csv(output_csv, index=False)
 
@@ -55,7 +55,7 @@ def main(update_csv=False, update_sheets=True, sheet_name="Contract Types"):
         if already_scraped >= len(unique_links):
             logger.info("All player links have already been scraped. Restarting from the beginning.")
             os.remove(output_csv)
-            scraped_df = pd.DataFrame(columns=["Player", "Player Link", "Player Key", "Signed Using"])
+            scraped_df = pd.DataFrame(columns=["Player", "Player Link", "Player Key", "Signed Using", "Drafted"])
             already_scraped_links = set()
             scraped_df.to_csv(output_csv, index=False)
             to_scrape = unique_links
@@ -68,7 +68,7 @@ def main(update_csv=False, update_sheets=True, sheet_name="Contract Types"):
             player_name = player_row["Player"]
 
             try:
-                signed_using = scrape_player_contracts(link)
+                signed_using, drafted = scrape_player_contracts(link)
                 signed_using = make_title_case(signed_using)
             except Exception as e:
                 logger.warning(f"Failed to scrape {player_name}: {e}")
@@ -78,7 +78,8 @@ def main(update_csv=False, update_sheets=True, sheet_name="Contract Types"):
                 "Player": player_name,
                 "Player Link": link,
                 "Player Key": player_key,
-                "Signed Using": signed_using
+                "Signed Using": signed_using,
+                "Drafted": drafted,
             }
 
             pd.DataFrame([scraped_row]).to_csv(output_csv, mode="a", header=False, index=False, encoding="utf-8")
@@ -136,14 +137,13 @@ def main(update_csv=False, update_sheets=True, sheet_name="Contract Types"):
         # Save the filtered DataFrame back to CSV
         filtered_df.to_csv(output_csv, index=False)
         logger.info(f"Removed players with Signed Using like YYYY / RFA or YYYY / UFA (YYYY ≤ {first_year}) from output CSV.")
-        #df.to_csv(output_csv, index=False)
-        #logger.info(f"Removed players with Signed Using like YYYY / RFA or YYYY / UFA (YYYY ≤ {first_year}) from output CSV.")
 
     if update_sheets:
         try:
+            df = pd.read_csv(output_csv)
             df = df.fillna('')
             sheets_manager = GoogleSheetsManager()
-            sheets_manager.clear_data(sheet_name=sheet_name)
+            sheets_manager.clear_range(sheet_name=sheet_name, range_to_clear="A:E")
             logger.info(f"Cleared existing data in Google Sheets '{sheet_name}'.")
 
             timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
@@ -159,10 +159,48 @@ def main(update_csv=False, update_sheets=True, sheet_name="Contract Types"):
             logger.error(f"Error updating Google Sheets: {e}")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Scrape and process NBA contract types.")
-    parser.add_argument("--update_csv", action="store_true", default=True, help="Save processed data to CSV (default: True).")
-    parser.add_argument("--update_sheets", action="store_true", default=False, help="Update Google Sheets with processed data (default: False).")
-    parser.add_argument("--sheet_name", type=str, default="Contract Types", help="Google Sheets tab name to update.")
+    parser = argparse.ArgumentParser(description="Process Spotrac contracts and classify contract types.")
+
+    # Mutually exclusive group for CSV updating
+    csv_group = parser.add_mutually_exclusive_group()
+    csv_group.add_argument(
+        "--update-csv",
+        action="store_true",
+        dest="update_csv",
+        help="Regenerate CSV file (default)",
+    )
+    csv_group.add_argument(
+        "--no-update-csv",
+        action="store_false",
+        dest="update_csv",
+        help="Do not regenerate CSV, load existing instead",
+    )
+    parser.set_defaults(update_csv=True)
+
+    # Mutually exclusive group for Sheets updating
+    sheets_group = parser.add_mutually_exclusive_group()
+    sheets_group.add_argument(
+        "--update-sheets",
+        action="store_true",
+        dest="update_sheets",
+        help="Update Google Sheets with results",
+    )
+    sheets_group.add_argument(
+        "--no-update-sheets",
+        action="store_false",
+        dest="update_sheets",
+        help="Do not update Google Sheets (default)",
+    )
+    parser.set_defaults(update_sheets=False)
+
+    parser.add_argument(
+        "--sheet",
+        dest="sheet_name",
+        type=str,
+        default="Contract Types",
+        help="Google Sheets tab name to update",
+    )
+
     args = parser.parse_args()
 
     main(
