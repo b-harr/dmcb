@@ -1,123 +1,362 @@
-# DMCB League Rules
+# Dreams Morey Can Buy (DMCB) League Rules
 
-## 1. League Overview
+---
 
-League Name: Dreams Morey Can Buy (DMCB)
-Type of League: Points-per-minute-based, Salary Cap Dynasty
-Platform: Sports.ws
+# Table of Contents
 
-Competition Committee:
-* Commissioner: Sam Fraser (@Sam Antonio)
-* Draft & Operations Director: Brian Harrison (@B-Har)
-* League Historian & Tournament Director: Andrew Casillas (@Andrew)
-* Rules & Compliance Director: Christopher Heiligenstein (@St9er)
-* Treasurer: Robert Ramon (@Rizzy (Austin))
-
-Resources:
-* Slack: dreamsmoreycanbuy.slack.com
-* Google Sheets: https://docs.google.com/spreadsheets/d/1NgAl7GSl3jfehz4Sb3SmR_k1-QtQFm55fBPb3QOGYYw
-* Sports.ws: https://sports.ws/fantasy-basketball/
+## 1. League Structure
+- 16 franchises, each run by a GM.
+- No divisions/conferences.
+- Season uses first 77 NBA games for matchups.
 
 ## 2. Teams & Rosters
+- Roster: 12–15 standard players + up to 2 Two-Way Players (don’t count toward cap/roster).
+- Lineup: 96 Guard mins, 96 Forward mins, 48 Center mins per matchup (Sports.ws positions).
+- Two-Way contracts: separate slots, no cap hits unless converted.
 
-Number of Teams: 16 teams
+## 3. Contracts & Salary Cap
+- Salary cap: 1.5× NBA cap (auto-updates yearly).
+- Rookie contracts: 2 guaranteed years, follows NBA for years 3/4, then RFA.
+- Extensions: Granted if signed without entering UFA.
+- Waived players’ salary counts against cap unless claimed or waived by NBA.
 
-Roster Size:
-* 12 active players (minimum)
-* 3 free agent spots
-* 2 two-way players
+## 4. Draft & Free Agency
+- Includes rookies, UFAs, RFAs not kept by fantasy owner, and others not on a fantasy roster.
+- Free agents signed via waiver wire by notifying Commissioner.
+- Contract terms follow Section 2 rules.
 
-Starting Positions:
-* 96 Guard minutes
-* 96 Forward minutes
-* 48 Center minutes
+## 5. Trades
+- Trades need commissioner or league approval.
+- Must follow cap/roster rules.
+- Annual trade deadline.
 
-## 3. Scoring System
+## 6. Waivers & Releases
+- Waived players on waivers for 48 hours.
+- Claims assume full contract.
+- Guaranteed salary counts against cap unless claimed.
+
+## 7. Playoffs & Matchups
+- 77-game season: 56 regular, 21 playoff (3 rounds × 7 games).
+- Matchups based on NBA schedule; lineups lock at start of each NBA game number.
+
+## 8. Salary Cap & Financial Rules
+
+## 9. Playoffs & Matchups
+
+## 10. Governance & Dispute Resolution
+- Commissioner oversees rules and disputes.
+- Rule changes by majority GM vote.
+
+## 11. Miscellaneous
+- League fees, conduct, and communication rules.
+- Historical honors tracked in Appendix.
+
+**Appendix:**  
+- Table of past champions, MVPs, and other honors.
+
+---
+
+## Section 1 – League Structure
+
+* The **Dreams Morey Can Buy (DMCB) League** consists of **16 franchises**, each owned and operated by a General Manager ("GM" aka "Owner").
+* The league does not use divisions or conferences.
+* Each season is structured around the first 77 games of the NBA schedule (56 + 7*3) (see Section 2.2).
+* Franchise identity is tied to the **GM/owner**, not the team name. *Example: Stein rebrands annually but retains all history.*
+
+### 1.1 Competition Committee
+
+* Commissioner: Brian Harrison (B-Har)
+* League Historian & Tournament Director: Andrew Casillas (Andrew)
+* Rules & Compliance Director: Christopher Heiligenstein (St9er)
+* Treasurer: Robert Ramon (Rizzy)
+* Chief Counsel: Sam Fraser (Sam Antonio)
+
+### 1.2 Current Franchises (2024–25 Season)
+
+| Owner   | Team                         |
+| ------- | ---------------------------- |
+| Andrew  | San Antonio Breakfast Tacos  |
+| B-Har   | Giannis Is Upon Us           |
+| BJ      | Houston Rehab                |
+| Brandon | To Be Relocated Later Jokers |
+| Brian   | Stairway to Devin            |
+| Colin   | Thompson Twins Inc           |
+| David   | Dirk's Daggers               |
+| Efrain  | River City Bling Bling       |
+| Hil     | Step Back Floater            |
+| John    | Liberty City Penetrators     |
+| Kyle    | Capitol City Nenes           |
+| Robert  | Austin Rivers(ide)           |
+| Sam     | More like Borlando           |
+| Stein   | Fuck It We Bub               |
+| Will    | League Average               |
+| Zack    | The Monstars                 |
+
+### 1.3 Resources
+
+* Slack: https://dreamsmoreycanbuy.slack.com
+* Google Sheets: https://docs.google.com/spreadsheets/d/1NgAl7GSl3jfehz4Sb3SmR_k1-QtQFm55fBPb3QOGYYw
+* Sports.ws: https://sports.ws/fantasy-basketball
+* Spotrac: https://www.spotrac.com/nba
+* Basketball-Reference: https://www.basketball-reference.com/leagues/NBA_2025_totals.html
+* NBA.com: https://www.nba.com/stats/leaders?PerMode=Totals&SeasonType=Regular+Season
+* GitHub: https://github.com/b-harr/dmcb
+
+---
+
+## Section 2 – Teams & Rosters
+
+### 2.1 Roster Size
+
+* Each franchise must maintain a **minimum of 12 players** and may carry a **maximum of 15 players** under standard contracts.
+* In addition, each franchise may carry up to **2 Two-Way Players**.
+* **Two-Way Players**:
+
+  * Occupy separate slots that do not count toward the 15-man roster limit.
+  * Do not count against the salary cap if waived.
+
+### 2.2 Active Lineup & Matchups
+
+* **Fantasy Games & NBA Schedule**:
+
+  * Each fantasy matchup is tied directly to the NBA schedule, producing **82 potential fantasy matchups per season**.
+  * The DMCB season officially consists of **77 games**:
+
+    * **Games 1–56**: Regular Season
+    * **Games 57–63**: Playoffs, Round 1 (7 games)
+    * **Games 64–70**: Playoffs, Round 2 (7 games)
+    * **Games 71–77**: Finals (7 games)
+  * **Games 78–82** are discarded and will not count toward fantasy results.
+
+* **Matchup Mechanics**:
+
+  * Matchups open on the first day any NBA team plays its designated numbered game and close once the last team has completed that same numbered game.
+  * Example: Your Sports.ws matchup for *Game 12* consists of every player’s 12th NBA game, even if those games occur on different days. For example, in 2024-25 [Boston](https://www.basketball-reference.com/teams/BOS/2025_games.html) was the first to play its 12th game on Mon, Nov 11, 2024, while [Denver](https://www.basketball-reference.com/teams/DEN/2025_games.html) was the last to play its 12th game on Sun, Nov 17, 2025. Fantasy rosters for Game 12 would lock at the start of the first game on Mon, Nov 11, 2024 at 7:00p, and Game 12 would become final at the end of the final game on Sun, Nov 17, 2025 at approx. 8:12p (ET).
+  * Real-time scoring is provided by Sports.ws for paid leagues and is subject to availability.
+
+* **Lineup Minutes Allocation**:
+
+  * Each franchise must distribute lineup minutes as follows:
+
+    * **96 Guard (G) minutes**
+    * **96 Forward (F) minutes**
+    * **48 Center (C) minutes**
+  * Position eligibility is locked to **Sports.ws default designations**.
+  * **No exceptions** to Sports.ws positional eligibility will be granted.
+
+### 2.3 Contract Types
+
+* **Rookie Contracts**: Players drafted in the Entry Draft enter the league on rookie-scale contracts (see Section 3).
+* **Veteran Contracts**: Players signed in free agency or acquired by trade may be signed up to the maximum allowable length (see 2.5).
+* **Extensions**: Teams may extend a player in the final year of a contract, subject to salary cap rules.
+* **Options**: Team and Player Options are permitted, limited to one (1) year.
+* **Two-Way Contracts**: See 2.1 above.
+
+---
+
+## Section 3 - Contracts & Salary Cap
+
+### 3.1 Salary Cap Structure
+
+* The DMCB operates under a **salary cap** (see Section 3.2).
+* Two-way contracts do not apply to the salary cap unless converted to standard contracts.
+* When a player is waived from a standard contract, any guaranteed salary continues to apply to the cap (unless another team claims the player).
+
+### 3.2 Contract Limits & Salary Cap
+
+* **Salary Cap Basis**
+
+  * The DMCB salary cap is set at **1.5× the NBA’s actual salary cap** for that season.
+  * For **2025–26**, the NBA salary cap is **\$154,647,000**, resulting in a DMCB cap of **\$231,970,500**.
+  * This cap will automatically adjust each year in accordance with NBA cap announcements. See the league spreadsheet for the latest figures.
+
+* **Team Salary**
+
+  * Teams may not exceed the cap except under permitted exceptions (see Section 3.1).
+  * Teams are not required to maintain a minimum payroll.
+
+* **Extensions**
+
+  * Teams may extend a player entering the final year of their contract for up to **4 additional years**, subject to max salary rules.
+
+* **Options**
+
+  * Contracts may include **Player or Team Options** for **1 additional year**.
+  * A contract may not include both a Player Option and Team Option.
+  * Owners must notify the Commissioner of exercised or declined Team Options by a league-set deadline (typically one week prior to the annual Draft). Failure to respond by the deadline will result in the contract being deemed accepted and the player retained.
+
+* **Restricted Free Agents (RFAs) and Cap Holds**
+
+  * If an NBA player is a Restricted Free Agent and has not signed by the DMCB Draft, Spotrac’s published Cap Hold will be applied to the fantasy team’s payroll until the NBA contract is signed.
+  * Upon signing, the Cap Hold will be replaced with the actual contract terms. Owners then have three (3) days to decide whether to keep or release the player. If no decision is communicated, the player is retained by default.
+
+* **Two-Way Contracts**
+
+  * Two-way players do not count against the salary cap unless converted to standard contracts.
+  * If converted, their salary must fit within the team’s cap and roster limits.
+
+### 3.3 Scoring System
 
 Points-per-Minute Format:
 Points are awarded based on the minutes a player logs on the court, emphasizing efficiency.
 For example, a player who scores a point every minute gets 1 point per minute played.
 The system also adjusts for stats like rebounds, assists, steals, etc. in a points-per-minute fashion.
 
-## 4. Draft Rules
+FP = PTS + TRB + AST + STL + BLK - TOV - PF         FPPG = FP / G                           FPR = FPPG * FPPM
+-------------------------------------------         -------------                           -----------------
+FP  = Fantasy Points                                FPPG = Fantasy Points Per Game          FPR = Fantasy Point Rating
+PTS = Points          (+1)                          FP = Fantasy Points                     FPPG = Fantasy Points Per Game
+TRB = Total Rebounds  (+1)                          G = Games                               FPPM = Fantasy Points Per Minute
+AST = Assists         (+1)
+STL = Steals          (+1)                          FPPM = FP / MP                          FPV = FPR / $1M
+BLK = Blocks          (+1)                          --------------                          ---------------
+TOV = Turnovers       (-1)                          FPPM = Fantasy Points Per Minute        FPV = Fantasy Point Value
+PF  = Personal Fouls  (-1)                          FP = Fantasy Points                     FPR = Fantasy Point Rating
+TF  = Technical Fouls (-1)                          MP = Minutes Played                     $1M = Salary (in millions)
+                                                    
+---
 
-Draft Type:
-The draft will be conducted in multiple stages:
+## Section 4 – Draft & Free Agency
 
-The first round will take place via Slack and Google Hangouts over the course of 2-3 hours. Managers will have a set time to make their selections, and the draft will proceed with prompt notifications and discussions.
+* **4.1 Entry Draft Format**
+  * Annual draft typically held late Sep or early Oct.
+  * Draft order determined by previous season standings and lottery (8 non-playoff teams).
 
-If time permits, the second round may be completed on the same day.
+* ***4.1.1 Historical Draft Dates**
+  * Mon, Sep 30, 2019
+  * Sun, Nov 29, 2020 (COVID)
+  * Sat, Oct 9, 2021
+  * Sat, Oct 1, 2022
+  * Sun, Oct 1, 2023
+  * Sun, Oct 6, 2024
+  * Sat, Oct 4, 2025
 
-Autopick and express draft modes are available in case a manager cannot attend in real-time.
+* **4.2 Rookie Contracts**
+  * Drafted players enter on rookie contracts using the NBA rookie salary scale.
+  * Rookie deals are guaranteed for **2 years**, with **NBA team options for years 3 and 4**, but no **fantasy team options** to establish restricted free agency.
+  * * If an NBA franchise declines their team option, the player will be released from the corresponding fantasy roster.
+  * * If an NBA franchise exercises their team option, the contract will be accepted in fantasy, and the owner will receive the player's Restricted Free Agency rights.
 
-The remaining rounds (Rounds 3 and 4) will be conducted via Slack over a period of days. This allows flexibility for teams to make picks at their convenience, though they must adhere to a reasonable timeline to keep the draft moving.
+* **4.3 Draft Eligibility**
+  * Only players on the league spreadsheet Contracts tab are eligible for the DMCB Draft.
+  * Contracts include players signed to active NBA rosters according to Spotrac.com.
 
-Managers will be notified of their designated pick times and must select their players within the specified time window. If a manager misses their pick, autopick may be triggered, or they may be skipped until their next scheduled pick.
+* **4.4 Free Agent Eligibility**
+  * Any player not under contract in the DMCB is eligible for free agency.
 
-Draft Order:
-The draft order is determined by the outcome of the DMCB draft lottery for non-playoff teams. The top four picks are determined by the lottery, with the remaining spots (5-16) determined by playoff seedings in reverse order.
-Teams can trade draft picks before, during, or after the draft, subject to approval by the commissioner or competition committee.
+* **4.5 Free Agent Bidding**
+  * Free agents are signed via Sports.ws, but will be subjected to contract & salary cap rules.
 
-Player Eligibility:
-All NBA players are eligible for the draft, including those on two-way contracts or active free agents.
-Teams must adhere to the salary cap and contract rules while making their selections to ensure compliance throughout the draft process.
+---
 
-Draft Strategy:
-Managers should consider roster needs, salary cap management, and future potential when making selections.
-Drafting can focus on positions (guards, forwards, centers) or overall team balance, but long-term strategies may be prioritized to build a competitive roster.
+## Section 5 – Trades
 
-## 5. Trades & Transactions
+* **5.1 Trade Approval**
+  * Trades must be approved by the Commissioner.
 
-Waivers:
-Players can be picked up through a waiver system with customizable rules (e.g., FAAB or waiver priority).
-Players on waivers are held for a certain period before being added to a team.
+* **5.2 Trade Restrictions**
+  * Trades may not violate salary cap or roster limits.
 
-Trades:
-Unlimited trades per team with no penalties.
-Trades are subject to veto by league members or commissioners.
+* **5.3 Salary Matching**
+  * For teams not above the 2nd apron, total salaries must match within 25%.
+  * After the trade is processed,
+  * * For teams above the 1st apron: $Incoming < $Outgoing * 1.25 + $250K
+  * * For teams above the 2nd apron: $Incoming < $Outgoing
 
-Trade deadline: to be set before playoffs.
+* **5.4 Trade Deadline**
+  * Deadline set annually (e.g., NBA trade deadline).
 
-## 6. Salary Cap & Contracts
+---
 
-Salary Cap:
-Teams operate under a virtual salary cap, mimicking the real NBA salary cap, with a multiplier (currently 1.5x) applied to the NBA’s cap.
-Cap for next five years:
-2024-25: $211,500,000
-2025-26: $232,650,000
-2026-27: $255,915,000
-2027-28: $281,506,500
-2028-29: $281,506,500
+## Section 6 – Waivers & Releases
 
-Salary Cap Rules:
-Players are signed to contracts that fall within the salary cap.
-Contracts can be for up to 3 years per player.
-Fantasy owners can waive players at any time but are responsible for the player's salary unless signed by another team.
-Once a player is waived, the manager is not eligible to re-sign them for the duration of the contract.
+* **6.1 Waiver Process**
+  * Players released from contracts enter waivers for 48 hours.
 
-Luxury Tax:
-Teams exceeding the salary cap will be subject to the luxury tax.
-DMCB Tax for the next five years:
-2024-25: $267,982,500
-2025-26: $294,781,500
-2026-27: $324,261,000
-2027-28: $356,688,000
-2028-29: $356,688,000
+* **6.2 Waiver Claims**
+  * Teams may claim waived players, assuming remaining contract.
 
-## 7. League Play & Structure
+* **6.3 Cap Implications**
+  * Guaranteed salary continues to count against the cap unless claimed.
 
-Season Length: Regular season typically runs for 20 weeks, with playoffs immediately following.
-Playoff Format:
-Top 6 teams make the playoffs, with the top 2 earning a bye.
-The playoff bracket and round lengths are customizable.
+---
 
-## 8. Injured Reserve (IR)
+## Section 7 – Extensions & Options
 
-IR Rules:
-Players listed as "injured" in the NBA can be placed on IR, freeing up a roster spot temporarily.
+* **7.1 Extension Eligibility**
+  * Players in the final year of a contract may be extended.
 
-## 9. Code of Conduct
+* **7.2 Extension Terms**
+  * Up to 4 additional years, subject to max salary rules.
 
-Fair Play:
-No collusion between teams.
-All managers must remain active, with lineup submissions and trade approvals.
+* **7.3 Option Years**
+  * Only one option year (player or team) per contract.
+
+---
+
+## Section 8 – Salary Cap & Financial Rules
+
+* **8.1 Salary Cap Calculation**
+  * DMCB cap is 1.5× NBA cap, updates annually.
+
+* **8.2 Minimum Payroll**
+  * No minimum payroll required.
+
+* **8.3 Cap Exceptions**
+  * Specify any exceptions (e.g., Bird rights, injury exceptions).
+
+---
+
+## Section 9 – Playoffs & Matchups
+
+* **9.1 Playoff Format**
+  * 8 teams.
+  * 3 rounds, 7 games.
+  * Matchups: 1v8, 2v7, 3v6, 4v5.
+
+* **9.2 Tiebreakers**
+  * Seeding based on regular season W-L, tiebreaker highest FPPG.
+
+---
+
+## Section 10 – Governance & Dispute Resolution
+
+* **10.1 Commissioner Powers**
+  * Commissioner oversees league operations and rule enforcement.
+
+* **10.2 Rule Changes**
+  * Amendments require majority vote of GMs.
+
+* **10.3 Dispute Resolution**
+  * Disputes resolved by Commissioner or league vote.
+
+---
+
+## Section 11 – Miscellaneous
+
+* **11.1 League Fees**
+  * Specify any entry fees, prize structure, and payment deadlines.
+
+* **11.2 Owner Conduct**
+  * Expectations for GM behavior and sportsmanship.
+
+* **11.3 Communication**
+  * Official league communication channels.
+
+---
+
+## Appendix A – League Historical Honors
+
+| Season  | Emirates DMCB Cup | 2K Tournament                 | Regular Season Leader | "The Toby" Finals Champion  | 2K Tournament MVP     | Regular Season MVP    | Finals MVP        | GM of the Year  |
+| ------- | ----------------- | ----------------------------- | --------------------- | --------------------------- | --------------------- | --------------------- | ----------------- | --------------- |
+| 2015-16 | N/A               | N/A                           | Dirk's Daggers        | Dirk's Daggers              | N/A                   | Steph Curry           | Andre Drummond    | David           |
+| 2016-17 | N/A               | San Antonio Breakfast Tacos   | Unmentionably Fresh   | Houston Rehab               | James Harden          | Russell Westbrook     | Devin Booker      | B-Har           |
+| 2017-18 | N/A               | San Antonio Breakfast Tacos   | Flat Earthers         | Dirk's Daggers              | James Harden          | James Harden          | LaMarcus Aldridge | (vacated)       |
+| 2018-19 | N/A               | To Be Relocated Later Ballers | Dirk's Daggers        | San Antonio Breakfast Tacos | Nikola Jokic          | James Harden          | James Harden      | Andrew          |
+| 2019-20 | N/A               | Capitol City Nenes            | Capitol City Nenes    | DNP (COVID-19)              | Anthony Davis         | Giannis Antetokounmpo | DNP (COVID-19)    | Donald J. Trump |
+| 2020-21 | N/A               | Giannis Is Upon Us            | Giannis Is Upon Us    | Giannis Is Upon Us          | Giannis Antetokounmpo | Nikola Jokic          | Steph Curry       | B-Har           |
+| 2021-22 | N/A               | Houston Rehab                 | Giannis Is Upon Us    | Dirk's Daggers              | Jarrett Allen         | Nikola Jokic          | Luka Doncic       | Robert          |
+| 2022-23 | N/A               | Giannis Is Upon Us            | Austin Rivers(ide)    | Dirk's Daggers              | Giannis Antetokounmpo | Giannis Antetokounmpo | Luka Doncic       | Zack            |
+| 2023-24 | Dirk's Daggers    | Giannis Is Upon Us            | Dirk's Daggers        | Fuck It, We Ball            | Joel Embiid           | Nikola Jokic          | Bam Adebayo       | Hil             |
+| 2024-25 | Step Back Floater | Houston Rehab                 | Fuck It We Bub        | More Like Borlando          | Jayson Tatum          | Nikola Jokic          | Josh Giddey       | Colin           |
+| 2025-26 |                   |                               |                       |                             |                       |                       |                   |                 |
