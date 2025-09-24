@@ -1,8 +1,8 @@
-# Dreams Morey Can Buy (DMCB) League Constitution
+# Dreams Morey Can Buy (DMCB) League Rules
 
 ---
 
-# Summary
+# Table of Contents
 
 ## 1. League Structure
 - 16 franchises, each run by a GM.
@@ -63,7 +63,15 @@
 * Each season is structured around the first 77 games of the NBA schedule (56 + 7*3) (see Section 2.2).
 * Franchise identity is tied to the **GM/owner**, not the team name. *Example: Stein rebrands annually but retains all history.*
 
-### 1.1 Current Franchises (2024–25 Season)
+### 1.1 Competition Committee
+
+* Commissioner: Brian Harrison (B-Har)
+* League Historian & Tournament Director: Andrew Casillas (Andrew)
+* Rules & Compliance Director: Christopher Heiligenstein (St9er)
+* Treasurer: Robert Ramon (Rizzy)
+* Chief Counsel: Sam Fraser (Sam Antonio)
+
+### 1.2 Current Franchises (2024–25 Season)
 
 | Owner   | Team                         |
 | ------- | ---------------------------- |
@@ -83,6 +91,16 @@
 | Stein   | Fuck It We Bub               |
 | Will    | League Average               |
 | Zack    | The Monstars                 |
+
+### 1.3 Resources
+
+* Slack: https://dreamsmoreycanbuy.slack.com
+* Google Sheets: https://docs.google.com/spreadsheets/d/1NgAl7GSl3jfehz4Sb3SmR_k1-QtQFm55fBPb3QOGYYw
+* Sports.ws: https://sports.ws/fantasy-basketball
+* Spotrac: https://www.spotrac.com/nba
+* Basketball-Reference: https://www.basketball-reference.com/leagues/NBA_2025_totals.html
+* NBA.com: https://www.nba.com/stats/leaders?PerMode=Totals&SeasonType=Regular+Season
+* GitHub: https://github.com/b-harr/dmcb
 
 ---
 
@@ -134,6 +152,8 @@
 * **Options**: Team and Player Options are permitted, limited to one (1) year.
 * **Two-Way Contracts**: See 2.1 above.
 
+---
+
 ## Section 3 - Contracts & Salary Cap
 
 ### 3.1 Salary Cap Structure
@@ -175,6 +195,25 @@
   * Two-way players do not count against the salary cap unless converted to standard contracts.
   * If converted, their salary must fit within the team’s cap and roster limits.
 
+### 3.3 Scoring System
+
+Points-per-Minute Format:
+Points are awarded based on the minutes a player logs on the court, emphasizing efficiency.
+For example, a player who scores a point every minute gets 1 point per minute played.
+The system also adjusts for stats like rebounds, assists, steals, etc. in a points-per-minute fashion.
+
+FP = PTS + TRB + AST + STL + BLK - TOV - PF         FPPG = FP / G                           FPR = FPPG * FPPM
+-------------------------------------------         -------------                           -----------------
+FP  = Fantasy Points                                FPPG = Fantasy Points Per Game          FPR = Fantasy Point Rating
+PTS = Points          (+1)                          FP = Fantasy Points                     FPPG = Fantasy Points Per Game
+TRB = Total Rebounds  (+1)                          G = Games                               FPPM = Fantasy Points Per Minute
+AST = Assists         (+1)
+STL = Steals          (+1)                          FPPM = FP / MP                          FPV = FPR / $1M
+BLK = Blocks          (+1)                          --------------                          ---------------
+TOV = Turnovers       (-1)                          FPPM = Fantasy Points Per Minute        FPV = Fantasy Point Value
+PF  = Personal Fouls  (-1)                          FP = Fantasy Points                     FPR = Fantasy Point Rating
+TF  = Technical Fouls (-1)                          MP = Minutes Played                     $1M = Salary (in millions)
+                                                    
 ---
 
 ## Section 4 – Draft & Free Agency
