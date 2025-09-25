@@ -9,7 +9,7 @@
     
 # Dreams Morey Can Buy (DMCB) League Rules
 
-## Table of Contents
+## Contents
 1. League Structure
 2. Teams & Rosters
 3. Contracts & Salary Cap
@@ -228,7 +228,7 @@ $1M = Salary (in millions)
   * Annual draft typically held late Sep or early Oct.
   * Draft order determined by previous season standings and lottery (8 non-playoff teams).
 
-* ***4.1.1 Historical Draft Dates**
+* **4.1.1 Historical Draft Dates**
   * Mon, Sep 30, 2019
   * Sun, Nov 29, 2020 (COVID)
   * Sat, Oct 9, 2021
