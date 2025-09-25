@@ -9,7 +9,7 @@
     
 # Dreams Morey Can Buy (DMCB) League Rules
 
-## Table of Contents
+## Contents
 1. League Structure
 2. Teams & Rosters
 3. Contracts & Salary Cap
