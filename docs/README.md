@@ -1,58 +1,30 @@
+<table style="border:0; border-collapse: collapse; width:100%;">
+  <tr>
+    <!-- Logo Column -->
+    <td width="20%" valign="middle" style="border:0; padding:0;">
+      <img src="./dmcb_logo.png?raw=true" alt="DMCB Logo" style="width:100%; border:0;">
+    </td>
+    <!-- Content Column -->
+    <td width="80%" valign="top" style="border:0; padding-left:10px;">
+    
 # Dreams Morey Can Buy (DMCB) League Rules
 
----
-
-# Table of Contents
-
-## 1. League Structure
-- 16 franchises, each run by a GM.
-- No divisions/conferences.
-- Season uses first 77 NBA games for matchups.
-
-## 2. Teams & Rosters
-- Roster: 12–15 standard players + up to 2 Two-Way Players (don’t count toward cap/roster).
-- Lineup: 96 Guard mins, 96 Forward mins, 48 Center mins per matchup (Sports.ws positions).
-- Two-Way contracts: separate slots, no cap hits unless converted.
-
-## 3. Contracts & Salary Cap
-- Salary cap: 1.5× NBA cap (auto-updates yearly).
-- Rookie contracts: 2 guaranteed years, follows NBA for years 3/4, then RFA.
-- Extensions: Granted if signed without entering UFA.
-- Waived players’ salary counts against cap unless claimed or waived by NBA.
-
-## 4. Draft & Free Agency
-- Includes rookies, UFAs, RFAs not kept by fantasy owner, and others not on a fantasy roster.
-- Free agents signed via waiver wire by notifying Commissioner.
-- Contract terms follow Section 2 rules.
-
-## 5. Trades
-- Trades need commissioner or league approval.
-- Must follow cap/roster rules.
-- Annual trade deadline.
-
-## 6. Waivers & Releases
-- Waived players on waivers for 48 hours.
-- Claims assume full contract.
-- Guaranteed salary counts against cap unless claimed.
-
-## 7. Playoffs & Matchups
-- 77-game season: 56 regular, 21 playoff (3 rounds × 7 games).
-- Matchups based on NBA schedule; lineups lock at start of each NBA game number.
-
-## 8. Salary Cap & Financial Rules
-
-## 9. Playoffs & Matchups
-
-## 10. Governance & Dispute Resolution
-- Commissioner oversees rules and disputes.
-- Rule changes by majority GM vote.
-
-## 11. Miscellaneous
-- League fees, conduct, and communication rules.
-- Historical honors tracked in Appendix.
-
-**Appendix:**  
-- Table of past champions, MVPs, and other honors.
+## Table of Contents
+1. League Structure
+2. Teams & Rosters
+3. Contracts & Salary Cap
+4. Draft & Free Agency
+5. Trades
+6. Waivers & Releases
+7. Extensions & Options
+8. Salary Cap & Financial Rules
+9. Playoffs & Matchups
+10. Governance & Dispute Resolution
+11. Miscellaneous
+12. Appendix
+    </td>
+  </tr>
+</table>
 
 ---
 
@@ -61,7 +33,7 @@
 * The **Dreams Morey Can Buy (DMCB) League** consists of **16 franchises**, each owned and operated by a General Manager ("GM" aka "Owner").
 * The league does not use divisions or conferences.
 * Each season is structured around the first 77 games of the NBA schedule (56 + 7*3) (see Section 2.2).
-* Franchise identity is tied to the **GM/owner**, not the team name. *Example: Stein rebrands annually but retains all history.*
+* Franchise identity is tied to the **GM**, not the team name. *Example: Stein rebrands annually but retains all history.*
 
 ### 1.1 Competition Committee
 
@@ -381,16 +353,16 @@ $1M = Salary (in millions)
 
 ## Appendix A – League Historical Honors
 
-| Season  | Emirates DMCB Cup | 2K Tournament                 | Regular Season Leader | "The Toby" Finals Champion  | 2K Tournament MVP     | Regular Season MVP    | Finals MVP        | GM of the Year  |
-| ------- | ----------------- | ----------------------------- | --------------------- | --------------------------- | --------------------- | --------------------- | ----------------- | --------------- |
-| 2015-16 | N/A               | N/A                           | Dirk's Daggers        | Dirk's Daggers              | N/A                   | Steph Curry           | Andre Drummond    | David           |
-| 2016-17 | N/A               | San Antonio Breakfast Tacos   | Unmentionably Fresh   | Houston Rehab               | James Harden          | Russell Westbrook     | Devin Booker      | B-Har           |
-| 2017-18 | N/A               | San Antonio Breakfast Tacos   | Flat Earthers         | Dirk's Daggers              | James Harden          | James Harden          | LaMarcus Aldridge | (vacated)       |
-| 2018-19 | N/A               | To Be Relocated Later Ballers | Dirk's Daggers        | San Antonio Breakfast Tacos | Nikola Jokic          | James Harden          | James Harden      | Andrew          |
-| 2019-20 | N/A               | Capitol City Nenes            | Capitol City Nenes    | DNP (COVID-19)              | Anthony Davis         | Giannis Antetokounmpo | DNP (COVID-19)    | Donald J. Trump |
-| 2020-21 | N/A               | Giannis Is Upon Us            | Giannis Is Upon Us    | Giannis Is Upon Us          | Giannis Antetokounmpo | Nikola Jokic          | Steph Curry       | B-Har           |
-| 2021-22 | N/A               | Houston Rehab                 | Giannis Is Upon Us    | Dirk's Daggers              | Jarrett Allen         | Nikola Jokic          | Luka Doncic       | Robert          |
-| 2022-23 | N/A               | Giannis Is Upon Us            | Austin Rivers(ide)    | Dirk's Daggers              | Giannis Antetokounmpo | Giannis Antetokounmpo | Luka Doncic       | Zack            |
-| 2023-24 | Dirk's Daggers    | Giannis Is Upon Us            | Dirk's Daggers        | Fuck It, We Ball            | Joel Embiid           | Nikola Jokic          | Bam Adebayo       | Hil             |
-| 2024-25 | Step Back Floater | Houston Rehab                 | Fuck It We Bub        | More Like Borlando          | Jayson Tatum          | Nikola Jokic          | Josh Giddey       | Colin           |
-| 2025-26 |                   |                               |                       |                             |                       |                       |                   |                 |
+| Season  | Emirates DMCB Cup | 2K Tournament                 | Regular Season Leader | "The Toby" Finals Champion  | 2K Tournament MVP     | Regular Season MVP    | Finals MVP        | GM of the Year |
+| ------- | ----------------- | ----------------------------- | --------------------- | --------------------------- | --------------------- | --------------------- | ----------------- | ---------------|
+| 2015-16 | N/A               | N/A                           | Dirk's Daggers        | Dirk's Daggers              | N/A                   | Steph Curry           | Andre Drummond    | David          |
+| 2016-17 | N/A               | San Antonio Breakfast Tacos   | Unmentionably Fresh   | Houston Rehab               | James Harden          | Russell Westbrook     | Devin Booker      | B-Har          |
+| 2017-18 | N/A               | San Antonio Breakfast Tacos   | Flat Earthers         | Dirk's Daggers              | James Harden          | James Harden          | LaMarcus Aldridge | (vacated)      |
+| 2018-19 | N/A               | To Be Relocated Later Ballers | Dirk's Daggers        | San Antonio Breakfast Tacos | Nikola Jokic          | James Harden          | James Harden      | Andrew         |
+| 2019-20 | N/A               | Capitol City Nenes            | Capitol City Nenes    | DNP (COVID-19)              | Anthony Davis         | Giannis Antetokounmpo | DNP (COVID-19)    | Donald J. Trump|
+| 2020-21 | N/A               | Giannis Is Upon Us            | Giannis Is Upon Us    | Giannis Is Upon Us          | Giannis Antetokounmpo | Nikola Jokic          | Steph Curry       | B-Har          |
+| 2021-22 | N/A               | Houston Rehab                 | Giannis Is Upon Us    | Dirk's Daggers              | Jarrett Allen         | Nikola Jokic          | Luka Doncic       | Robert         |
+| 2022-23 | N/A               | Giannis Is Upon Us            | Austin Rivers(ide)    | Dirk's Daggers              | Giannis Antetokounmpo | Giannis Antetokounmpo | Luka Doncic       | Zack           |
+| 2023-24 | Dirk's Daggers    | Giannis Is Upon Us            | Dirk's Daggers        | Fuck It, We Ball            | Joel Embiid           | Nikola Jokic          | Bam Adebayo       | Hil            |
+| 2024-25 | Step Back Floater | Houston Rehab                 | Fuck It We Bub        | More Like Borlando          | Jayson Tatum          | Nikola Jokic          | Josh Giddey       | Colin          |
+| 2025-26 |                   |                               |                       |                             |                       |                       |                   |                |
