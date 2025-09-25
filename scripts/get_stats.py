@@ -124,17 +124,45 @@ if __name__ == "__main__":
         help="NBA season year (e.g., 2025 for 2024-25 season). Default is 2026."
     )
 
+    # Mutually exclusive group for CSV updating
     csv_group = parser.add_mutually_exclusive_group()
-    csv_group.add_argument("--update_csv", dest="update_csv", action="store_true")
-    csv_group.add_argument("--no-update_csv", dest="update_csv", action="store_false")
+    csv_group.add_argument(
+        "--update-csv",
+        action="store_true",
+        dest="update_csv",
+        help="Regenerate CSV file (default)",
+    )
+    csv_group.add_argument(
+        "--no-update-csv",
+        action="store_false",
+        dest="update_csv",
+        help="Do not regenerate CSV, load existing instead",
+    )
     parser.set_defaults(update_csv=True)
 
+    # Mutually exclusive group for Sheets updating
     sheets_group = parser.add_mutually_exclusive_group()
-    sheets_group.add_argument("--update_sheets", dest="update_sheets", action="store_true")
-    sheets_group.add_argument("--no-update_sheets", dest="update_sheets", action="store_false")
+    sheets_group.add_argument(
+        "--update-sheets",
+        action="store_true",
+        dest="update_sheets",
+        help="Update Google Sheets with results",
+    )
+    sheets_group.add_argument(
+        "--no-update-sheets",
+        action="store_false",
+        dest="update_sheets",
+        help="Do not update Google Sheets (default)",
+    )
     parser.set_defaults(update_sheets=False)
 
-    parser.add_argument("--sheet_name", type=str, default="Positions", help="Google Sheets tab name to update.")
+    parser.add_argument(
+        "--sheet",
+        dest="sheet_name",
+        type=str,
+        default="Stats",
+        help="Google Sheets tab name to update",
+    )
 
     args = parser.parse_args()
 

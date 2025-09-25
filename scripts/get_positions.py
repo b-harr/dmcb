@@ -88,10 +88,48 @@ def main(update_csv=True, update_sheets=False, sheet_name="Positions"):
             logger.error(f"Error updating Google Sheets: {e}")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Scrape and export Sports.ws player positions.")
-    parser.add_argument("--update_csv", action="store_true", default=True, help="Save processed data to CSV. (default: True)")
-    parser.add_argument("--update_sheets", action="store_true", default=False, help="Update Google Sheets with processed data. (default: False)")
-    parser.add_argument("--sheet_name", type=str, default="Positions", help="Google Sheets tab name to update.")
+    parser = argparse.ArgumentParser(description="Process Spotrac contracts and classify contract types.")
+
+    # Mutually exclusive group for CSV updating
+    csv_group = parser.add_mutually_exclusive_group()
+    csv_group.add_argument(
+        "--update-csv",
+        action="store_true",
+        dest="update_csv",
+        help="Regenerate CSV file (default)",
+    )
+    csv_group.add_argument(
+        "--no-update-csv",
+        action="store_false",
+        dest="update_csv",
+        help="Do not regenerate CSV, load existing instead",
+    )
+    parser.set_defaults(update_csv=True)
+
+    # Mutually exclusive group for Sheets updating
+    sheets_group = parser.add_mutually_exclusive_group()
+    sheets_group.add_argument(
+        "--update-sheets",
+        action="store_true",
+        dest="update_sheets",
+        help="Update Google Sheets with results",
+    )
+    sheets_group.add_argument(
+        "--no-update-sheets",
+        action="store_false",
+        dest="update_sheets",
+        help="Do not update Google Sheets (default)",
+    )
+    parser.set_defaults(update_sheets=False)
+
+    parser.add_argument(
+        "--sheet",
+        dest="sheet_name",
+        type=str,
+        default="Positions",
+        help="Google Sheets tab name to update",
+    )
+
     args = parser.parse_args()
 
     main(
