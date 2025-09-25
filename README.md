@@ -68,9 +68,14 @@ GOOGLE_SHEETS_CREDENTIALS=path/to/credentials.json
 
 ## Usage
 
-Run the script from the command line:
+Run the script from the command line to scrape contract data from the web and load it to a CSV:
 ```bash
-python3 scripts/get_stats.py
+python3 scripts/get_contracts.py
+```
+
+Run the script from the command line to read contract data from a CSV and load it to Google Sheets:
+```bash
+python3 scripts/get_contracts.py --no-update-csv --update-sheets
 ```
 
 ---
@@ -79,49 +84,57 @@ python3 scripts/get_stats.py
 
 ```
 dmcb/  
-├── data/                           # Directory for storing output data  
-│   ├── bbref_archive/              # Basketball Reference archived statistics  
-│   │   └── NBA_{year}_totals.csv   # Basketball Reference statistics data  
-│   ├── bbref_stats.csv             # Basketball Reference statistics data  
-│   ├── contract_types.csv          # Spotrac contract type data by player  
-│   ├── sportsws_positions.csv      # Sports.ws default positions  
-│   └── spotrac_contracts.csv       # Spotrac contract data by NBA team  
-├── docs/                           # Directory for storing output data  
-│   ├── dmcb_logo.png               # DMCB "Riz" logo  
-│   └── league_rules.md             # DMCB league rules  
-├── logs/                           # Directory for storing output logs (excluded via .gitignore)  
-│   ├── get_stats_error.log         # Error logs  
-│   └── get_stats.log               # Execution logs  
-├── notebooks/                      # Directory for storing Google Colab Jupyter notebooks  
-│   └── dmcb_colab.ipynb            # Main Colab notebook  
-├── scripts/                        # Directory for individual Python scripts  
-│   ├── get_contract_types.py       # Scrapes contract types to CSV  
-│   ├── get_contracts.py            # Scrapes Spotrac contracts to CSV  
-│   ├── get_positions.py            # Syncs Sports.ws player positions to Google Sheets  
-│   └── get_stats.py                # Syncs Basketball Reference stats to Google Sheets  
-├── secrets/                        # Directory for secrets files (excluded via .gitignore)  
-├── utils/                          # Directory for individual Python utilities  
-│   ├── __init__.py                 # Makes scripts executable  
-│   ├── google_sheets_manager.py    # Manages connections to Google Sheets  
-│   ├── scrape_bbref.py             # Scrapes Basketball-Reference.com  
-│   ├── scrape_sportsws.py          # Scrapes Sports.ws  
-│   ├── scrape_spotrac.py           # Scrapes Spotrac.com NBA contracts  
-│   └── text_formatter.py           # Helper functions to process text  
-├── .env                            # Environment variables (excluded via .gitignore)  
-├── .gitignore                      # Git ignore rules  
-├── README.md                       # Project documentation  
-└── requirements.txt                # Python dependencies  
+├── data/                                  # Directory for storing output data  
+│   ├── bbref_archive/                     # Basketball-Reference archived statistics  
+│   │   └── NBA_{year}_totals.csv          # Basketball-Reference yearly statistics data  
+│   ├── spotrac_archive/                   # Spotrac archived contracts  
+│   │   └── spotrac_contracts_{year}.csv   # Spotrac yearly contracts data  
+│   ├── bbref_stats.csv                    # Basketball-Reference statistics data  
+│   ├── contract_types.csv                 # Spotrac contract types by player  
+│   ├── sportsws_positions.csv             # Sports.ws default positions  
+│   └── spotrac_contracts.csv              # Spotrac contract data by NBA team  
+├── docs/                                  # Directory for storing output data  
+│   ├── dmcb_logo.png                      # DMCB "Riz" logo  
+│   ├── nba_cba_2023.pdf                   # 2023 NBA/NBAPA Collective Bargaining Agreement (PDF)  
+│   └── README.md                          # DMCB league rules  
+├── logs/                                  # Directory for storing output logs (excluded via .gitignore)  
+├── notebooks/                             # Directory for storing Google Colab Jupyter notebooks  
+│   └── dmcb_colab.ipynb                   # Main Colab notebook  
+├── scripts/                               # Directory for individual Python scripts  
+│   ├── get_contract_types.py              # Scrapes contract types to CSV  
+│   ├── get_contracts.py                   # Scrapes Spotrac contracts to CSV  
+│   ├── get_positions.py                   # Syncs Sports.ws player positions to Google Sheets  
+│   └── get_stats.py                       # Syncs Basketball-Reference stats to Google Sheets  
+├── secrets/                               # Directory for secrets files (excluded via .gitignore)  
+├── tests/                                 # Directory for test scripts  
+│   ├── test_data_fetch.py                 # Tests data_fetcher  
+│   ├── test_file_handling.py              # Tests csv_handler  
+│   ├── test_format_text.py                # Tests text_formatter  
+│   └── test_google_sheets.py              # Tests google_sheets  
+├── utils/                                 # Directory for individual Python utilities  
+│   ├── __init__.py                        # Makes scripts executable  
+│   ├── google_sheets_manager.py           # Manages connections to Google Sheets  
+│   ├── scrape_bbref.py                    # Scrapes Basketball-Reference.com stats  
+│   ├── scrape_nba.py                      # Scrapes NBA.com stats  
+│   ├── scrape_sportsws.py                 # Scrapes Sports.ws positions  
+│   ├── scrape_spotrac.py                  # Scrapes Spotrac.com NBA contracts  
+│   └── text_formatter.py                  # Helper functions to process text  
+├── .env                                   # Environment variables (excluded via .gitignore)  
+├── .gitignore                             # Git ignore rules  
+├── README.md                              # Project documentation  
+└── requirements.txt                       # Python dependencies  
 ```
 
 ---
 
 ## Metrics Processed
 `sync_bbref_stats.py`
-- **Fantasy Points (FP)**: Calculated as `PTS + TRB + AST + STL + BLK - TOV - PF`.
-- **Fantasy Points Per Game (FPPG)**: Average fantasy points per game (`FP / G`).
-- **Fantasy Points Per Minute (FPPM)**: Average fantasy points per minute (`FP / MP`).
-- **Minutes Per Game (MPG)**: Average minutes played per game (`MP / G`).
-- **Fantasy Point Rating (FPR)**: A combined metric that helps gauge overall fantasy value (`FP² / (G * MP)`) (`FPPG * FPPM`).
+- **Fantasy Points** `FP`: Total fantasy points score `PTS + TRB + AST + STL + BLK - TOV - PF`.
+- **Fantasy Points Per Game** `FPPG`: Average fantasy points per game `FP / G`.
+- **Fantasy Points Per Minute** `FPPM`: Average fantasy points per minute `FP / MP`.
+- **Minutes Per Game** `MPG`: Average minutes played per game `MP / G`.
+- **Fantasy Point Rating** `FPR`: A combined metric that helps gauge overall fantasy value `FPPG * FPPM`.
+- **Fantasy Point Value** `FPV`: Measures value by comparing production relative to salary `FPR / $1M`.
 
 ---
 
