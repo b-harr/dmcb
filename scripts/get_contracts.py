@@ -97,16 +97,6 @@ def main(update_csv=True, update_sheets=False, sheet_name="Contracts", data_rang
             # --- Add Cap Holds for Kuminga and Grimes before CSV output ---
             extra_rows = [
                 [
-                    "Jonathan Kuminga",
-                    "https://www.spotrac.com/nba/player/_/id/74114/jonathan-kuminga",
-                    "jonathan-kuminga",
-                    "Golden State Warriors",
-                    "https://www.spotrac.com/nba/golden-state-warriors/yearly",
-                    "PF",
-                    22,
-                    "$22908921"
-                ],
-                [
                     "Quentin Grimes",
                     "https://www.spotrac.com/nba/player/_/id/74132/quentin-grimes",
                     "quentin-grimes",
