@@ -94,27 +94,6 @@ def main(update_csv=True, update_sheets=False, sheet_name="Contracts", data_rang
             
             df = df[column_order]
 
-            # --- Add Cap Holds for Kuminga and Grimes before CSV output ---
-            extra_rows = [
-                [
-                    "Quentin Grimes",
-                    "https://www.spotrac.com/nba/player/_/id/74132/quentin-grimes",
-                    "quentin-grimes",
-                    "Philadelphia 76ers",
-                    "https://www.spotrac.com/nba/philadelphia-76ers/yearly",
-                    "SG",
-                    25,
-                    "$12890046"
-                ]
-            ]
-            # Ensure extra_rows has the same number of columns as df
-            while len(extra_rows[0]) < len(df.columns):
-                for row in extra_rows:
-                    row.append("")
-            extra_df = pd.DataFrame(extra_rows, columns=df.columns)
-            df = pd.concat([df, extra_df], ignore_index=True)
-            # --- End add rows ---
-
         except Exception as e:
             logging.error(f"Error during data processing: {e}")
             sys.exit(1)
