@@ -9,7 +9,7 @@ sys.path.append(base_dir)
 
 # Output directory and file settings
 output_dir = "data"
-output_file = "bbref_stats.csv"
+output_file = "nba_stats.csv"
 os.makedirs(output_dir, exist_ok=True)
 output_csv = os.path.join(output_dir, output_file)
 
