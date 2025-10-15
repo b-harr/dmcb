@@ -43,7 +43,7 @@
 * Treasurer: Robert Ramon (Rizzy)
 * Chief Counsel: Sam Fraser (Sam Antonio)
 
-### 1.2 Current Franchises (2024–25 Season)
+### 1.2 Current Franchises (2025-26 Season)
 
 | Owner   | Team                         |
 | ------- | ---------------------------- |
@@ -59,8 +59,8 @@
 | John    | Liberty City Penetrators     |
 | Kyle    | Capitol City Nenes           |
 | Robert  | Austin Rivers(ide)           |
-| Sam     | More like Borlando           |
-| Stein   | Fuck It We Bub               |
+| Sam     | Igor Denim                   |
+| Stein   | What About Bub?              |
 | Will    | League Average               |
 | Zack    | The Monstars                 |
 
