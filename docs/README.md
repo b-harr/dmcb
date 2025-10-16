@@ -237,6 +237,16 @@ $1M = Salary (in millions)
   * Sun, Oct 6, 2024
   * Sat, Oct 4, 2025
 
+* **4.1.2 Draft Timing & Clock Management**
+  * The **first round** of the DMCB draft will be **timed**, modeled after professional leagues.
+  * **Time per pick**: Each team will have **10 minutes** to make their selection.
+  * The clock **starts** once the previous pick is recorded in the draft sheet or officially announced by the committee.
+  * If a team **fails to make a selection before time expires**:
+    * The **next team immediately goes on the clock**.
+    * The **skipped team retains their pick** and may make a selection **at any time thereafter**, but only from the **remaining undrafted players**.
+    * Once a player is drafted by another team, they are no longer eligible to be selected by the skipped team.
+  * The Commissioner may **pause, reset, or extend the clock** in the event of technical issues, disputes, trade discussions, or extenuating circumstances.
+
 * **4.2 Rookie Contracts**
   * Drafted players enter on rookie contracts using the NBA rookie salary scale.
   * Rookie deals are guaranteed for **2 years**, with **NBA team options for years 3 and 4**, but no **fantasy team options** to establish restricted free agency.
@@ -350,6 +360,31 @@ $1M = Salary (in millions)
   * Official league communication channels.
 
 ---
+
+## Section 12 – League Calendar
+
+* **12.1 Review Position Changes**
+  * Review all **Sports.ws positional updates** and confirm eligibility for the upcoming season.
+  * Any position disputes must be raised **before the draft begins** and are subject to final ruling by the Commissioner.
+
+* **12.2 Confirm Contract Decisions**
+  * Verify that all **team and player options**, **extensions**, and **declined contracts** have been processed and reflected in the league spreadsheet.
+  * Ensure that all **waived players**, **restricted free agents**, and **cap holds** are accurate prior to the start of the draft.
+
+* **12.3 Discuss Timing Rules**
+  * Review the **first-round timing format** (10-minute clock) and **skip rule** for missed picks.
+
+* **12.4 Conduct the Draft**
+  * Begin the annual DMCB Draft.
+  * Picks will be announced **live in the Slack #draft channel**.
+  * Selections will be recorded in the shared **Google Sheets Draft tab**.
+
+* **12.5 Post-Draft Business**
+  * **Reactivation**: The Commissioner and Treasurer will coordinate the **reactivation of the Sports.ws league** for the new season.
+  * **League Dues**: GMs should **submit payment** to the Treasurer, Robert Ramon.
+    * PayPal: 
+    * Venmo: 
+  * **Adds/Drops**: Owners must log in to the new league year and add/drop players to match their contracts sheet.
 
 ## Appendix A – League Historical Honors
 
