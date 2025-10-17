@@ -21,7 +21,8 @@
 9. Playoffs & Matchups
 10. Governance & Dispute Resolution
 11. Miscellaneous
-12. Appendix
+12. League Calendar
+13. Appendix
     </td>
   </tr>
 </table>
@@ -70,7 +71,7 @@
 * Google Sheets: https://docs.google.com/spreadsheets/d/1NgAl7GSl3jfehz4Sb3SmR_k1-QtQFm55fBPb3QOGYYw
 * Sports.ws: https://sports.ws/fantasy-basketball
 * Spotrac: https://www.spotrac.com/nba
-* Basketball-Reference: https://www.basketball-reference.com/leagues/NBA_2025_totals.html
+* Basketball-Reference: https://www.basketball-reference.com/leagues/NBA_2026_totals.html
 * NBA.com: https://www.nba.com/stats/leaders?PerMode=Totals&SeasonType=Regular+Season
 * GitHub: https://github.com/b-harr/dmcb
 
@@ -363,28 +364,51 @@ $1M = Salary (in millions)
 
 ## Section 12 – League Calendar
 
-* **12.1 Review Position Changes**
-  * Review all **Sports.ws positional updates** and confirm eligibility for the upcoming season.
-  * Any position disputes must be raised **before the draft begins** and are subject to final ruling by the Commissioner.
+The **League Calendar** serves as the official outline for offseason and preseason operations, beginning with contract option deadlines and culminating in league reactivation ahead of opening night.
 
-* **12.2 Confirm Contract Decisions**
-  * Verify that all **team and player options**, **extensions**, and **declined contracts** have been processed and reflected in the league spreadsheet.
-  * Ensure that all **waived players**, **restricted free agents**, and **cap holds** are accurate prior to the start of the draft.
+### **12.1 Offseason Timeline**
 
-* **12.3 Discuss Timing Rules**
-  * Review the **first-round timing format** (10-minute clock) and **skip rule** for missed picks.
+| Phase                    | Approx. Date                          | Description                                                                                                                                      |
+| ------------------------ | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Option Deadline**      | *Late September*                      | GMs must notify the Commissioner of all **Team Option decisions**. Any unreported decisions default to "accepted" and the player is retained.    |
+| **Draft Week**           | *Early October*                       | The DMCB **Entry Draft** marks the start of the new league year. GMs finalize rosters, contracts, and positional eligibility prior to the draft. |
+| **League Reactivation**  | *Shortly after Draft*                 | The Commissioner and Treasurer **reactivate the Sports.ws league** for the new season and verify rosters.                                        |
+| **League Dues Deadline** | *After reactivation*                  | All GMs must **submit payment to the Treasurer** (Robert Ramon) to confirm participation for the upcoming season.                                |
+| **Season Start**         | *NBA Opening Week (Mid–Late October)* | Final lineups lock for **Game 1**, with rosters, salaries, and contracts active for the new DMCB season.                                         |
 
-* **12.4 Conduct the Draft**
-  * Begin the annual DMCB Draft.
-  * Picks will be announced **live in the Slack #draft channel**.
-  * Selections will be recorded in the shared **Google Sheets Draft tab**.
+### **12.2 Review Position Changes**
 
-* **12.5 Post-Draft Business**
-  * **Reactivation**: The Commissioner and Treasurer will coordinate the **reactivation of the Sports.ws league** for the new season.
-  * **League Dues**: GMs should **submit payment** to the Treasurer, Robert Ramon.
-    * PayPal: 
-    * Venmo: 
-  * **Adds/Drops**: Owners must log in to the new league year and add/drop players to match their contracts sheet.
+* Review all **Sports.ws positional updates** and confirm eligibility for the upcoming season.
+* Any position disputes must be raised **before the draft begins** and are subject to final ruling by the Commissioner.
+
+### **12.3 Confirm Contract Decisions**
+
+* Verify that all **team and player options**, **extensions**, and **declined contracts** have been processed and reflected in the league spreadsheet.
+* Ensure that all **waived players**, **restricted free agents**, and **cap holds** are accurate prior to the start of the draft.
+
+### **12.4 Discuss Timing Rules**
+
+* Review the **first-round timing format** (10-minute clock) and **skip rule** for missed picks.
+* Clarify the Commissioner’s discretion to **pause, reset, or extend** the clock for any technical or procedural issues.
+
+### **12.5 Conduct the Draft**
+
+* Begin the annual **DMCB Entry Draft.**
+* Picks will be announced **live in the Slack #draft channel.**
+* Selections will be recorded in the shared **Google Sheets Draft tab.**
+
+### **12.6 Post-Draft Business**
+
+* **Reactivation:** The Commissioner and Treasurer will coordinate the **reactivation of the Sports.ws league** for the new season.
+* **League Dues:** All GMs must **submit payment** to the Treasurer (Robert Ramon) to confirm participation.
+* **Rosters:** Verify that all **draft picks, contracts, and salaries** are correctly reflected in the league spreadsheet.
+* **Designations:** Confirm all **inactive, IR, and two-way player designations** before Game 1.
+
+### **12.7 Trade Deadline**
+
+* Set annually, typically during **NBA All-Star Weekend.**
+
+---
 
 ## Appendix A – League Historical Honors
 
