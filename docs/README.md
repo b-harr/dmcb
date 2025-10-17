@@ -364,17 +364,19 @@ $1M = Salary (in millions)
 
 ## Section 12 – League Calendar
 
-The **League Calendar** serves as the official outline for offseason and preseason operations, beginning with contract option deadlines and culminating in league reactivation ahead of opening night.
+The **League Calendar** serves as the official outline for league operations, beginning with contract option deadlines and culminating in league reactivation ahead of opening night.
 
-### 12.1 Offseason Timeline
+### 12.1 Season Timeline
 
-| Phase                    | Approx. Date                          | Description                                                                                                                                      |
-| ------------------------ | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Option Deadline**      | *Late September*                      | GMs must notify the Commissioner of all **Team Option decisions**. Any unreported decisions default to "accepted" and the player is retained.    |
-| **Draft Week**           | *Early October*                       | The DMCB **Entry Draft** marks the start of the new league year. GMs finalize rosters, contracts, and positional eligibility prior to the draft. |
-| **League Reactivation**  | *Shortly after Draft*                 | The Commissioner and Treasurer **reactivate the Sports.ws league** for the new season and verify rosters.                                        |
-| **League Dues Deadline** | *After reactivation*                  | All GMs must **submit payment to the Treasurer** (Robert Ramon) to confirm participation for the upcoming season.                                |
-| **Season Start**         | *NBA Opening Week (Mid–Late October)* | Final lineups lock for **Game 1**, with rosters, salaries, and contracts active for the new DMCB season.                                         |
+| Phase                    | Approx. Date                          | Description                                                                                                                                              |
+| ------------------------ | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Option Deadline**      | *Late September*                      | GMs must notify the Commissioner of all **Team Option decisions**. Any unreported decisions default to "accepted" and the player is retained.            |
+| **Draft Week**           | *Early October*                       | The DMCB **Entry Draft** marks the start of the new league year. GMs finalize rosters, contracts, and positional eligibility prior to the draft.         |
+| **League Reactivation**  | *Shortly after Draft*                 | The Commissioner and Treasurer **reactivate the Sports.ws league** for the new season and verify rosters.                                                |
+| **League Dues Deadline** | *After reactivation*                  | All GMs must **submit payment to the Treasurer** (Robert Ramon) to confirm participation for the upcoming season.                                        |
+| **Season Start**         | *NBA Opening Week (Mid–Late October)* | Final lineups lock for **Game 1**, with rosters, salaries, and contracts active for the new DMCB season.                                                 |
+| **Trade Deadline**       | *NBA All-Star Weekend (February)*     | Last date for fantasy owners to make trades.                                                                                                             |
+| **Playoff Rosters Lock** | *Before start of first playoff game*  | Final lineups lock for **Playoffs Game 1**, after which players can no longer be added or dropped from fantasy rosters until the end of the league year. |
 
 ### 12.2 Review Position Changes
 
