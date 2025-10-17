@@ -225,11 +225,11 @@ $1M = Salary (in millions)
 
 ## Section 4 – Draft & Free Agency
 
-* **4.1 Entry Draft Format**
+### 4.1 Entry Draft Format
   * Annual draft typically held late Sep or early Oct.
   * Draft order determined by previous season standings and lottery (8 non-playoff teams).
 
-* **4.1.1 Historical Draft Dates**
+#### 4.1.1 Historical Draft Dates
   * Mon, Sep 30, 2019
   * Sun, Nov 29, 2020 (COVID)
   * Sat, Oct 9, 2021
@@ -238,7 +238,7 @@ $1M = Salary (in millions)
   * Sun, Oct 6, 2024
   * Sat, Oct 4, 2025
 
-* **4.1.2 Draft Timing & Clock Management**
+#### 4.1.2 Draft Timing & Clock Management
   * The **first round** of the DMCB draft will be **timed**, modeled after professional leagues.
   * **Time per pick**: Each team will have **10 minutes** to make their selection.
   * The clock **starts** once the previous pick is recorded in the draft sheet or officially announced by the committee.
@@ -248,116 +248,116 @@ $1M = Salary (in millions)
     * Once a player is drafted by another team, they are no longer eligible to be selected by the skipped team.
   * The Commissioner may **pause, reset, or extend the clock** in the event of technical issues, disputes, trade discussions, or extenuating circumstances.
 
-* **4.2 Rookie Contracts**
+### 4.2 Rookie Contracts
   * Drafted players enter on rookie contracts using the NBA rookie salary scale.
   * Rookie deals are guaranteed for **2 years**, with **NBA team options for years 3 and 4**, but no **fantasy team options** to establish restricted free agency.
   * * If an NBA franchise declines their team option, the player will be released from the corresponding fantasy roster.
   * * If an NBA franchise exercises their team option, the contract will be accepted in fantasy, and the owner will receive the player's Restricted Free Agency rights.
 
-* **4.3 Draft Eligibility**
+### 4.3 Draft Eligibility
   * Only players on the league spreadsheet Contracts tab are eligible for the DMCB Draft.
   * Contracts include players signed to active NBA rosters according to Spotrac.com.
 
-* **4.4 Free Agent Eligibility**
+### 4.4 Free Agent Eligibility
   * Any player not under contract in the DMCB is eligible for free agency.
 
-* **4.5 Free Agent Bidding**
+### 4.5 Free Agent Bidding
   * Free agents are signed via Sports.ws, but will be subjected to contract & salary cap rules.
 
 ---
 
 ## Section 5 – Trades
 
-* **5.1 Trade Approval**
+### 5.1 Trade Approval
   * Trades must be approved by the Commissioner.
 
-* **5.2 Trade Restrictions**
+### 5.2 Trade Restrictions
   * Trades may not violate salary cap or roster limits.
 
-* **5.3 Salary Matching**
+### 5.3 Salary Matching
   * For teams not above the 2nd apron, total salaries must match within 25%.
   * After the trade is processed,
   * * For teams above the 1st apron: $Incoming < $Outgoing * 1.25 + $250K
   * * For teams above the 2nd apron: $Incoming < $Outgoing
 
-* **5.4 Trade Deadline**
+### 5.4 Trade Deadline
   * Deadline set annually (e.g., NBA trade deadline).
 
 ---
 
 ## Section 6 – Waivers & Releases
 
-* **6.1 Waiver Process**
+### 6.1 Waiver Process
   * Players released from contracts enter waivers for 48 hours.
 
-* **6.2 Waiver Claims**
+### 6.2 Waiver Claims
   * Teams may claim waived players, assuming remaining contract.
 
-* **6.3 Cap Implications**
+### 6.3 Cap Implications
   * Guaranteed salary continues to count against the cap unless claimed.
 
 ---
 
 ## Section 7 – Extensions & Options
 
-* **7.1 Extension Eligibility**
+### 7.1 Extension Eligibility
   * Players in the final year of a contract may be extended.
 
-* **7.2 Extension Terms**
+### 7.2 Extension Terms
   * Up to 4 additional years, subject to max salary rules.
 
-* **7.3 Option Years**
+### 7.3 Option Years
   * Only one option year (player or team) per contract.
 
 ---
 
 ## Section 8 – Salary Cap & Financial Rules
 
-* **8.1 Salary Cap Calculation**
+### 8.1 Salary Cap Calculation
   * DMCB cap is 1.5× NBA cap, updates annually.
 
-* **8.2 Minimum Payroll**
+### 8.2 Minimum Payroll
   * No minimum payroll required.
 
-* **8.3 Cap Exceptions**
+### 8.3 Cap Exceptions
   * Specify any exceptions (e.g., Bird rights, injury exceptions).
 
 ---
 
 ## Section 9 – Playoffs & Matchups
 
-* **9.1 Playoff Format**
+### 9.1 Playoff Format
   * 8 teams.
   * 3 rounds, 7 games.
   * Matchups: 1v8, 2v7, 3v6, 4v5.
 
-* **9.2 Tiebreakers**
+### 9.2 Tiebreakers
   * Seeding based on regular season W-L, tiebreaker highest FPPG.
 
 ---
 
 ## Section 10 – Governance & Dispute Resolution
 
-* **10.1 Commissioner Powers**
+### 10.1 Commissioner Powers
   * Commissioner oversees league operations and rule enforcement.
 
-* **10.2 Rule Changes**
+### 10.2 Rule Changes
   * Amendments require majority vote of GMs.
 
-* **10.3 Dispute Resolution**
+### 10.3 Dispute Resolution
   * Disputes resolved by Commissioner or league vote.
 
 ---
 
 ## Section 11 – Miscellaneous
 
-* **11.1 League Fees**
+### 11.1 League Fees
   * Specify any entry fees, prize structure, and payment deadlines.
 
-* **11.2 Owner Conduct**
+### 11.2 Owner Conduct
   * Expectations for GM behavior and sportsmanship.
 
-* **11.3 Communication**
+### 11.3 Communication
   * Official league communication channels.
 
 ---
@@ -366,7 +366,7 @@ $1M = Salary (in millions)
 
 The **League Calendar** serves as the official outline for offseason and preseason operations, beginning with contract option deadlines and culminating in league reactivation ahead of opening night.
 
-### **12.1 Offseason Timeline**
+### 12.1 Offseason Timeline
 
 | Phase                    | Approx. Date                          | Description                                                                                                                                      |
 | ------------------------ | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -376,35 +376,35 @@ The **League Calendar** serves as the official outline for offseason and preseas
 | **League Dues Deadline** | *After reactivation*                  | All GMs must **submit payment to the Treasurer** (Robert Ramon) to confirm participation for the upcoming season.                                |
 | **Season Start**         | *NBA Opening Week (Mid–Late October)* | Final lineups lock for **Game 1**, with rosters, salaries, and contracts active for the new DMCB season.                                         |
 
-### **12.2 Review Position Changes**
+### 12.2 Review Position Changes
 
 * Review all **Sports.ws positional updates** and confirm eligibility for the upcoming season.
 * Any position disputes must be raised **before the draft begins** and are subject to final ruling by the Commissioner.
 
-### **12.3 Confirm Contract Decisions**
+### 12.3 Confirm Contract Decisions
 
 * Verify that all **team and player options**, **extensions**, and **declined contracts** have been processed and reflected in the league spreadsheet.
 * Ensure that all **waived players**, **restricted free agents**, and **cap holds** are accurate prior to the start of the draft.
 
-### **12.4 Discuss Timing Rules**
+### 12.4 Discuss Timing Rules
 
 * Review the **first-round timing format** (10-minute clock) and **skip rule** for missed picks.
 * Clarify the Commissioner’s discretion to **pause, reset, or extend** the clock for any technical or procedural issues.
 
-### **12.5 Conduct the Draft**
+### 12.5 The Draft
 
 * Begin the annual **DMCB Entry Draft.**
 * Picks will be announced **live in the Slack #draft channel.**
 * Selections will be recorded in the shared **Google Sheets Draft tab.**
 
-### **12.6 Post-Draft Business**
+### 12.6 Post-Draft Business
 
 * **Reactivation:** The Commissioner and Treasurer will coordinate the **reactivation of the Sports.ws league** for the new season.
 * **League Dues:** All GMs must **submit payment** to the Treasurer (Robert Ramon) to confirm participation.
 * **Rosters:** Verify that all **draft picks, contracts, and salaries** are correctly reflected in the league spreadsheet.
 * **Designations:** Confirm all **inactive, IR, and two-way player designations** before Game 1.
 
-### **12.7 Trade Deadline**
+### 12.7 Trade Deadline
 
 * Set annually, typically during **NBA All-Star Weekend.**
 
