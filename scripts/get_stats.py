@@ -107,6 +107,12 @@ def main(year=2026, update_csv=True, update_sheets=False, sheet_name="Stats"):
                 sheet_name=sheet_name,
                 start_cell="A1"
             )
+
+            # Clean NaN and Inf values before writing to Google Sheets
+            logger.info("Cleaning data before writing to Google Sheets...")
+            df = df.replace([float("inf"), float("-inf")], pd.NA).fillna("")
+
+            # Safely write data to Google Sheets
             sheets_manager.write_data([df.columns.tolist()] + df.values.tolist(), sheet_name=sheet_name, start_cell="A2")
             logger.info(f"Data successfully written to Google Sheets: {sheet_name}")
         except Exception as e:
