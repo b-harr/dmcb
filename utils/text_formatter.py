@@ -7,7 +7,7 @@ PLAYER_KEY_OVERRIDES = {
     "oliviermaxence-prosper": "olivier-maxence-prosper",
     "herbert-jones": "herb-jones",
     "tristan-dasilva": "tristan-da-silva",
-    "yang-hansen": "hansen-yang",
+    #"yang-hansen": "hansen-yang",
     # add more as needed
 }
 
