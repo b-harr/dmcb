@@ -83,8 +83,10 @@ push-all: push-contracts push-types push-stats push-positions
 
 update-all: update-contracts update-types update-stats update-positions
 
+pull-common: pull-stats pull-positions pull-contracts
+
 # -------------------------
 # Default
 # -------------------------
 # If no target is specified, pull contract data by default
-default: pull-contracts pull-stats pull-positions
+default: pull-common
