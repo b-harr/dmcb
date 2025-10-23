@@ -103,7 +103,7 @@ def main(year=2026, update_csv=True, update_sheets=False, sheet_name="Stats"):
             sheets_manager.clear_data(sheet_name=sheet_name)
             timestamp = logging.Formatter('%(asctime)s').format(logging.LogRecord("", 0, "", 0, "", [], None))
             sheets_manager.write_data(
-                [[f"Last updated {timestamp} by {sheets_manager.service_account_email} from {os.path.basename(__file__)}"]],
+                [[f"Last updated {timestamp}"]],
                 sheet_name=sheet_name,
                 start_cell="A1"
             )
