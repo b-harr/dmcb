@@ -18,7 +18,7 @@
 #   make pull-all           # refresh all CSVs locally
 #   make push-all           # push all CSVs to Sheets
 #   make update-all         # refresh and push everything
-#   make                    # default: pull-contracts
+#   make                    # default: pull stats, positions, contracts
 # ============================================================
 
 .DEFAULT_GOAL := default
