@@ -88,5 +88,5 @@ update-all: update-contracts update-types update-stats update-positions
 # -------------------------
 # Default
 # -------------------------
-# If no target is specified, pull contract data by default
+# If no target is specified, pull stats, positions, and contracts data by default
 default: pull-stats pull-positions pull-contracts
