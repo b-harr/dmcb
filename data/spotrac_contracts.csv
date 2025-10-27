@@ -74,6 +74,7 @@ Caris LeVert,https://www.spotrac.com/nba/player/_/id/20225/caris-levert,caris-le
 Carter Bryant,https://www.spotrac.com/nba/player/_/id/98614/carter-bryant,carter-bryant,San Antonio Spurs,https://www.spotrac.com/nba/san-antonio-spurs/yearly,PF,20,$4900320,$5145360,$5390640,$7983539,RFA
 Cason Wallace,https://www.spotrac.com/nba/player/_/id/82207/cason-wallace,cason-wallace,Oklahoma City Thunder,https://www.spotrac.com/nba/oklahoma-city-thunder/yearly,PG,22,$5820240,$7420806,RFA,,
 Cedric Coward,https://www.spotrac.com/nba/player/_/id/98639/cedric-coward,cedric-coward,Memphis Grizzlies,https://www.spotrac.com/nba/memphis-grizzlies/yearly,SG,22,$5715120,$6001080,$6286920,$8342743,RFA
+Charles Bassey,https://www.spotrac.com/nba/player/_/id/74160/charles-bassey,charles-bassey,Memphis Grizzlies,https://www.spotrac.com/nba/memphis-grizzlies/yearly,C,25,$131970,,,,
 Chaz Lanier,https://www.spotrac.com/nba/player/_/id/98643/chaz-lanier,chaz-lanier,Detroit Pistons,https://www.spotrac.com/nba/detroit-pistons/yearly,SG,24,$1272870,$2150917,$2525901,$2735698,UFA
 Chet Holmgren,https://www.spotrac.com/nba/player/_/id/78108/chet-holmgren,chet-holmgren,Oklahoma City Thunder,https://www.spotrac.com/nba/oklahoma-city-thunder/yearly,C,23,$13731368,$41500000,$44820000,$48140000,$51460000
 Chris Boucher,https://www.spotrac.com/nba/player/_/id/23671/chris-boucher,chris-boucher,Boston Celtics,https://www.spotrac.com/nba/boston-celtics/yearly,PF,33,$2296274,UFA,,,
@@ -222,7 +223,6 @@ Jamal Cain,https://www.spotrac.com/nba/player/_/id/78584/jamal-cain,jamal-cain,O
 Jamal Murray,https://www.spotrac.com/nba/player/_/id/20212/jamal-murray,jamal-murray,Denver Nuggets,https://www.spotrac.com/nba/denver-nuggets/yearly,PG,28,$46394100,$50105628,$53817156,$57528684,UFA
 Jamal Shead,https://www.spotrac.com/nba/player/_/id/93955/jamal-shead,jamal-shead,Toronto Raptors,https://www.spotrac.com/nba/toronto-raptors/yearly,PG,23,$1955377,$2296271,RFA,,
 James Harden,https://www.spotrac.com/nba/player/_/id/6312/james-harden,james-harden,LA Clippers,https://www.spotrac.com/nba/la-clippers/yearly,SG,36,$39182693,$42317307,UFA,,
-James Wiseman,https://www.spotrac.com/nba/player/_/id/70644/james-wiseman,james-wiseman,Indiana Pacers,https://www.spotrac.com/nba/indiana-pacers/yearly,C,24,$2667947,$3018158,UFA,,
 Jamir Watkins,https://www.spotrac.com/nba/player/_/id/99257/jamir-watkins,jamir-watkins,Washington Wizards,https://www.spotrac.com/nba/washington-wizards/yearly,G,24,Two-Way,RFA,,,
 Jamison Battle,https://www.spotrac.com/nba/player/_/id/95121/jamison-battle,jamison-battle,Toronto Raptors,https://www.spotrac.com/nba/toronto-raptors/yearly,SF,24,$1955377,$2296271,RFA,,
 Jarace Walker,https://www.spotrac.com/nba/player/_/id/82201/jarace-walker,jarace-walker,Indiana Pacers,https://www.spotrac.com/nba/indiana-pacers/yearly,PF,22,$6665520,$8478542,RFA,,
@@ -232,7 +232,7 @@ Jarred Vanderbilt,https://www.spotrac.com/nba/player/_/id/27007/jarred-vanderbil
 Jarrett Allen,https://www.spotrac.com/nba/player/_/id/23617/jarrett-allen,jarrett-allen,Cleveland Cavaliers,https://www.spotrac.com/nba/cleveland-cavaliers/yearly,C,27,$20000000,$28000000,$30240000,$32480000,UFA
 Jase Richardson,https://www.spotrac.com/nba/player/_/id/98604/jase-richardson,jase-richardson,Orlando Magic,https://www.spotrac.com/nba/orlando-magic/yearly,SG,20,$2983320,$3132360,$3282000,$5910882,RFA
 Javon Small,https://www.spotrac.com/nba/player/_/id/99261/javon-small,javon-small,Memphis Grizzlies,https://www.spotrac.com/nba/memphis-grizzlies/yearly,G,23,Two-Way,Two-Way,RFA,,
-Javonte Cooke,https://www.spotrac.com/nba/player/_/id/86085/javonte-cooke,javonte-cooke,Portland Trail Blazers,https://www.spotrac.com/nba/portland-trail-blazers/yearly,G,26,Two-Way,RFA,,,
+Javonte Cooke,https://www.spotrac.com/nba/player/_/id/86085/javonte-cooke,javonte-cooke,Portland Trail Blazers,https://www.spotrac.com/nba/portland-trail-blazers/yearly,G,26,Two-Way,Two-Way,RFA,,
 Javonte Green,https://www.spotrac.com/nba/player/_/id/32409/javonte-green,javonte-green,Detroit Pistons,https://www.spotrac.com/nba/detroit-pistons/yearly,SG,32,$2296274,UFA,,,
 Jaxson Hayes,https://www.spotrac.com/nba/player/_/id/31565/jaxson-hayes,jaxson-hayes,Los Angeles Lakers,https://www.spotrac.com/nba/los-angeles-lakers/yearly,C,25,$3449323,UFA,,,
 Jay Huff,https://www.spotrac.com/nba/player/_/id/74262/jay-huff,jay-huff,Indiana Pacers,https://www.spotrac.com/nba/indiana-pacers/yearly,C,27,$2349578,$2667944,$3005085,UFA,
@@ -342,6 +342,7 @@ Luka Garza,https://www.spotrac.com/nba/player/_/id/74159/luka-garza,luka-garza,B
 Luke Kennard,https://www.spotrac.com/nba/player/_/id/23607/luke-kennard,luke-kennard,Atlanta Hawks,https://www.spotrac.com/nba/atlanta-hawks/yearly,SG,29,$11000000,UFA,,,
 Luke Kornet,https://www.spotrac.com/nba/player/_/id/23670/luke-kornet,luke-kornet,San Antonio Spurs,https://www.spotrac.com/nba/san-antonio-spurs/yearly,C,30,$11000000,$10450000,$9900000,$9350000,UFA
 Luke Travers,https://www.spotrac.com/nba/player/_/id/78166/luke-travers,luke-travers,Cleveland Cavaliers,https://www.spotrac.com/nba/cleveland-cavaliers/yearly,SG,24,Two-Way,RFA,,,
+Mac McClung,https://www.spotrac.com/nba/player/_/id/74267/mac-mcclung,mac-mcclung,Indiana Pacers,https://www.spotrac.com/nba/indiana-pacers/yearly,PG,27,$2283168,$2497812,,,
 Malaki Branham,https://www.spotrac.com/nba/player/_/id/78120/malaki-branham,malaki-branham,Washington Wizards,https://www.spotrac.com/nba/washington-wizards/yearly,SG,22,$4962033,RFA,,,
 Malik Monk,https://www.spotrac.com/nba/player/_/id/23606/malik-monk,malik-monk,Sacramento Kings,https://www.spotrac.com/nba/sacramento-kings/yearly,SG,27,$18797619,$20190035,$21582451,UFA,
 Marcus Sasser,https://www.spotrac.com/nba/player/_/id/84442/marcus-sasser,marcus-sasser,Detroit Pistons,https://www.spotrac.com/nba/detroit-pistons/yearly,PG,25,$2886720,$5198983,RFA,,
