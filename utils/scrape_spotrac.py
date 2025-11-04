@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import re
 import logging
+import time
 
 # Set up logging for the script
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -18,10 +19,30 @@ def scrape_team_contracts(team):
     }
     response = requests.get(url, headers=headers)
 
-    
-    # Check if the request was successful (status code 200)
-    if response.status_code != 200:
-        logging.error(f"Failed to fetch data for {team} (Status code: {response.status_code})")
+    MAX_RETRIES = 3
+    RETRY_DELAY = 3  # seconds
+
+    for attempt in range(1, MAX_RETRIES + 1):
+        try:
+            response = requests.get(url, headers=headers, timeout=10)
+
+            if response.status_code == 200:
+                break  # success, exit retry loop
+
+            elif response.status_code == 502:
+                logging.warning(f"502 error for {team}, retrying ({attempt}/{MAX_RETRIES}) in {RETRY_DELAY}s...")
+                time.sleep(RETRY_DELAY)
+                continue  # retry again
+
+            else:
+                logging.error(f"Failed to fetch data for {team} (Status code: {response.status_code})")
+                return None
+
+        except requests.exceptions.RequestException as e:
+            logging.warning(f"Network error for {team}: {e} (attempt {attempt}/{MAX_RETRIES})")
+            time.sleep(RETRY_DELAY)
+    else:
+        logging.error(f"Failed to fetch data for {team} after {MAX_RETRIES} attempts (last status: {response.status_code if 'response' in locals() else 'N/A'})")
         return None
     
     # Parse the HTML content of the page using BeautifulSoup
