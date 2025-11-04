@@ -1,6 +1,6 @@
 Player,Age,Team,Pos,G,GS,MP,FG,FGA,FG%,3P,3PA,3P%,2P,2PA,2P%,eFG%,FT,FTA,FT%,ORB,DRB,TRB,AST,STL,BLK,TOV,PF,PTS,Trp-Dbl,Awards,Player Link,Team Link,Player Key,FP,FPPG,FPPM,MPG,FPR
 Aaron Gordon,,DEN,,6,,181,,,,,,,,,,,,,,,,34,11,5,1,10,11,119,,,https://www.nba.com/player/aaron-gordon,https://www.nba.com/team/DEN,aaron-gordon,149,24.8,0.82,30.2,20.4
-Aaron Holiday,,HOU,,3,,22,,,,,,,,,,,,,,,,2,3,0,0,3,1,13,,,https://www.nba.com/player/aaron-holiday,https://www.nba.com/team/HOU,aaron-holiday,14,4.7,0.64,7.3,3.0
+Aaron Holiday,,HOU,,3,,24,,,,,,,,,,,,,,,,3,3,0,0,4,2,13,,,https://www.nba.com/player/aaron-holiday,https://www.nba.com/team/HOU,aaron-holiday,13,4.3,0.54,8.0,2.3
 Aaron Nesmith,,IND,,7,,224,,,,,,,,,,,,,,,,34,7,2,2,4,17,103,,,https://www.nba.com/player/aaron-nesmith,https://www.nba.com/team/IND,aaron-nesmith,127,18.1,0.57,32.0,10.3
 Aaron Wiggins,,OKC,,7,,195,,,,,,,,,,,,,,,,29,16,1,7,9,13,94,,,https://www.nba.com/player/aaron-wiggins,https://www.nba.com/team/OKC,aaron-wiggins,125,17.9,0.64,27.9,11.4
 Ace Bailey,,UTA,,7,,122,,,,,,,,,,,,,,,,20,10,2,1,8,10,32,,,https://www.nba.com/player/ace-bailey,https://www.nba.com/team/UTA,ace-bailey,47,6.7,0.39,17.4,2.6
@@ -11,9 +11,9 @@ Ajay Mitchell,,OKC,,7,,193,,,,,,,,,,,,,,,,25,25,9,1,9,19,121,,,https://www.nba.c
 Al Horford,,GSW,,5,,105,,,,,,,,,,,,,,,,20,6,2,3,8,10,27,,,https://www.nba.com/player/al-horford,https://www.nba.com/team/GSW,al-horford,40,8.0,0.38,21.0,3.0
 Alex Caruso,,OKC,,4,,83,,,,,,,,,,,,,,,,8,8,8,3,3,4,24,,,https://www.nba.com/player/alex-caruso,https://www.nba.com/team/OKC,alex-caruso,44,11.0,0.53,20.8,5.8
 Alex Sarr,,WAS,,7,,194,,,,,,,,,,,,,,,,59,29,5,15,19,12,121,,,https://www.nba.com/player/alex-sarr,https://www.nba.com/team/WAS,alex-sarr,198,28.3,1.02,27.7,28.9
-Alperen Sengun,,HOU,,6,,211,,,,,,,,,,,,,,,,51,44,9,5,19,17,130,,,https://www.nba.com/player/alperen-sengun,https://www.nba.com/team/HOU,alperen-sengun,203,33.8,0.96,35.2,32.6
+Alperen Sengun,,HOU,,6,,223,,,,,,,,,,,,,,,,53,44,10,5,19,19,137,,,https://www.nba.com/player/alperen-sengun,https://www.nba.com/team/HOU,alperen-sengun,211,35.2,0.95,37.2,33.3
 Amari Williams,,BOS,,2,,7,,,,,,,,,,,,,,,,2,1,1,0,0,1,2,,,https://www.nba.com/player/amari-williams,https://www.nba.com/team/BOS,amari-williams,5,2.5,0.71,3.5,1.8
-Amen Thompson,,HOU,,6,,193,,,,,,,,,,,,,,,,34,33,5,1,15,15,97,,,https://www.nba.com/player/amen-thompson,https://www.nba.com/team/HOU,amen-thompson,140,23.3,0.73,32.2,16.9
+Amen Thompson,,HOU,,6,,205,,,,,,,,,,,,,,,,35,33,5,2,16,16,102,,,https://www.nba.com/player/amen-thompson,https://www.nba.com/team/HOU,amen-thompson,145,24.2,0.71,34.2,17.1
 Amir Coffey,,MIL,,7,,70,,,,,,,,,,,,,,,,8,5,0,1,1,2,14,,,https://www.nba.com/player/amir-coffey,https://www.nba.com/team/MIL,amir-coffey,25,3.6,0.36,10.0,1.3
 Andre Drummond,,PHI,,6,,88,,,,,,,,,,,,,,,,40,3,5,5,1,12,28,,,https://www.nba.com/player/andre-drummond,https://www.nba.com/team/PHI,andre-drummond,68,11.3,0.77,14.7,8.8
 Andre Jackson Jr.,,MIL,,2,,7,,,,,,,,,,,,,,,,0,0,1,0,0,0,0,,,https://www.nba.com/player/andre-jackson,https://www.nba.com/team/MIL,andre-jackson,1,0.5,0.14,3.5,0.1
@@ -46,7 +46,7 @@ Branden Carlson,,OKC,,5,,30,,,,,,,,,,,,,,,,8,2,0,0,2,3,16,,,https://www.nba.com/
 Brandin Podziemski,,GSW,,7,,209,,,,,,,,,,,,,,,,33,19,10,2,7,14,86,,,https://www.nba.com/player/brandin-podziemski,https://www.nba.com/team/GSW,brandin-podziemski,129,18.4,0.62,29.9,11.4
 Brandon Ingram,,TOR,,7,,230,,,,,,,,,,,,,,,,41,27,7,3,22,21,156,,,https://www.nba.com/player/brandon-ingram,https://www.nba.com/team/TOR,brandon-ingram,191,27.3,0.83,32.9,22.7
 Brandon Miller,,CHA,,2,,40,,,,,,,,,,,,,,,,0,8,1,1,3,5,29,,,https://www.nba.com/player/brandon-miller,https://www.nba.com/team/CHA,brandon-miller,31,15.5,0.78,20.0,12.0
-Brandon Williams,,DAL,,5,,62,,,,,,,,,,,,,,,,8,5,5,1,8,7,34,,,https://www.nba.com/player/brandon-williams,https://www.nba.com/team/DAL,brandon-williams,38,7.6,0.61,12.4,4.7
+Brandon Williams,,DAL,,5,,66,,,,,,,,,,,,,,,,9,5,6,1,8,8,34,,,https://www.nba.com/player/brandon-williams,https://www.nba.com/team/DAL,brandon-williams,39,7.8,0.59,13.2,4.6
 Brice Sensabaugh,,UTA,,6,,84,,,,,,,,,,,,,,,,16,5,3,1,5,12,53,,,https://www.nba.com/player/brice-sensabaugh,https://www.nba.com/team/UTA,brice-sensabaugh,61,10.2,0.73,14.0,7.4
 Bronny James,,LAL,,5,,65,,,,,,,,,,,,,,,,4,11,5,1,4,8,7,,,https://www.nba.com/player/bronny-james,https://www.nba.com/team/LAL,bronny-james,16,3.2,0.25,13.0,0.8
 Brook Lopez,,LAC,,6,,96,,,,,,,,,,,,,,,,19,2,3,6,4,8,37,,,https://www.nba.com/player/brook-lopez,https://www.nba.com/team/LAC,brook-lopez,55,9.2,0.57,16.0,5.3
@@ -72,26 +72,26 @@ Charles Bassey,,MEM,,1,,15,,,,,,,,,,,,,,,,10,1,1,1,1,3,3,,,https://www.nba.com/p
 Chaz Lanier,,DET,,5,,32,,,,,,,,,,,,,,,,1,2,1,0,1,0,11,,,https://www.nba.com/player/chaz-lanier,https://www.nba.com/team/DET,chaz-lanier,14,2.8,0.44,6.4,1.2
 Chet Holmgren,,OKC,,4,,137,,,,,,,,,,,,,,,,41,7,5,5,12,16,92,,,https://www.nba.com/player/chet-holmgren,https://www.nba.com/team/OKC,chet-holmgren,122,30.5,0.89,34.2,27.2
 Chris Boucher,,BOS,,6,,64,,,,,,,,,,,,,,,,10,2,4,5,1,12,15,,,https://www.nba.com/player/chris-boucher,https://www.nba.com/team/BOS,chris-boucher,23,3.8,0.36,10.7,1.4
-Chris Manon,,LAL,,2,,7,,,,,,,,,,,,,,,,2,0,0,1,0,2,0,,,https://www.nba.com/player/chris-manon,https://www.nba.com/team/LAL,chris-manon,1,0.5,0.14,3.5,0.1
+Chris Mañon,,LAL,,2,,7,,,,,,,,,,,,,,,,2,0,0,1,0,2,0,,,https://www.nba.com/player/chris-manon,https://www.nba.com/team/LAL,chris-manon,1,0.5,0.14,3.5,0.1
 Chris Paul,,LAC,,6,,82,,,,,,,,,,,,,,,,11,24,8,0,6,11,16,,,https://www.nba.com/player/chris-paul,https://www.nba.com/team/LAC,chris-paul,42,7.0,0.51,13.7,3.6
 Chris Youngblood,,OKC,,7,,33,,,,,,,,,,,,,,,,3,1,0,0,0,5,13,,,https://www.nba.com/player/chris-youngblood,https://www.nba.com/team/OKC,chris-youngblood,12,1.7,0.36,4.7,0.6
 Christian Braun,,DEN,,6,,186,,,,,,,,,,,,,,,,23,15,4,2,8,18,76,,,https://www.nba.com/player/christian-braun,https://www.nba.com/team/DEN,christian-braun,94,15.7,0.51,31.0,7.9
 Christian Koloko,,LAL,,2,,6,,,,,,,,,,,,,,,,1,0,0,0,0,1,0,,,https://www.nba.com/player/christian-koloko,https://www.nba.com/team/LAL,christian-koloko,0,0.0,0.0,3.0,0.0
 CJ McCollum,,WAS,,7,,201,,,,,,,,,,,,,,,,23,24,4,0,8,13,90,,,https://www.nba.com/player/cj-mccollum,https://www.nba.com/team/WAS,cj-mccollum,120,17.1,0.6,28.7,10.2
-Clint Capela,,HOU,,6,,56,,,,,,,,,,,,,,,,23,1,2,5,3,6,24,,,https://www.nba.com/player/clint-capela,https://www.nba.com/team/HOU,clint-capela,46,7.7,0.82,9.3,6.3
+Clint Capela,,HOU,,6,,60,,,,,,,,,,,,,,,,26,1,2,5,3,6,26,,,https://www.nba.com/player/clint-capela,https://www.nba.com/team/HOU,clint-capela,51,8.5,0.85,10.0,7.2
 Cody Williams,,UTA,,4,,38,,,,,,,,,,,,,,,,4,2,0,1,3,6,12,,,https://www.nba.com/player/cody-williams,https://www.nba.com/team/UTA,cody-williams,10,2.5,0.26,9.5,0.7
 Colby Jones,,DET,,1,,7,,,,,,,,,,,,,,,,4,2,0,0,0,1,2,,,https://www.nba.com/player/colby-jones,https://www.nba.com/team/DET,colby-jones,7,7.0,1.0,7.0,7.0
 Cole Anthony,,MIL,,6,,120,,,,,,,,,,,,,,,,19,32,4,3,12,24,66,,,https://www.nba.com/player/cole-anthony,https://www.nba.com/team/MIL,cole-anthony,88,14.7,0.73,20.0,10.8
 Collin Gillespie,,PHX,,7,,176,,,,,,,,,,,,,,,,23,38,9,6,10,9,82,,,https://www.nba.com/player/collin-gillespie,https://www.nba.com/team/PHX,collin-gillespie,139,19.9,0.79,25.1,15.7
 Collin Murray-Boyles,,TOR,,5,,113,,,,,,,,,,,,,,,,19,8,6,1,6,11,53,,,https://www.nba.com/player/collin-murray-boyles,https://www.nba.com/team/TOR,collin-murray-boyles,70,14.0,0.62,22.6,8.7
 Collin Sexton,,CHA,,7,,182,,,,,,,,,,,,,,,,18,37,4,0,20,18,112,,,https://www.nba.com/player/collin-sexton,https://www.nba.com/team/CHA,collin-sexton,133,19.0,0.73,26.0,13.9
-Cooper Flagg,,DAL,,7,,219,,,,,,,,,,,,,,,,42,20,6,3,13,19,95,,,https://www.nba.com/player/cooper-flagg,https://www.nba.com/team/DAL,cooper-flagg,134,19.1,0.61,31.3,11.7
+Cooper Flagg,,DAL,,7,,229,,,,,,,,,,,,,,,,44,20,6,3,15,20,95,,,https://www.nba.com/player/cooper-flagg,https://www.nba.com/team/DAL,cooper-flagg,133,19.0,0.58,32.7,11.0
 Corey Kispert,,WAS,,7,,133,,,,,,,,,,,,,,,,17,12,1,1,6,10,56,,,https://www.nba.com/player/corey-kispert,https://www.nba.com/team/WAS,corey-kispert,71,10.1,0.53,19.0,5.4
 Craig Porter Jr.,,CLE,,7,,126,,,,,,,,,,,,,,,,25,15,9,2,7,5,41,,,https://www.nba.com/player/craig-porter,https://www.nba.com/team/CLE,craig-porter,80,11.4,0.63,18.0,7.3
 Dalen Terry,,CHI,,3,,9,,,,,,,,,,,,,,,,0,0,0,0,0,0,3,,,https://www.nba.com/player/dalen-terry,https://www.nba.com/team/CHI,dalen-terry,3,1.0,0.33,3.0,0.3
 Dalton Knecht,,LAL,,7,,131,,,,,,,,,,,,,,,,12,4,4,4,5,11,49,,,https://www.nba.com/player/dalton-knecht,https://www.nba.com/team/LAL,dalton-knecht,57,8.1,0.44,18.7,3.5
-D'Angelo Russell,,DAL,,7,,151,,,,,,,,,,,,,,,,22,39,4,1,13,10,87,,,https://www.nba.com/player/dangelo-russell,https://www.nba.com/team/DAL,dangelo-russell,130,18.6,0.86,21.6,16.0
-Daniel Gafford,,DAL,,2,,31,,,,,,,,,,,,,,,,7,4,1,2,0,5,13,,,https://www.nba.com/player/daniel-gafford,https://www.nba.com/team/DAL,daniel-gafford,22,11.0,0.71,15.5,7.8
+D'Angelo Russell,,DAL,,7,,162,,,,,,,,,,,,,,,,24,42,4,1,15,11,95,,,https://www.nba.com/player/dangelo-russell,https://www.nba.com/team/DAL,dangelo-russell,140,20.0,0.86,23.1,17.3
+Daniel Gafford,,DAL,,2,,42,,,,,,,,,,,,,,,,8,4,2,3,0,5,21,,,https://www.nba.com/player/daniel-gafford,https://www.nba.com/team/DAL,daniel-gafford,33,16.5,0.79,21.0,13.0
 Daniss Jenkins,,DET,,4,,41,,,,,,,,,,,,,,,,0,6,4,0,4,4,14,,,https://www.nba.com/player/daniss-jenkins,https://www.nba.com/team/DET,daniss-jenkins,16,4.0,0.39,10.2,1.6
 Danny Wolf,,BKN,,1,,4,,,,,,,,,,,,,,,,1,2,0,0,0,0,0,,,https://www.nba.com/player/danny-wolf,https://www.nba.com/team/BKN,danny-wolf,3,3.0,0.75,4.0,2.2
 Dario Šarić,,SAC,,3,,28,,,,,,,,,,,,,,,,5,2,0,0,1,0,5,,,https://www.nba.com/player/dario-saric,https://www.nba.com/team/SAC,dario-saric,11,3.7,0.39,9.3,1.4
@@ -126,7 +126,7 @@ Drew Eubanks,,SAC,,7,,88,,,,,,,,,,,,,,,,18,2,4,7,5,7,29,,,https://www.nba.com/pl
 Dru Smith,,MIA,,7,,118,,,,,,,,,,,,,,,,10,27,10,1,9,12,38,,,https://www.nba.com/player/dru-smith,https://www.nba.com/team/MIA,dru-smith,65,9.3,0.55,16.9,5.1
 Duncan Robinson,,DET,,7,,230,,,,,,,,,,,,,,,,22,8,1,4,3,17,79,,,https://www.nba.com/player/duncan-robinson,https://www.nba.com/team/DET,duncan-robinson,94,13.4,0.41,32.9,5.5
 Duop Reath,,POR,,4,,24,,,,,,,,,,,,,,,,1,2,0,1,0,2,12,,,https://www.nba.com/player/duop-reath,https://www.nba.com/team/POR,duop-reath,14,3.5,0.58,6.0,2.0
-Dwight Powell,,DAL,,6,,66,,,,,,,,,,,,,,,,14,4,2,2,5,14,25,,,https://www.nba.com/player/dwight-powell,https://www.nba.com/team/DAL,dwight-powell,28,4.7,0.42,11.0,2.0
+Dwight Powell,,DAL,,6,,67,,,,,,,,,,,,,,,,14,4,2,2,5,15,25,,,https://www.nba.com/player/dwight-powell,https://www.nba.com/team/DAL,dwight-powell,27,4.5,0.4,11.2,1.8
 Dylan Cardwell,,SAC,,3,,33,,,,,,,,,,,,,,,,5,0,2,3,2,10,5,,,https://www.nba.com/player/dylan-cardwell,https://www.nba.com/team/SAC,dylan-cardwell,3,1.0,0.09,11.0,0.1
 Dylan Harper,,SAS,,6,,140,,,,,,,,,,,,,,,,24,23,4,0,11,18,84,,,https://www.nba.com/player/dylan-harper,https://www.nba.com/team/SAS,dylan-harper,106,17.7,0.76,23.3,13.4
 Dyson Daniels,,ATL,,7,,224,,,,,,,,,,,,,,,,40,24,18,4,12,20,63,,,https://www.nba.com/player/dyson-daniels,https://www.nba.com/team/ATL,dyson-daniels,117,16.7,0.52,32.0,8.7
@@ -167,9 +167,9 @@ Ja Morant,,MEM,,7,,206,,,,,,,,,,,,,,,,25,50,7,0,20,11,143,,,https://www.nba.com/
 Jabari Smith Jr.,,HOU,,5,,170,,,,,,,,,,,,,,,,26,7,7,6,3,9,75,,,https://www.nba.com/player/jabari-smith,https://www.nba.com/team/HOU,jabari-smith,109,21.8,0.64,34.0,14.0
 Jabari Walker,,PHI,,6,,84,,,,,,,,,,,,,,,,20,0,1,3,3,15,22,,,https://www.nba.com/player/jabari-walker,https://www.nba.com/team/PHI,jabari-walker,28,4.7,0.33,14.0,1.6
 Jacob Toppin,,ATL,,2,,6,,,,,,,,,,,,,,,,0,0,0,0,0,1,2,,,https://www.nba.com/player/jacob-toppin,https://www.nba.com/team/ATL,jacob-toppin,1,0.5,0.17,3.0,0.1
-Jaden Hardy,,DAL,,6,,58,,,,,,,,,,,,,,,,5,2,2,0,2,6,28,,,https://www.nba.com/player/jaden-hardy,https://www.nba.com/team/DAL,jaden-hardy,29,4.8,0.5,9.7,2.4
+Jaden Hardy,,DAL,,6,,60,,,,,,,,,,,,,,,,6,2,3,0,2,6,28,,,https://www.nba.com/player/jaden-hardy,https://www.nba.com/team/DAL,jaden-hardy,31,5.2,0.52,10.0,2.7
 Jaden McDaniels,,MIN,,7,,229,,,,,,,,,,,,,,,,29,14,5,11,12,26,130,,,https://www.nba.com/player/jaden-mcdaniels,https://www.nba.com/team/MIN,jaden-mcdaniels,151,21.6,0.66,32.7,14.2
-Jae'Sean Tate,,HOU,,3,,22,,,,,,,,,,,,,,,,4,0,1,0,1,4,4,,,https://www.nba.com/player/jaesean-tate,https://www.nba.com/team/HOU,jaesean-tate,4,1.3,0.18,7.3,0.2
+Jae'Sean Tate,,HOU,,3,,24,,,,,,,,,,,,,,,,4,0,1,0,1,4,4,,,https://www.nba.com/player/jaesean-tate,https://www.nba.com/team/HOU,jaesean-tate,4,1.3,0.17,8.0,0.2
 Jahmir Young,,MIA,,2,,10,,,,,,,,,,,,,,,,1,2,0,0,1,2,2,,,https://www.nba.com/player/jahmir-young,https://www.nba.com/team/MIA,jahmir-young,2,1.0,0.2,5.0,0.2
 Jahmyl Telfort,,LAC,,1,,3,,,,,,,,,,,,,,,,0,0,0,0,0,0,0,,,https://www.nba.com/player/jahmyl-telfort,https://www.nba.com/team/LAC,jahmyl-telfort,0,0.0,0.0,3.0,0.0
 Jaime Jaquez Jr.,,MIA,,7,,206,,,,,,,,,,,,,,,,47,32,6,0,14,14,118,,,https://www.nba.com/player/jaime-jaquez,https://www.nba.com/team/MIA,jaime-jaquez,175,25.0,0.85,29.4,21.2
@@ -235,7 +235,7 @@ Jose Alvarado,,NOP,,5,,74,,,,,,,,,,,,,,,,9,6,5,0,2,5,15,,,https://www.nba.com/pl
 Josh Giddey,,CHI,,6,,202,,,,,,,,,,,,,,,,55,52,5,2,20,11,133,,,https://www.nba.com/player/josh-giddey,https://www.nba.com/team/CHI,josh-giddey,216,36.0,1.07,33.7,38.5
 Josh Hart,,NYK,,6,,141,,,,,,,,,,,,,,,,43,21,4,0,10,9,37,,,https://www.nba.com/player/josh-hart,https://www.nba.com/team/NYK,josh-hart,86,14.3,0.61,23.5,8.7
 Josh Minott,,BOS,,7,,146,,,,,,,,,,,,,,,,47,12,9,4,3,18,52,,,https://www.nba.com/player/josh-minott,https://www.nba.com/team/BOS,josh-minott,103,14.7,0.71,20.9,10.4
-Josh Okogie,,HOU,,6,,129,,,,,,,,,,,,,,,,8,7,4,1,3,11,50,,,https://www.nba.com/player/josh-okogie,https://www.nba.com/team/HOU,josh-okogie,56,9.3,0.43,21.5,4.1
+Josh Okogie,,HOU,,6,,137,,,,,,,,,,,,,,,,10,8,5,1,3,12,52,,,https://www.nba.com/player/josh-okogie,https://www.nba.com/team/HOU,josh-okogie,61,10.2,0.45,22.8,4.5
 Jrue Holiday,,POR,,7,,229,,,,,,,,,,,,,,,,33,58,10,2,20,18,117,,,https://www.nba.com/player/jrue-holiday,https://www.nba.com/team/POR,jrue-holiday,182,26.0,0.79,32.7,20.7
 Julian Champagnie,,SAS,,6,,176,,,,,,,,,,,,,,,,37,11,6,2,4,8,45,,,https://www.nba.com/player/julian-champagnie,https://www.nba.com/team/SAS,julian-champagnie,89,14.8,0.51,29.3,7.5
 Julian Phillips,,CHI,,5,,34,,,,,,,,,,,,,,,,2,1,2,1,0,3,9,,,https://www.nba.com/player/julian-phillips,https://www.nba.com/team/CHI,julian-phillips,12,2.4,0.35,6.8,0.8
@@ -254,7 +254,7 @@ Kelly Oubre Jr.,,PHI,,6,,228,,,,,,,,,,,,,,,,38,7,7,5,8,11,117,,,https://www.nba.
 Kentavious Caldwell-Pope,,MEM,,8,,199,,,,,,,,,,,,,,,,21,31,5,2,10,7,76,,,https://www.nba.com/player/kentavious-caldwell-pope,https://www.nba.com/team/MEM,kentavious-caldwell-pope,118,14.8,0.59,24.9,8.7
 Keon Ellis,,SAC,,7,,139,,,,,,,,,,,,,,,,13,4,11,1,3,15,57,,,https://www.nba.com/player/keon-ellis,https://www.nba.com/team/SAC,keon-ellis,68,9.7,0.49,19.9,4.8
 Keshad Johnson,,MIA,,2,,10,,,,,,,,,,,,,,,,3,0,1,0,0,0,7,,,https://www.nba.com/player/keshad-johnson,https://www.nba.com/team/MIA,keshad-johnson,11,5.5,1.1,5.0,6.0
-Kevin Durant,,HOU,,6,,203,,,,,,,,,,,,,,,,33,13,7,6,12,18,151,,,https://www.nba.com/player/kevin-durant,https://www.nba.com/team/HOU,kevin-durant,180,30.0,0.89,33.8,26.6
+Kevin Durant,,HOU,,6,,213,,,,,,,,,,,,,,,,33,14,7,6,14,19,157,,,https://www.nba.com/player/kevin-durant,https://www.nba.com/team/HOU,kevin-durant,184,30.7,0.86,35.5,26.5
 Kevin Huerter,,CHI,,6,,149,,,,,,,,,,,,,,,,25,16,5,6,8,14,78,,,https://www.nba.com/player/kevin-huerter,https://www.nba.com/team/CHI,kevin-huerter,108,18.0,0.72,24.8,13.0
 Kevin Love,,UTA,,2,,31,,,,,,,,,,,,,,,,12,8,0,0,4,2,8,,,https://www.nba.com/player/kevin-love,https://www.nba.com/team/UTA,kevin-love,22,11.0,0.71,15.5,7.8
 Kevin Porter Jr.,,MIL,,1,,9,,,,,,,,,,,,,,,,0,2,1,0,0,0,10,,,https://www.nba.com/player/kevin-porter,https://www.nba.com/team/MIL,kevin-porter,13,13.0,1.44,9.0,18.8
@@ -263,7 +263,7 @@ Keyonte George,,UTA,,7,,242,,,,,,,,,,,,,,,,26,57,7,3,25,18,162,,,https://www.nba
 Khaman Maluach,,PHX,,4,,23,,,,,,,,,,,,,,,,2,1,0,2,2,5,11,,,https://www.nba.com/player/khaman-maluach,https://www.nba.com/team/PHX,khaman-maluach,9,2.2,0.39,5.8,0.9
 Khris Middleton,,WAS,,6,,149,,,,,,,,,,,,,,,,27,13,4,1,9,20,68,,,https://www.nba.com/player/khris-middleton,https://www.nba.com/team/WAS,khris-middleton,84,14.0,0.56,24.8,7.9
 KJ Simpson,,CHA,,1,,17,,,,,,,,,,,,,,,,4,4,1,0,4,3,7,,,https://www.nba.com/player/kj-simpson,https://www.nba.com/team/CHA,kj-simpson,9,9.0,0.53,17.0,4.8
-Klay Thompson,,DAL,,7,,138,,,,,,,,,,,,,,,,21,11,1,3,8,5,57,,,https://www.nba.com/player/klay-thompson,https://www.nba.com/team/DAL,klay-thompson,80,11.4,0.58,19.7,6.6
+Klay Thompson,,DAL,,7,,142,,,,,,,,,,,,,,,,21,11,1,3,8,5,57,,,https://www.nba.com/player/klay-thompson,https://www.nba.com/team/DAL,klay-thompson,80,11.4,0.56,20.3,6.4
 Kobe Brown,,LAC,,3,,14,,,,,,,,,,,,,,,,3,2,0,0,1,0,4,,,https://www.nba.com/player/kobe-brown,https://www.nba.com/team/LAC,kobe-brown,8,2.7,0.57,4.7,1.5
 Kobe Sanders,,LAC,,2,,9,,,,,,,,,,,,,,,,1,1,2,0,1,0,2,,,https://www.nba.com/player/kobe-sanders,https://www.nba.com/team/LAC,kobe-sanders,5,2.5,0.56,4.5,1.4
 Koby Brea,,PHX,,1,,4,,,,,,,,,,,,,,,,0,1,0,0,0,0,4,,,https://www.nba.com/player/koby-brea,https://www.nba.com/team/PHX,koby-brea,5,5.0,1.25,4.0,6.2
@@ -299,7 +299,7 @@ Marvin Bagley III,,WAS,,7,,104,,,,,,,,,,,,,,,,28,10,3,2,4,20,49,,,https://www.nb
 Mason Plumlee,,CHA,,3,,12,,,,,,,,,,,,,,,,3,1,0,0,1,1,2,,,https://www.nba.com/player/mason-plumlee,https://www.nba.com/team/CHA,mason-plumlee,4,1.3,0.33,4.0,0.4
 Matas Buzelis,,CHI,,6,,173,,,,,,,,,,,,,,,,27,7,5,5,11,21,94,,,https://www.nba.com/player/matas-buzelis,https://www.nba.com/team/CHI,matas-buzelis,106,17.7,0.61,28.8,10.8
 Matisse Thybulle,,POR,,4,,49,,,,,,,,,,,,,,,,4,3,10,0,1,7,20,,,https://www.nba.com/player/matisse-thybulle,https://www.nba.com/team/POR,matisse-thybulle,29,7.2,0.59,12.2,4.3
-Max Christie,,DAL,,7,,204,,,,,,,,,,,,,,,,17,17,1,2,8,10,84,,,https://www.nba.com/player/max-christie,https://www.nba.com/team/DAL,max-christie,103,14.7,0.5,29.1,7.4
+Max Christie,,DAL,,7,,212,,,,,,,,,,,,,,,,17,20,1,2,8,12,89,,,https://www.nba.com/player/max-christie,https://www.nba.com/team/DAL,max-christie,109,15.6,0.51,30.3,8.0
 Maxime Raynaud,,SAC,,2,,15,,,,,,,,,,,,,,,,5,2,0,0,1,2,0,,,https://www.nba.com/player/maxime-raynaud,https://www.nba.com/team/SAC,maxime-raynaud,4,2.0,0.27,7.5,0.5
 Micah Peavy,,NOP,,3,,18,,,,,,,,,,,,,,,,4,3,1,0,1,0,8,,,https://www.nba.com/player/micah-peavy,https://www.nba.com/team/NOP,micah-peavy,15,5.0,0.83,6.0,4.2
 Michael Porter Jr.,,BKN,,6,,191,,,,,,,,,,,,,,,,48,18,4,1,12,13,125,,,https://www.nba.com/player/michael-porter,https://www.nba.com/team/BKN,michael-porter,171,28.5,0.9,31.8,25.5
@@ -312,11 +312,11 @@ Mitchell Robinson,,NYK,,2,,33,,,,,,,,,,,,,,,,16,3,0,2,1,4,4,,,https://www.nba.co
 Mohamed Diawara,,NYK,,3,,5,,,,,,,,,,,,,,,,0,1,0,0,1,2,0,,,https://www.nba.com/player/mohamed-diawara,https://www.nba.com/team/NYK,mohamed-diawara,-2,-0.7,-0.4,1.7,0.3
 Moses Moody,,GSW,,5,,91,,,,,,,,,,,,,,,,12,6,3,4,6,8,39,,,https://www.nba.com/player/moses-moody,https://www.nba.com/team/GSW,moses-moody,50,10.0,0.55,18.2,5.5
 Mouhamed Gueye,,ATL,,7,,106,,,,,,,,,,,,,,,,27,7,1,4,6,14,47,,,https://www.nba.com/player/mouhamed-gueye,https://www.nba.com/team/ATL,mouhamed-gueye,66,9.4,0.62,15.1,5.9
-Moussa Cisse,,DAL,,3,,17,,,,,,,,,,,,,,,,2,0,1,1,2,3,4,,,https://www.nba.com/player/moussa-cisse,https://www.nba.com/team/DAL,moussa-cisse,3,1.0,0.18,5.7,0.2
+Moussa Cisse,,DAL,,3,,18,,,,,,,,,,,,,,,,2,0,1,1,2,4,4,,,https://www.nba.com/player/moussa-cisse,https://www.nba.com/team/DAL,moussa-cisse,2,0.7,0.11,6.0,0.1
 Moussa Diabaté,,CHA,,7,,141,,,,,,,,,,,,,,,,50,3,2,8,4,16,77,,,https://www.nba.com/player/moussa-diabate,https://www.nba.com/team/CHA,moussa-diabate,120,17.1,0.85,20.1,14.6
 Myles Turner,,MIL,,7,,204,,,,,,,,,,,,,,,,44,16,4,16,12,20,68,,,https://www.nba.com/player/myles-turner,https://www.nba.com/team/MIL,myles-turner,116,16.6,0.57,29.1,9.4
 Myron Gardner,,MIA,,1,,3,,,,,,,,,,,,,,,,1,1,0,0,0,2,3,,,https://www.nba.com/player/myron-gardner,https://www.nba.com/team/MIA,myron-gardner,3,3.0,1.0,3.0,3.0
-Naji Marshall,,DAL,,7,,157,,,,,,,,,,,,,,,,22,12,7,0,6,16,50,,,https://www.nba.com/player/naji-marshall,https://www.nba.com/team/DAL,naji-marshall,69,9.9,0.44,22.4,4.3
+Naji Marshall,,DAL,,7,,163,,,,,,,,,,,,,,,,23,12,8,0,6,16,50,,,https://www.nba.com/player/naji-marshall,https://www.nba.com/team/DAL,naji-marshall,71,10.1,0.44,23.3,4.4
 Naz Reid,,MIN,,7,,161,,,,,,,,,,,,,,,,36,11,6,6,11,19,89,,,https://www.nba.com/player/naz-reid,https://www.nba.com/team/MIN,naz-reid,118,16.9,0.73,23.0,12.4
 Neemias Queta,,BOS,,8,,182,,,,,,,,,,,,,,,,61,10,7,11,10,24,67,,,https://www.nba.com/player/neemias-queta,https://www.nba.com/team/BOS,neemias-queta,122,15.2,0.67,22.8,10.2
 N'Faly Dante,,ATL,,3,,14,,,,,,,,,,,,,,,,7,0,2,0,1,1,3,,,https://www.nba.com/player/nfaly-dante,https://www.nba.com/team/ATL,nfaly-dante,10,3.3,0.71,4.7,2.4
@@ -353,14 +353,14 @@ Payton Pritchard,,BOS,,8,,263,,,,,,,,,,,,,,,,34,42,9,0,9,15,120,,,https://www.nb
 Pelle Larsson,,MIA,,7,,123,,,,,,,,,,,,,,,,16,15,5,0,5,11,55,,,https://www.nba.com/player/pelle-larsson,https://www.nba.com/team/MIA,pelle-larsson,75,10.7,0.61,17.6,6.5
 Peyton Watson,,DEN,,6,,122,,,,,,,,,,,,,,,,16,10,6,7,7,8,36,,,https://www.nba.com/player/peyton-watson,https://www.nba.com/team/DEN,peyton-watson,60,10.0,0.49,20.3,4.9
 PJ Hall,,MEM,,3,,17,,,,,,,,,,,,,,,,4,0,0,2,1,3,7,,,https://www.nba.com/player/pj-hall,https://www.nba.com/team/MEM,pj-hall,9,3.0,0.53,5.7,1.6
-P.J. Washington,,DAL,,7,,227,,,,,,,,,,,,,,,,55,19,6,8,19,18,104,,,https://www.nba.com/player/pj-washington,https://www.nba.com/team/DAL,pj-washington,155,22.1,0.68,32.4,15.1
+P.J. Washington,,DAL,,7,,239,,,,,,,,,,,,,,,,58,20,6,9,20,19,111,,,https://www.nba.com/player/pj-washington,https://www.nba.com/team/DAL,pj-washington,165,23.6,0.69,34.1,16.3
 Quentin Grimes,,PHI,,6,,191,,,,,,,,,,,,,,,,28,31,5,3,18,17,109,,,https://www.nba.com/player/quentin-grimes,https://www.nba.com/team/PHI,quentin-grimes,141,23.5,0.74,31.8,17.3
 Quenton Jackson,,IND,,5,,101,,,,,,,,,,,,,,,,17,18,5,1,6,10,59,,,https://www.nba.com/player/quenton-jackson,https://www.nba.com/team/IND,quenton-jackson,84,16.8,0.83,20.2,14.0
 Quinten Post,,GSW,,7,,89,,,,,,,,,,,,,,,,24,4,1,3,6,9,28,,,https://www.nba.com/player/quinten-post,https://www.nba.com/team/GSW,quinten-post,45,6.4,0.51,12.7,3.3
 Rasheer Fleming,,PHX,,4,,19,,,,,,,,,,,,,,,,4,2,1,0,0,3,5,,,https://www.nba.com/player/rasheer-fleming,https://www.nba.com/team/PHX,rasheer-fleming,9,2.2,0.47,4.8,1.1
 Rayan Rupert,,POR,,4,,25,,,,,,,,,,,,,,,,5,2,2,0,1,2,5,,,https://www.nba.com/player/rayan-rupert,https://www.nba.com/team/POR,rayan-rupert,11,2.8,0.44,6.2,1.2
 RayJ Dennis,,IND,,6,,136,,,,,,,,,,,,,,,,15,23,3,4,9,15,49,,,https://www.nba.com/player/rayj-dennis,https://www.nba.com/team/IND,rayj-dennis,70,11.7,0.51,22.7,6.0
-Reed Sheppard,,HOU,,6,,119,,,,,,,,,,,,,,,,17,19,5,2,8,7,55,,,https://www.nba.com/player/reed-sheppard,https://www.nba.com/team/HOU,reed-sheppard,83,13.8,0.7,19.8,9.6
+Reed Sheppard,,HOU,,6,,123,,,,,,,,,,,,,,,,18,20,5,2,9,8,57,,,https://www.nba.com/player/reed-sheppard,https://www.nba.com/team/HOU,reed-sheppard,85,14.2,0.69,20.5,9.8
 Riley Minix,,SAS,,3,,8,,,,,,,,,,,,,,,,2,1,1,0,0,1,9,,,https://www.nba.com/player/riley-minix,https://www.nba.com/team/SAS,riley-minix,12,4.0,1.5,2.7,6.0
 RJ Barrett,,TOR,,7,,228,,,,,,,,,,,,,,,,31,24,9,2,15,19,143,,,https://www.nba.com/player/rj-barrett,https://www.nba.com/team/TOR,rj-barrett,175,25.0,0.77,32.6,19.2
 Rob Dillingham,,MIN,,5,,65,,,,,,,,,,,,,,,,4,12,4,0,9,9,23,,,https://www.nba.com/player/rob-dillingham,https://www.nba.com/team/MIN,rob-dillingham,25,5.0,0.38,13.0,1.9
@@ -390,17 +390,17 @@ Sion James,,CHA,,7,,163,,,,,,,,,,,,,,,,20,10,4,2,3,9,64,,,https://www.nba.com/pl
 Spencer Jones,,DEN,,4,,15,,,,,,,,,,,,,,,,1,0,2,0,4,3,2,,,https://www.nba.com/player/spencer-jones,https://www.nba.com/team/DEN,spencer-jones,-2,-0.5,-0.13,3.8,0.1
 Stephen Curry,,GSW,,7,,216,,,,,,,,,,,,,,,,25,31,11,4,21,12,186,,,https://www.nba.com/player/stephen-curry,https://www.nba.com/team/GSW,stephen-curry,224,32.0,1.04,30.9,33.2
 Stephon Castle,,SAS,,6,,192,,,,,,,,,,,,,,,,37,32,11,3,29,19,120,,,https://www.nba.com/player/stephon-castle,https://www.nba.com/team/SAS,stephon-castle,155,25.8,0.81,32.0,20.9
-Steven Adams,,HOU,,6,,130,,,,,,,,,,,,,,,,56,10,5,4,7,14,39,,,https://www.nba.com/player/steven-adams,https://www.nba.com/team/HOU,steven-adams,93,15.5,0.72,21.7,11.1
+Steven Adams,,HOU,,6,,135,,,,,,,,,,,,,,,,57,10,6,4,8,14,39,,,https://www.nba.com/player/steven-adams,https://www.nba.com/team/HOU,steven-adams,94,15.7,0.7,22.5,10.9
 Svi Mykhailiuk,,UTA,,7,,190,,,,,,,,,,,,,,,,21,11,6,1,5,8,48,,,https://www.nba.com/player/svi-mykhailiuk,https://www.nba.com/team/UTA,svi-mykhailiuk,74,10.6,0.39,27.1,4.1
 Taelon Peter,,IND,,5,,42,,,,,,,,,,,,,,,,3,2,1,0,3,3,9,,,https://www.nba.com/player/taelon-peter,https://www.nba.com/team/IND,taelon-peter,9,1.8,0.21,8.4,0.4
-Tari Eason,,HOU,,6,,141,,,,,,,,,,,,,,,,29,13,4,4,13,9,65,,,https://www.nba.com/player/tari-eason,https://www.nba.com/team/HOU,tari-eason,93,15.5,0.66,23.5,10.2
+Tari Eason,,HOU,,6,,148,,,,,,,,,,,,,,,,31,13,5,4,14,9,70,,,https://www.nba.com/player/tari-eason,https://www.nba.com/team/HOU,tari-eason,100,16.7,0.68,24.7,11.3
 Taurean Prince,,MIL,,7,,148,,,,,,,,,,,,,,,,13,7,6,2,4,16,49,,,https://www.nba.com/player/taurean-prince,https://www.nba.com/team/MIL,taurean-prince,57,8.1,0.39,21.1,3.1
 Taylor Hendricks,,UTA,,7,,113,,,,,,,,,,,,,,,,29,3,2,2,4,4,36,,,https://www.nba.com/player/taylor-hendricks,https://www.nba.com/team/UTA,taylor-hendricks,64,9.1,0.57,16.1,5.2
 Terance Mann,,BKN,,7,,188,,,,,,,,,,,,,,,,28,21,9,0,5,26,80,,,https://www.nba.com/player/terance-mann,https://www.nba.com/team/BKN,terance-mann,107,15.3,0.57,26.9,8.7
 Terrence Shannon Jr.,,MIN,,7,,115,,,,,,,,,,,,,,,,17,8,4,0,6,11,27,,,https://www.nba.com/player/terrence-shannon,https://www.nba.com/team/MIN,terrence-shannon,39,5.6,0.34,16.4,1.9
 Thanasis Antetokounmpo,,MIL,,1,,2,,,,,,,,,,,,,,,,0,0,0,0,0,0,0,,,https://www.nba.com/player/thanasis-antetokounmpo,https://www.nba.com/team/MIL,thanasis-antetokounmpo,0,0.0,0.0,2.0,0.0
 Thomas Bryant,,CLE,,4,,27,,,,,,,,,,,,,,,,6,1,1,2,0,4,8,,,https://www.nba.com/player/thomas-bryant,https://www.nba.com/team/CLE,thomas-bryant,14,3.5,0.52,6.8,1.8
-Tidjane Salaun,,CHA,,7,,83,,,,,,,,,,,,,,,,25,5,2,1,3,8,22,,,https://www.nba.com/player/tidjane-salaun,https://www.nba.com/team/CHA,tidjane-salaun,44,6.3,0.53,11.9,3.3
+Tidjane Salaün,,CHA,,7,,83,,,,,,,,,,,,,,,,25,5,2,1,3,8,22,,,https://www.nba.com/player/tidjane-salaun,https://www.nba.com/team/CHA,tidjane-salaun,44,6.3,0.53,11.9,3.3
 Tim Hardaway Jr.,,DEN,,6,,139,,,,,,,,,,,,,,,,8,8,4,0,1,10,61,,,https://www.nba.com/player/tim-hardaway,https://www.nba.com/team/DEN,tim-hardaway,70,11.7,0.5,23.2,5.9
 Tobias Harris,,DET,,6,,193,,,,,,,,,,,,,,,,36,17,5,1,8,18,81,,,https://www.nba.com/player/tobias-harris,https://www.nba.com/team/DET,tobias-harris,114,19.0,0.59,32.2,11.2
 Tolu Smith,,DET,,1,,6,,,,,,,,,,,,,,,,4,0,1,0,1,0,11,,,https://www.nba.com/player/tolu-smith,https://www.nba.com/team/DET,tolu-smith,15,15.0,2.5,6.0,37.5
