@@ -4,76 +4,83 @@ import pandas as pd
 import re
 import logging
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
-# Set up logging for the script
+
+# Set up logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
-# Function to scrape contract data for a single team from Spotrac
-def scrape_team_contracts(team):
-    # Construct the team's URL for Spotrac based on the team name
+# Global constants
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"
+}
+
+MAX_RETRIES = 3
+RETRY_DELAY = 2
+TIMEOUT = 10
+
+
+def scrape_team_contracts(team, session):
+    """
+    Scrape contract data for a specific NBA team from Spotrac.
+    """
+    # Construct the URL for the team's contracts page
     url = f"https://www.spotrac.com/nba/{team}/yearly"
-    
-    # Send a GET request to fetch the web page content
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"
-    }
-    response = requests.get(url, headers=headers)
 
-    MAX_RETRIES = 3
-    RETRY_DELAY = 3  # seconds
-
+    # Retry logic for handling transient errors
     for attempt in range(1, MAX_RETRIES + 1):
         try:
-            response = requests.get(url, headers=headers, timeout=10)
+            response = session.get(url, headers=HEADERS, timeout=TIMEOUT)
 
             if response.status_code == 200:
-                break  # success, exit retry loop
-
+                # Successful response
+                break
             elif response.status_code == 502:
-                logging.warning(f"502 error for {team}, retrying ({attempt}/{MAX_RETRIES}) in {RETRY_DELAY}s...")
+                # Bad Gateway, retry
+                logging.warning(f"502 for {team} ({attempt}/{MAX_RETRIES})")
                 time.sleep(RETRY_DELAY)
-                continue  # retry again
-
             else:
-                logging.error(f"Failed to fetch data for {team} (Status code: {response.status_code})")
+                # Other HTTP errors
+                logging.error(f"{team}: HTTP {response.status_code}")
                 return None
 
-        except requests.exceptions.RequestException as e:
-            logging.warning(f"Network error for {team}: {e} (attempt {attempt}/{MAX_RETRIES})")
+        except requests.RequestException as e:
+            # Network-related errors, wait before retrying
+            logging.warning(f"{team}: {e} ({attempt}/{MAX_RETRIES})")
             time.sleep(RETRY_DELAY)
     else:
-        logging.error(f"Failed to fetch data for {team} after {MAX_RETRIES} attempts (last status: {response.status_code if 'response' in locals() else 'N/A'})")
+        # All retries exhausted
+        logging.error(f"{team}: failed after retries")
         return None
-    
-    # Parse the HTML content of the page using BeautifulSoup
+
     soup = BeautifulSoup(response.content, "html.parser")
-    
-    # Helper function to extract table data
+
+    # Function to extract data from a table
     def extract_table(table, season_headers):
         data = []
         for row in table.find("tbody").find_all("tr"):
-            # Get all the cells (columns) for the current row
+            # Skip header or invalid rows
             cells = row.find_all("td")
-            
-            # Skip rows that don't contain enough data (likely non-player rows)
+
+            # Ensure there are enough cells
             if len(cells) < 2:
                 continue
-            
-            # Extract the player's name and the link to their profile (if available)
+
+            # Extract player name and link
             player_tag = row.find("a")
             player_name = player_tag.text.strip() if player_tag else "Unknown"
             player_link = player_tag["href"] if player_tag else None
-            
-            # Extract the player's position and age from the respective columns
+
+            # Extract position and age
             position = cells[1].text.strip()
             age = cells[2].text.strip()
-            
-            # Extract contract values (salaries, UFA, RFA, etc.) from the remaining columns
+
+            # Extract contract values for the seasons
             contract_values = []
             for col in cells[3:]:
                 cell_text = col.get_text(strip=True)
-                
-                # Check for special cases such as "Two-Way", "UFA", or "RFA" in the cell text
+
+                # Check for special contract types
                 if "Two-Way" in cell_text:
                     contract_values.append("Two-Way")
                 elif "UFA" in cell_text:
@@ -81,23 +88,23 @@ def scrape_team_contracts(team):
                 elif "RFA" in cell_text:
                     contract_values.append("RFA")
                 else:
-                    # Use regex to find salary values in the format "$1,000,000" or "$1M"
+                    # Extract dollar amounts
                     salary_matches = re.findall(r"\$\d{1,3}(?:,\d{3})*(?:\.\d{2})?", cell_text)
                     contract_values.extend([s.replace(",", "") for s in salary_matches])
-            
-            # Limit the contract values to the first 5 seasons (to match season headers)
+
+            # Limit to first 5 seasons
             contract_values = contract_values[:5]
-            
-            # If there are fewer contract values than the number of seasons, pad with None
+
+            # Pad with None if fewer than expected seasons
             while len(contract_values) < len(season_headers):
                 contract_values.append(None)
-            
-            # Add the extracted data (player name, link, position, age, contract data) to the list
+
+            # Append the extracted data
             data.append([player_name, player_link, position, age] + contract_values)
-        
+
         return data
 
-    # Find both tables
+    # Find both active and pending contract tables
     tables = []
     for table_id in ["dataTable-active", "dataTable-pending"]:
         table = soup.find("table", {"id": table_id})
@@ -108,12 +115,12 @@ def scrape_team_contracts(team):
         logging.warning(f"No contracts tables found for {team}")
         return None
 
-    # Use headers from the first table found
+    # Extract season headers from the first table
     headers = [th.text.strip() for th in tables[0].find_all("th")]
     season_headers = [h for h in headers if h.startswith("20")]
     season_headers = season_headers[:5]
 
-    # Extract data from all tables and combine
+    # Extract data from all found tables
     all_data = []
     for table in tables:
         all_data.extend(extract_table(table, season_headers))
@@ -121,9 +128,10 @@ def scrape_team_contracts(team):
     columns = ["Player", "Player Link", "Position", "Age"] + season_headers
     return pd.DataFrame(all_data, columns=columns)
 
-# Function to scrape contract data for all teams in the 'teams' list
 def scrape_all_teams():
-    # List of NBA teams to scrape contract data for (Spotrac-friendly URL format)
+    """
+    Scrape contract data for all NBA teams from Spotrac.
+    """
     teams = [
         "atlanta-hawks", "boston-celtics", "brooklyn-nets", "charlotte-hornets",
         "chicago-bulls", "cleveland-cavaliers", "dallas-mavericks", "denver-nuggets",
@@ -132,47 +140,57 @@ def scrape_all_teams():
         "milwaukee-bucks", "minnesota-timberwolves", "new-orleans-pelicans",
         "new-york-knicks", "oklahoma-city-thunder", "orlando-magic", "philadelphia-76ers",
         "phoenix-suns", "portland-trail-blazers", "sacramento-kings", "san-antonio-spurs",
-        "toronto-raptors", "utah-jazz", "washington-wizards"
+        "toronto-raptors", "utah-jazz", "washington-wizards",
     ]
 
-    all_data = []  # List to store DataFrames for each team's contract data
-    for team in teams:
-        logging.info(f"Scraping data for {team}...")
-        team_data = scrape_team_contracts(team)  # Scrape contract data for the current team
-        
-        # If the team data was successfully retrieved, process and add it to the list
-        if team_data is not None:
-            team_data["Team"] = team  # Add a column for the team name
-            all_data.append(team_data)
-    
-    # Combine all team DataFrames into one large DataFrame (if any data was successfully scraped)
-    combined_data = pd.concat(all_data, ignore_index=True) if all_data else pd.DataFrame()
+    # Scrape all teams concurrently
+    all_data = []
 
-    return combined_data
+    # Use a session for connection pooling
+    with requests.Session() as session:
+        session.headers.update(HEADERS)
 
-# Function to scrape player data from the player's individual page
+        # Use ThreadPoolExecutor for concurrent scraping
+        with ThreadPoolExecutor(max_workers=6) as executor:
+            futures = {
+                executor.submit(scrape_team_contracts, team, session): team
+                for team in teams
+            }
+
+            # Collect results as they complete
+            for future in as_completed(futures):
+                team = futures[future]
+                try:
+                    df = future.result()
+                    if df is not None:
+                        df["Team"] = team
+                        all_data.append(df)
+                        logging.info(f"✔ Finished {team}")
+                except Exception as e:
+                    logging.error(f"{team} failed: {e}")
+
+    return pd.concat(all_data, ignore_index=True) if all_data else pd.DataFrame()
+
 def scrape_player_contracts(url):
-    # Send a GET request to fetch the web page content
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"
-    }
-
+    """
+    Scrape contract details for a specific player from Spotrac.
+    """
     try:
-        # Send a GET request to the player's page and parse the HTML content
-        response = requests.get(url, headers=headers)
+        # Make a request to the player's contract page
+        response = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
         soup = BeautifulSoup(response.content, "html.parser")
 
-        # CSS selector to find the "Signed Using" contract information
+        # Extract "Signed Using" details
         signed_using_selector = "#contracts > div > div > div.contract-wrapper.mb-5 > div.contract-details.row.m-0 > div:nth-child(5) > div.label"
         signed_using_element = soup.select_one(signed_using_selector)
 
-        # Extract contract info
+        # Get the text of the next sibling element which contains the value
         signed_using_value = (
             signed_using_element.find_next_sibling().get_text().strip()
             if signed_using_element else None
         )
 
-        # CSS selector to find the "Drafted" information
+        # Extract "Drafted" details
         drafted_selector = "#main > section > article > div.row.m-0.mt-0.pb-3 > div.col-md-6 > div > div:nth-child(1) > span"
         drafted_element = soup.select_one(drafted_selector)
 
@@ -186,14 +204,12 @@ def scrape_player_contracts(url):
     except Exception as e:
         return None, None
 
-# Example usage
+
 if __name__ == "__main__":
-    # Scrape contract data for all teams and store the result in a DataFrame
-    #contracts_df = scrape_all_teams()
-    # Display the first few rows of the combined DataFrame
-    #print(contracts_df.head())
-    
-    # Scrape contract data for a specific player (example)
-    player_df = scrape_player_contracts("https://www.spotrac.com/nba/player/_/id/15356")
-    # Display the scraped contract information for the player
+    # Example usage: Scrape San Antonio Spurs contracts and print the resulting DataFrame
+    team_df = scrape_team_contracts("san-antonio-spurs", requests.Session())
+    print(team_df)
+
+    # Example usage: Scrape contract details for Victor Wembanyama
+    player_df = scrape_player_contracts("https://www.spotrac.com/nba/player/_/id/82196/victor-wembanyama")
     print(player_df)
