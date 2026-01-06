@@ -1,10 +1,12 @@
-import os
-import sys
-import logging
-import pandas as pd
-import time
-import re
 import argparse
+import logging
+import os
+import re
+import requests
+import sys
+import time
+import pandas as pd
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # Set up paths
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -22,6 +24,12 @@ logger.info("The script started successfully.")
 from utils.google_sheets_manager import GoogleSheetsManager
 from utils.scrape_spotrac import scrape_player_contracts
 from utils.text_formatter import make_title_case
+
+# Global constants
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"
+}
+
 
 def main(update_csv=False, update_sheets=True, sheet_name="Contract Types"):
     logger.info(f"Starting script to scrape player data from {input_csv}")
@@ -61,43 +69,72 @@ def main(update_csv=False, update_sheets=True, sheet_name="Contract Types"):
             to_scrape = unique_links
             already_scraped = 0
 
-        start_time = time.time()
-        for idx, link in enumerate(to_scrape):
-            player_row = active_data[active_data["Player Link"] == link].iloc[0]
-            player_key = player_row["Player Key"]
-            player_name = player_row["Player"]
+        with requests.Session() as session:
+            session.headers.update({"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"})
 
-            try:
-                signed_using, drafted = scrape_player_contracts(link)
-                signed_using = make_title_case(signed_using)
-            except Exception as e:
-                logger.warning(f"Failed to scrape {player_name}: {e}")
-                continue
+            with ThreadPoolExecutor(max_workers=5) as executor:
+                futures = {
+                    executor.submit(scrape_player_contracts, link, session): link
+                    for link in to_scrape
+                }
 
-            scraped_row = {
-                "Player": player_name,
-                "Player Link": link,
-                "Player Key": player_key,
-                "Signed Using": signed_using,
-                "Drafted": drafted,
-            }
-
-            pd.DataFrame([scraped_row]).to_csv(output_csv, mode="a", header=False, index=False, encoding="utf-8")
-
-            # Calculate ETA
-            total_done = idx + already_scraped + 1
-            percent_complete = total_done / len(unique_links) * 100
-            elapsed = time.time() - start_time
-            rate = elapsed / (idx + 1)
-            remaining_time = rate * (len(to_scrape) - (idx + 1))
-            eta_min = int(remaining_time // 60)
-            eta_sec = int(remaining_time % 60)
-
-            logger.info(
-                f"Processed {idx + 1}/{len(to_scrape)} this session "
-                f"({total_done}/{len(unique_links)} total, {percent_complete:.1f}%) "
-                f"- {player_name} | ETA: {eta_min:02d}:{eta_sec:02d}"
+            player_lookup = (
+                active_data
+                .set_index("Player Link")[["Player", "Player Key"]]
+                .to_dict(orient="index")
             )
+
+            start_time = time.time()
+
+            with requests.Session() as session:
+                session.headers.update(HEADERS)
+
+                with ThreadPoolExecutor(max_workers=5) as executor:
+                    futures = {
+                        executor.submit(scrape_player_contracts, link, session): link
+                        for link in to_scrape
+                    }
+
+                    for idx, future in enumerate(as_completed(futures), start=1):
+                        link = futures[future]
+                        player_meta = player_lookup[link]
+
+                        player_name = player_meta["Player"]
+                        player_key = player_meta["Player Key"]
+
+                        try:
+                            signed_using, drafted = future.result()
+                            signed_using = make_title_case(signed_using)
+                        except Exception as e:
+                            logger.warning(f"Failed to scrape {player_name}: {e}")
+                            continue
+
+                        scraped_row = {
+                            "Player": player_name,
+                            "Player Link": link,
+                            "Player Key": player_key,
+                            "Signed Using": signed_using,
+                            "Drafted": drafted,
+                        }
+
+                        pd.DataFrame([scraped_row]).to_csv(
+                            output_csv, mode="a", header=False, index=False
+                        )
+
+                        # Calculate ETA
+                        total_done = idx + already_scraped + 1
+                        percent_complete = total_done / len(unique_links) * 100
+                        elapsed = time.time() - start_time
+                        rate = elapsed / (idx + 1)
+                        remaining_time = rate * (len(to_scrape) - (idx + 1))
+                        eta_min = int(remaining_time // 60)
+                        eta_sec = int(remaining_time % 60)
+
+                        logger.info(
+                            f"Processed {idx + 1}/{len(to_scrape)} this session "
+                            f"({total_done}/{len(unique_links)} total, {percent_complete:.1f}%) "
+                            f"- {player_name} | ETA: {eta_min:02d}:{eta_sec:02d}"
+                        )
 
         # Dynamically determine the cutoff year from the first entry in salary_data["2025-26"]
         try:
