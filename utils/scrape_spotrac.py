@@ -171,13 +171,13 @@ def scrape_all_teams():
 
     return pd.concat(all_data, ignore_index=True) if all_data else pd.DataFrame()
 
-def scrape_player_contracts(url):
+def scrape_player_contracts(url, session):
     """
     Scrape contract details for a specific player from Spotrac.
     """
     try:
         # Make a request to the player's contract page
-        response = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
+        response = session.get(url, headers=HEADERS, timeout=TIMEOUT)
         soup = BeautifulSoup(response.content, "html.parser")
 
         # Extract "Signed Using" details
