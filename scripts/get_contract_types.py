@@ -82,6 +82,16 @@ def main(update_csv=False, update_sheets=True, sheet_name="Contract Types"):
             f"To scrape: {len(to_scrape)}"
         )
 
+        # If all players have been scraped, reset and start from the beginning
+        if len(to_scrape) == 0 and len(existing_links) > 0:
+            logger.info("All players have been scraped. Resetting and starting from the beginning.")
+            existing_df = pd.DataFrame(
+                columns=["Player", "Player Link", "Player Key", "Signed Using", "Drafted"]
+            )
+            existing_df.to_csv(output_csv, index=False)
+            existing_links = set()
+            to_scrape = unique_links
+
         # -------------------------------------------------
         # Fast lookup dict (thread-safe)
         # -------------------------------------------------
