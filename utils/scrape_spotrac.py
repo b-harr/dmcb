@@ -6,6 +6,9 @@ import logging
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
+# Configure pandas display options to show all columns
+pd.set_option('display.max_columns', None)
+pd.set_option('display.width', None)
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -71,14 +74,39 @@ def scrape_team_contracts(team, session):
             player_name = player_tag.text.strip() if player_tag else "Unknown"
             player_link = player_tag["href"] if player_tag else None
 
-            # Extract position and age
-            position = cells[1].text.strip()
-            age = cells[2].text.strip()
+            # Extract position and age and determine where contract columns start
+            position = "Unknown"
+            age = "Unknown"
+            contract_start = 3
+
+            if len(cells) >= 3:
+                position_export = cells[1].get("data-export")
+                if position_export is not None and not str(position_export).strip().isdigit():
+                    position_raw = position_export.strip() if position_export else cells[1].get_text(separator="\n").strip()
+                    position = position_raw.split('\n')[0] if position_raw else "Unknown"
+
+                    age_export = cells[2].get("data-export")
+                    age_raw = age_export.strip() if isinstance(age_export, str) else cells[2].get_text(separator="\n").strip()
+                    age = age_raw.split('\n')[0] if age_raw else "Unknown"
+                else:
+                    player_details = row.find("div", class_="text-muted")
+                    if player_details:
+                        details_text = player_details.get_text(separator=" ").strip()
+                        details_match = re.search(r"\(?\s*([^,]+?)\s*,\s*(\d{1,2})\s*\)?", details_text)
+                        if details_match:
+                            position = details_match.group(1).strip()
+                            age = details_match.group(2).strip()
+                    contract_start = 1
 
             # Extract contract values for the seasons
             contract_values = []
-            for col in cells[3:]:
-                cell_text = col.get_text(strip=True)
+            for col in cells[contract_start:]:
+                cell_text = col.get_text().strip()
+                cell_amount = col.get("data-export")
+                if not isinstance(cell_amount, str) or not cell_amount.strip():
+                    hidden_span = col.find("span", style=lambda s: s and "display: none" in s)
+                    cell_amount = hidden_span.get_text().strip() if hidden_span else None
+                cell_amount = cell_amount.strip() if isinstance(cell_amount, str) else None
 
                 # Check for special contract types
                 if "Two-Way" in cell_text:
@@ -89,8 +117,8 @@ def scrape_team_contracts(team, session):
                     contract_values.append("RFA")
                 else:
                     # Extract dollar amounts
-                    salary_matches = re.findall(r"\$\d{1,3}(?:,\d{3})*(?:\.\d{2})?", cell_text)
-                    contract_values.extend([s.replace(",", "") for s in salary_matches])
+                    salary_matches = f"${cell_amount}" if cell_amount else None
+                    contract_values.append(salary_matches)
 
             # Limit to first 5 seasons
             contract_values = contract_values[:5]
@@ -206,10 +234,10 @@ def scrape_player_contracts(url, session):
 
 
 if __name__ == "__main__":
-    # Example usage: Scrape San Antonio Spurs contracts and print the resulting DataFrame
-    team_df = scrape_team_contracts("san-antonio-spurs", requests.Session())
+    # Example usage: Scrape Oklahoma City Thunder contracts and print the resulting DataFrame
+    team_df = scrape_team_contracts("oklahoma-city-thunder", requests.Session())
     print(team_df)
 
-    # Example usage: Scrape contract details for Victor Wembanyama
-    player_df = scrape_player_contracts("https://www.spotrac.com/nba/player/_/id/82196/victor-wembanyama")
+    # Example usage: Scrape contract details for Alex Caruso and print the resulting DataFrame
+    player_df = scrape_player_contracts("https://www.spotrac.com/nba/player/_/id/21076/alex-caruso", requests.Session())
     print(player_df)
