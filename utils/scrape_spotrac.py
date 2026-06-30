@@ -118,6 +118,8 @@ def scrape_team_contracts(team, session):
                 else:
                     # Extract dollar amounts
                     salary_matches = f"${cell_amount}" if cell_amount else None
+                    if salary_matches == "$-10":
+                        salary_matches = None
                     contract_values.append(salary_matches)
 
             # Limit to first 5 seasons
