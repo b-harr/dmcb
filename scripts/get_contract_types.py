@@ -49,8 +49,8 @@ def main(update_csv=False, update_sheets=True, sheet_name="Contract Types"):
     # Active players only
     # -------------------------------------------------
     active_data = salary_data[
-        (salary_data["2025-26"] != "Two-Way") &
-        (salary_data["2025-26"] != "-")
+        (salary_data["2026-27"] != "Two-Way") &
+        (salary_data["2026-27"] != "-")
     ].copy()
 
     unique_links = (
