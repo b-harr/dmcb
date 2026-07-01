@@ -97,6 +97,7 @@ def main(update_csv=False, update_sheets=True, sheet_name="Contract Types"):
         # -------------------------------------------------
         player_lookup = (
             active_data
+            .drop_duplicates(subset=["Player Link"])
             .set_index("Player Link")[["Player", "Player Key"]]
             .to_dict("index")
         )
