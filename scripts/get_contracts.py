@@ -138,7 +138,7 @@ def main(update_csv=True, update_sheets=False, sheet_name="Contracts", data_rang
             logging.info("Google Sheets updated successfully.")
 
             # Write the timestamp to Google Sheets
-            sheets_manager.write_data([[f"{timestamp}"]], sheet_name=sheet_name, start_cell="AC2")
+            sheets_manager.write_data([[f"{timestamp}"]], sheet_name=sheet_name, start_cell="AB2")
             logging.info("Wrote timestamp to Google Sheets.")
         except Exception as e:
             logging.error(f"Failed to update Google Sheets: {e}")
