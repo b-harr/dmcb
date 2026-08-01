@@ -34,6 +34,43 @@ from utils.text_formatter import make_title_case
 
 
 # -------------------------------------------------
+# Helpers
+# -------------------------------------------------
+def get_links_to_scrape(unique_links, output_csv_path):
+    if not os.path.exists(output_csv_path):
+        return unique_links
+
+    existing_df = pd.read_csv(output_csv_path)
+    missing_cols = ["Signed Using", "Drafted"]
+
+    if set(missing_cols).issubset(existing_df.columns):
+        missing_mask = (
+            existing_df[missing_cols].isna().all(axis=1)
+            | existing_df[missing_cols].eq("").all(axis=1)
+        )
+
+        if missing_mask.any():
+            missing_links = set(
+                existing_df.loc[missing_mask, "Player Link"].dropna().astype(str)
+            )
+            cleaned_df = existing_df.loc[~missing_mask].copy()
+            cleaned_df.to_csv(output_csv_path, index=False)
+            logger.info(
+                f"Removed {missing_mask.sum()} rows with missing contract metadata from {output_csv_path}"
+            )
+        else:
+            missing_links = set()
+            cleaned_df = existing_df
+    else:
+        missing_links = set()
+        cleaned_df = existing_df
+
+    existing_links = set(cleaned_df["Player Link"].dropna().astype(str))
+
+    return [link for link in unique_links if link in missing_links or link not in existing_links]
+
+
+# -------------------------------------------------
 # Main
 # -------------------------------------------------
 def main(update_csv=False, update_sheets=True, sheet_name="Contract Types"):
@@ -74,8 +111,9 @@ def main(update_csv=False, update_sheets=True, sheet_name="Contract Types"):
             )
             existing_df.to_csv(output_csv, index=False)
 
-        existing_links = set(existing_df["Player Link"])
-        to_scrape = [link for link in unique_links if link not in existing_links]
+        cleaned_df = pd.read_csv(output_csv)
+        existing_links = set(cleaned_df["Player Link"].dropna().astype(str))
+        to_scrape = get_links_to_scrape(unique_links, output_csv)
 
         logger.info(
             f"Existing: {len(existing_links)} | "
