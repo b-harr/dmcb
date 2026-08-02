@@ -2,6 +2,7 @@ import os
 import sys
 import logging
 import argparse
+import pandas as pd
 
 # Set up the project root directory for module imports
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,6 +26,50 @@ logger.info("The script started successfully.")
 from utils.scrape_sportsws import scrape_sportsws_positions
 from utils.text_formatter import make_player_key
 from utils.google_sheets_manager import GoogleSheetsManager
+
+
+def merge_owner_from_google_sheets(df, sheet_name="Contracts"):
+    """Merge owner values from the Google Sheets Contracts tab using Player Key."""
+    try:
+        sheets_manager = GoogleSheetsManager()
+        raw_data = sheets_manager.read_data(sheet_name=sheet_name)
+    except Exception as e:
+        logger.warning(f"Could not read owner data from Google Sheets '{sheet_name}': {e}")
+        return df
+
+    if not raw_data:
+        return df
+
+    header = raw_data[0]
+    rows = raw_data[1:] if len(raw_data) > 1 else []
+
+    if len(header) <= 16:
+        logger.warning("Google Sheets 'Contracts' tab does not contain the expected owner column (Q).")
+        return df
+
+    owner_df = pd.DataFrame(rows, columns=[str(col).strip() for col in header])
+    owner_df = owner_df.iloc[:, [0, 1, 2, 16]].copy()
+    owner_df.columns = ["Player", "Player Link", "Player Key", "Owner"]
+
+    owner_df["Player Key"] = owner_df["Player Key"].astype(str).str.strip()
+    owner_df = owner_df.dropna(subset=["Player Key"])
+    owner_df = owner_df[owner_df["Player Key"] != ""]
+
+    owner_lookup = {}
+    for _, row in owner_df.iterrows():
+        owner_lookup[row["Player Key"]] = row["Owner"]
+
+    if df.empty:
+        return df
+
+    merged_df = df.copy()
+    merged_df["Player Key"] = merged_df["Player Key"].astype(str).str.strip()
+    merged_df["Owner"] = merged_df["Player Key"].map(owner_lookup)
+    merged_df["Owner"] = merged_df["Owner"].replace({None: ""}).fillna("")
+
+    other_columns = [col for col in merged_df.columns if col != "Owner"]
+    return merged_df[other_columns + ["Owner"]]
+
 
 def main(update_csv=True, update_sheets=False, sheet_name="Positions"):
     """
@@ -50,6 +95,8 @@ def main(update_csv=True, update_sheets=False, sheet_name="Positions"):
     # Reorder columns and remove "Team" from output
     column_order = ["Name", "Player Link", "Player Key", "Position"]
     df = df[column_order]
+
+    df = merge_owner_from_google_sheets(df, sheet_name="Contracts")
 
     # Export to CSV if requested
     if update_csv:
