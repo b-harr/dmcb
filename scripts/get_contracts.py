@@ -38,6 +38,52 @@ from utils.scrape_spotrac import scrape_all_teams
 from utils.text_formatter import make_player_key, make_title_case
 from utils.google_sheets_manager import GoogleSheetsManager
 
+
+def merge_owner_from_google_sheets(df, sheet_name="Contracts"):
+    """Merge owner values from the Google Sheets Contracts tab using Player Key."""
+    try:
+        sheets_manager = GoogleSheetsManager()
+        raw_data = sheets_manager.read_data(sheet_name=sheet_name)
+    except Exception as e:
+        logging.warning(f"Could not read owner data from Google Sheets '{sheet_name}': {e}")
+        return df
+
+    if not raw_data:
+        return df
+
+    header = raw_data[0]
+    rows = raw_data[1:] if len(raw_data) > 1 else []
+
+    if len(header) <= 16:
+        logging.warning("Google Sheets 'Contracts' tab does not contain the expected owner column (Q).")
+        return df
+
+    owner_df = pd.DataFrame(rows, columns=[str(col).strip() for col in header])
+    owner_df = owner_df.iloc[:, [0, 1, 2, 16]].copy()
+    owner_df.columns = ["Player", "Player Link", "Player Key", "Owner"]
+
+    owner_df["Player Key"] = owner_df["Player Key"].astype(str).str.strip()
+    owner_df = owner_df.dropna(subset=["Player Key"])
+    owner_df = owner_df[owner_df["Player Key"] != ""]
+
+    owner_lookup = {}
+    for _, row in owner_df.iterrows():
+        key = row["Player Key"]
+        owner = row["Owner"]
+        owner_lookup.setdefault(key, owner)
+
+    if df.empty:
+        return df
+
+    merged_df = df.copy()
+    merged_df["Player Key"] = merged_df["Player Key"].astype(str).str.strip()
+    merged_df["Owner"] = merged_df["Player Key"].map(owner_lookup)
+    merged_df["Owner"] = merged_df["Owner"].replace({None: ""}).fillna("")
+
+    other_columns = [col for col in merged_df.columns if col != "Owner"]
+    return merged_df[other_columns + ["Owner"]]
+
+
 def main(update_csv=True, update_sheets=False, sheet_name="Contracts", data_range="A1:L751"):
     """
     Main function to scrape Spotrac data, process it, and optionally save it to a CSV file
@@ -98,6 +144,8 @@ def main(update_csv=True, update_sheets=False, sheet_name="Contracts", data_rang
             logging.error(f"Error during data processing: {e}")
             sys.exit(1)
     
+    df = merge_owner_from_google_sheets(df, sheet_name=sheet_name)
+
     # Save the processed data to a CSV file
     if update_csv:
         try:

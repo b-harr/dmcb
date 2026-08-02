@@ -67,6 +67,8 @@ def make_title_case(text):
             formatted_words.append("RFA")
         elif word == "ufa":
             formatted_words.append("UFA")
+        elif word == "mle":
+            formatted_words.append("MLE")
         # Handle exception words with hyphenation
         elif word in hyphenated_words and i < len(words) - 1:
             formatted_words.append(f"{word.capitalize()}-{words[i + 1].capitalize()}")
