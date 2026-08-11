@@ -181,8 +181,11 @@ def main(update_csv=True, update_sheets=False, sheet_name="Contracts", data_rang
             sheets_manager = GoogleSheetsManager()
             sheets_manager.clear_range(sheet_name=sheet_name, range_to_clear=data_range)
 
+            # Exclude the Owner column from the sheet write so it does not overwrite column M
+            write_df = df.drop(columns=["Owner"]) if "Owner" in df.columns else df.copy()
+
             # Write the processed data frame to the sheet starting from cell A1
-            sheets_manager.write_data([df.columns.tolist()] + df.values.tolist(), sheet_name=sheet_name, start_cell="A1")
+            sheets_manager.write_data([write_df.columns.tolist()] + write_df.values.tolist(), sheet_name=sheet_name, start_cell="A1")
             logging.info("Google Sheets updated successfully.")
 
             # Write the timestamp to Google Sheets
