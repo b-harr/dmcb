@@ -36,7 +36,7 @@ from utils.google_sheets_manager import GoogleSheetsManager
 # Columns that require numeric conversion for calculations
 numeric_columns = ["PTS", "TRB", "AST", "STL", "BLK", "TOV", "PF", "G", "MP"]
 
-def main(year=2025, update_csv=True, update_sheets=False, sheet_name="Stats"):
+def main(year=2026, update_csv=True, update_sheets=False, sheet_name="Stats"):
     """Main function to scrape NBA stats, process data, and optionally update CSV or Google Sheets.
 
     Args:
