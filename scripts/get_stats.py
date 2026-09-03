@@ -149,8 +149,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "--sheet_name",
         type=str,
-        default="Positions",
-        help="Google Sheets tab name to update (default: Positions)."
+        default="Stats",
+        help="Google Sheets tab name to update (default: Stats)."
     )
 
     args = parser.parse_args()
