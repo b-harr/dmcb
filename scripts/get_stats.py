@@ -83,7 +83,7 @@ def main(year=2026, update_csv=True, update_sheets=False, sheet_name="Stats"):
     # Save data to CSV
     if update_csv:
         try:
-            target_csv = output_csv if year == 2025 else os.path.join("data/bbref_archive", f"NBA_{year}_totals.csv")
+            target_csv = output_csv if year == 2026 else os.path.join("data/bbref_archive", f"NBA_{year}_totals.csv")
             os.makedirs(os.path.dirname(target_csv), exist_ok=True)
             df.to_csv(target_csv, index=False, encoding="utf-8")
             logger.info(f"Data saved to CSV: {target_csv}")
