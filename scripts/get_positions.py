@@ -125,8 +125,9 @@ def main(update_csv=True, update_sheets=False, sheet_name="Positions"):
             logger.info("Timestamp added to Google Sheets.")
 
             # Write the processed data to the sheet starting from cell A2
+            write_df = df.drop(columns=["Owner"]) if "Owner" in df.columns else df
             sheets_manager.write_data(
-                [df.columns.tolist()] + df.values.tolist(),
+                [write_df.columns.tolist()] + write_df.values.tolist(),
                 sheet_name=sheet_name,
                 start_cell="A2"
             )
