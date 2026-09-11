@@ -1,8 +1,8 @@
-import requests
-from bs4 import BeautifulSoup
-import pandas as pd
 import unicodedata
 import re
+import requests
+import pandas as pd
+from bs4 import BeautifulSoup
 
 
 HEADERS = {
@@ -162,8 +162,8 @@ def scrape_team_contracts(soup, table_id="dataTable-active"):
     df = pd.DataFrame(data, columns=headers)
     return df
 
-def scrape_player_details(player_soup):
-    table = player_soup.find("div", class_="contract-details")
+def scrape_player_details(soup):
+    table = soup.find("div", class_="contract-details")
 
     details = []
     for label, value in zip(
@@ -178,26 +178,29 @@ def scrape_player_details(player_soup):
     df = pd.DataFrame(details).set_index(0).T
     return df
 
-def scrape_sportsws_stats(sportsws_page):
-    soup = scrape_website(sportsws_page)
+def scrape_sportsws_stats(soup):
     table = soup.find("table")
     rows = table.find("tbody").find_all("tr")
     data = []
     for row in rows:
         player = row.find_all("td")[0].text.strip()
         data.append(player)
-    return data
+    df = pd.DataFrame(data)
+    return df
 
 
 if __name__ == "__main__":
     team_url = "https://www.spotrac.com/nba/san-antonio-spurs/yearly"
-    team_contract = scrape_team_contracts(team_url)
+    team_soup = scrape_website(team_url)
+    team_contract = scrape_team_contracts(team_soup)
     print(team_contract)
 
     player_url = "https://www.spotrac.com/nba/player/_/id/82196/victor-wembanyama"
-    player_details = scrape_player_details(player_url)
+    player_soup = scrape_website(player_url)
+    player_details = scrape_player_details(player_soup)
     print(player_details)
 
     sportsws_url = "https://sports.ws/nba/stats"
-    sportsws_stats = scrape_sportsws_stats(sportsws_url)
-    print(sportsws_stats)
+    sportsws_soup = scrape_website(sportsws_url)
+    sportsws_data = scrape_sportsws_stats(sportsws_soup)
+    print(sportsws_data)
