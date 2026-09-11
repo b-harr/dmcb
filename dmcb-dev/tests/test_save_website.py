@@ -9,7 +9,7 @@ from main import save_website
 
 
 if __name__ == "__main__":
-    team_url = "https://www.spotrac.com/nba/houston-rockets/yearly"
+    team_url = "https://www.spotrac.com/nba/la-clippers/yearly"
     output_path = os.path.join(project_root, "tests/cache/team.html")
     save_website(team_url, output_path)
 

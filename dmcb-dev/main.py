@@ -3,6 +3,7 @@ import re
 import requests
 import pandas as pd
 from bs4 import BeautifulSoup
+from pathlib import Path
 
 
 HEADERS = {
@@ -104,10 +105,9 @@ def scrape_website(url):
     soup = BeautifulSoup(page.content, "html.parser")
     return soup
 
-def scrape_cache(path):
-    with open(path, "r", encoding="utf-8") as file:
-        content = file.read()
-    soup = BeautifulSoup(content, "html.parser")
+def scrape_cache(file):
+    contents = Path(file).read_text(encoding="utf-8")
+    soup = BeautifulSoup(contents, "html.parser")
     return soup
 
 def save_website(url, output_path):
