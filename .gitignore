@@ -2,7 +2,7 @@
 /secrets/
 logs/
 __pycache__/
-cache/
+cache
 .venv/
 
 # Files
