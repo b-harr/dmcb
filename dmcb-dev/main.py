@@ -139,7 +139,7 @@ def scrape_team_contracts(soup, table_id="dataTable-active"):
         age = cells[2].get("data-export", "").strip()
 
         def get_contract_value(cell):
-            #export_value = cell.get("data-export", "").strip()
+            export_value = cell.get("data-export", "").strip()
             pill = cell.select_one(".pill-start")
             pill_text = pill.get_text(" ", strip=True) if pill else ""
 
@@ -150,10 +150,9 @@ def scrape_team_contracts(soup, table_id="dataTable-active"):
             if pill_text.startswith("$"):
                 return pill_text.replace(",", "")
 
-            return pill_text
+            return export_value
 
         values = [
-
             get_contract_value(cell)
             for cell in cells[3:]
         ]
@@ -165,6 +164,7 @@ def scrape_team_contracts(soup, table_id="dataTable-active"):
 
 def scrape_player_details(player_soup):
     table = player_soup.find("div", class_="contract-details")
+
     details = []
     for label, value in zip(
         table.find_all("div", class_="label"),
@@ -174,7 +174,9 @@ def scrape_player_details(player_soup):
             label.get_text(strip=True),
             value.get_text(strip=True),
         ))
-    return details
+
+    df = pd.DataFrame(details).set_index(0).T
+    return df
 
 def scrape_sportsws_stats(sportsws_page):
     soup = scrape_website(sportsws_page)
