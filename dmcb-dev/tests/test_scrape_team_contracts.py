@@ -24,6 +24,6 @@ if __name__ == "__main__":
     #df_web = test_web(team_url)
     #print(df_web)
 
-    team_cache = "dmcb-dev/tests/cache/team.html"
+    team_cache = os.path.join(project_root, "tests/cache/team.html")
     df_cache = test_cache(team_cache)
     print(df_cache)
