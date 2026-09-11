@@ -104,8 +104,8 @@ def scrape_website(url):
     soup = BeautifulSoup(page.content, "html.parser")
     return soup
 
-def scrape_cache(file_path):
-    with open(file_path, "r", encoding="utf-8") as file:
+def scrape_cache(path):
+    with open(path, "r", encoding="utf-8") as file:
         content = file.read()
     soup = BeautifulSoup(content, "html.parser")
     return soup
@@ -116,10 +116,10 @@ def save_website(url, output_path):
         file.write(soup.prettify())
     return soup
 
-def extract_multiyear_table(soup, table_id="dataTable-active"):
+def scrape_team_contracts(soup, table_id="dataTable-active"):
     table = soup.find("table", id=table_id)
     if table is None:
-        return [], []
+        return pd.DataFrame()
 
     headers = [
         th.get_text(strip=True)
@@ -160,11 +160,8 @@ def extract_multiyear_table(soup, table_id="dataTable-active"):
 
         data.append([player, link, position, age, *values])
 
-    return headers, data
-
-def scrape_team_contracts(team_soup):
-    headers, data = extract_multiyear_table(team_soup)
-    return pd.DataFrame(data, columns=headers)
+    df = pd.DataFrame(data, columns=headers)
+    return df
 
 def scrape_player_details(player_soup):
     table = player_soup.find("div", class_="contract-details")
