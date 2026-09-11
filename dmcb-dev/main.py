@@ -1,7 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-from decimal import Decimal, InvalidOperation
-from pathlib import Path
+import pandas as pd
 import unicodedata
 import re
 
@@ -105,11 +104,17 @@ def scrape_website(url):
     soup = BeautifulSoup(page.content, "html.parser")
     return soup
 
+def scrape_cache(file_path):
+    with open(file_path, "r", encoding="utf-8") as file:
+        content = file.read()
+    soup = BeautifulSoup(content, "html.parser")
+    return soup
+
 def save_website(url, output_path):
     soup = scrape_website(url)
-    Path(output_path).parent.mkdir(parents=True, exist_ok=True)
     with open(output_path, "w", encoding="utf-8") as file:
         file.write(soup.prettify())
+    return soup
 
 def extract_multiyear_table(soup, table_id="dataTable-active"):
     table = soup.find("table", id=table_id)
@@ -134,7 +139,7 @@ def extract_multiyear_table(soup, table_id="dataTable-active"):
         age = cells[2].get("data-export", "").strip()
 
         def get_contract_value(cell):
-            export_value = cell.get("data-export", "").strip()
+            #export_value = cell.get("data-export", "").strip()
             pill = cell.select_one(".pill-start")
             pill_text = pill.get_text(" ", strip=True) if pill else ""
 
@@ -143,13 +148,7 @@ def extract_multiyear_table(soup, table_id="dataTable-active"):
                     return status
 
             if pill_text.startswith("$"):
-                return export_value.replace(",", "")
-
-            try:
-                if export_value and Decimal(export_value) >= 0:
-                    return export_value
-            except InvalidOperation:
-                pass
+                return pill_text.replace(",", "")
 
             return pill_text
 
@@ -163,14 +162,12 @@ def extract_multiyear_table(soup, table_id="dataTable-active"):
 
     return headers, data
 
-def scrape_team_contracts(team_page):
-    soup = scrape_website(team_page)
-    contracts = extract_multiyear_table(soup)
-    return contracts
+def scrape_team_contracts(team_soup):
+    headers, data = extract_multiyear_table(team_soup)
+    return pd.DataFrame(data, columns=headers)
 
-def scrape_player_details(player_page):
-    soup = scrape_website(player_page)
-    table = soup.find("div", class_="contract-details")
+def scrape_player_details(player_soup):
+    table = player_soup.find("div", class_="contract-details")
     details = []
     for label, value in zip(
         table.find_all("div", class_="label"),
