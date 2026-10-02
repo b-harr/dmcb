@@ -34,9 +34,9 @@ os.makedirs(output_dir, exist_ok=True)
 output_csv = os.path.join(output_dir, output_file)
 
 # Import utility functions and modules
-from utils.scrape_spotrac import scrape_all_teams
+from utils.spotrac_scraper import scrape_all_teams
 from utils.text_formatter import make_player_key, make_title_case
-from utils.google_sheets_manager import GoogleSheetsManager
+from utils.sheets_manager import GoogleSheetsManager
 
 
 def merge_owner_from_google_sheets(df, sheet_name="Contracts"):

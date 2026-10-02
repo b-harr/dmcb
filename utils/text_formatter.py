@@ -1,7 +1,8 @@
 import unicodedata
 import re
 
-# Dictionary for known player key overrides
+
+# Set consistent player key when naming conflicts among sources exist
 PLAYER_KEY_OVERRIDES = {
     "cam-thomas": "cameron-thomas",
     "oliviermaxence-prosper": "olivier-maxence-prosper",
@@ -10,6 +11,15 @@ PLAYER_KEY_OVERRIDES = {
     #"yang-hansen": "hansen-yang",
     # add more as needed
 }
+MINOR_WORDS = {
+    "a", "an", "the", "and", "or",
+    "in", "on", "of", "for", "to",
+    "by", "with", "at", "vs"
+}
+HYPHENATED_WORDS = {
+    "non", "mid", "bi", "re"
+}
+
 
 def make_player_key(name):
     """
@@ -44,11 +54,7 @@ def make_title_case(text):
 
     Returns:
         str or None: The formatted text, or None if the input is None.
-    """
-    # List of minor words that should not be capitalized unless they are at the beginning or end
-    minor_words = {"and", "or", "the", "in", "at", "for", "to", "by", "with", "a", "an", "of", "on", "vs"}
-    hyphenated_words = {"non", "mid", "bi"}
-    
+    """    
     if text is None:
         return None
 
@@ -70,11 +76,11 @@ def make_title_case(text):
         elif word == "mle":
             formatted_words.append("MLE")
         # Handle exception words with hyphenation
-        elif word in hyphenated_words and i < len(words) - 1:
+        elif word in HYPHENATED_WORDS and i < len(words) - 1:
             formatted_words.append(f"{word.capitalize()}-{words[i + 1].capitalize()}")
             i += 1  # Skip the next word as it's already processed
         # Handle minor words
-        elif word in minor_words:
+        elif word in MINOR_WORDS:
             formatted_words.append(word if i != 0 and i != len(words) - 1 else word.capitalize())
         # Capitalize alphabetic words; retain numbers
         else:
@@ -88,7 +94,7 @@ def make_title_case(text):
     formatted_words = re.sub("Sign and Trade", "Sign-and-Trade", formatted_words)
     return formatted_words
 
-# Example usage (commented out):
+
 if __name__ == "__main__":
     # Test make_player_key
     print(make_player_key("LeBron James Jr."))
@@ -98,3 +104,5 @@ if __name__ == "__main__":
     print(make_title_case("sign and trade deal"))
     print(make_title_case("LA Lakers vs non-stop"))
     print(make_title_case("Non taxpayer bi annual Mid Level Exception"))
+    print(make_title_case("re signed extension"))
+    print(make_title_case("resigned from league"))

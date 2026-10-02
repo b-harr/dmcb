@@ -15,12 +15,27 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 
 # Global constants
 HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"
+    "User-Agent": (
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+        "AppleWebKit/605.1.15 (KHTML, like Gecko) "
+        "Version/26.6.2 Safari/605.1.15"
+    )
 }
-
 MAX_RETRIES = 3
 RETRY_DELAY = 2
 TIMEOUT = 10
+TEAMS = [
+    "atlanta-hawks", "boston-celtics", "brooklyn-nets",
+    "charlotte-hornets", "chicago-bulls", "cleveland-cavaliers",
+    "dallas-mavericks", "denver-nuggets", "detroit-pistons",
+    "golden-state-warriors", "houston-rockets", "indiana-pacers",
+    "la-clippers", "los-angeles-lakers", "memphis-grizzlies",
+    "miami-heat", "milwaukee-bucks", "minnesota-timberwolves",
+    "new-orleans-pelicans", "new-york-knicks", "oklahoma-city-thunder",
+    "orlando-magic", "philadelphia-76ers", "phoenix-suns",
+    "portland-trail-blazers", "sacramento-kings", "san-antonio-spurs",
+    "toronto-raptors", "utah-jazz", "washington-wizards",
+]
 
 
 def scrape_team_contracts(team, session):
@@ -59,10 +74,9 @@ def scrape_team_contracts(team, session):
     soup = BeautifulSoup(response.content, "html.parser")
 
     # Function to extract data from a table
-    def extract_table(table, season_headers):
+    def extract_table(table):
         data = []
-        for row in table.find("tbody").find_all("tr"):
-            # Skip header or invalid rows
+        for row in table.select("tbody tr"):
             cells = row.find_all("td")
 
             # Ensure there are enough cells
@@ -70,67 +84,32 @@ def scrape_team_contracts(team, session):
                 continue
 
             # Extract player name and link
-            player_tag = row.find("a")
-            player_name = player_tag.text.strip() if player_tag else "Unknown"
-            player_link = player_tag["href"] if player_tag else None
+            player = cells[0].get("data-export").strip() if cells[0].get("data-export") else None
+            link = cells[0].find("a")["href"] if cells[0].find("a") else None
+            position = cells[1].get("data-export").strip() if cells[1].get("data-export") else None
+            age = cells[2].get("data-export").strip() if cells[2].get("data-export") else None
 
-            # Extract position and age and determine where contract columns start
-            position = "Unknown"
-            age = "Unknown"
-            contract_start = 3
+            def get_value(cell: str):
+                export_value = cell.get("data-export").strip() if cell.get("data-export") else None
+                pill = cell.select_one(".pill-start")
+                pill_value = pill.get_text(strip=True) if pill else None
 
-            if len(cells) >= 3:
-                position_export = cells[1].get("data-export")
-                if position_export is not None and not str(position_export).strip().isdigit():
-                    position_raw = position_export.strip() if position_export else cells[1].get_text(separator="\n").strip()
-                    position = position_raw.split('\n')[0] if position_raw else "Unknown"
+                for status in ("UFA", "RFA", "Two-Way"):
+                    if pill_value.startswith(status):
+                        return status
 
-                    age_export = cells[2].get("data-export")
-                    age_raw = age_export.strip() if isinstance(age_export, str) else cells[2].get_text(separator="\n").strip()
-                    age = age_raw.split('\n')[0] if age_raw else "Unknown"
-                else:
-                    player_details = row.find("div", class_="text-muted")
-                    if player_details:
-                        details_text = player_details.get_text(separator=" ").strip()
-                        details_match = re.search(r"\(?\s*([^,]+?)\s*,\s*(\d{1,2})\s*\)?", details_text)
-                        if details_match:
-                            position = details_match.group(1).strip()
-                            age = details_match.group(2).strip()
-                    contract_start = 1
+                if pill_value.startswith("$"):
+                    return pill_value.replace(",", "")
 
-            # Extract contract values for the seasons
-            contract_values = []
-            for col in cells[contract_start:]:
-                cell_text = col.get_text().strip()
-                cell_amount = col.get("data-export")
-                if not isinstance(cell_amount, str) or not cell_amount.strip():
-                    hidden_span = col.find("span", style=lambda s: s and "display: none" in s)
-                    cell_amount = hidden_span.get_text().strip() if hidden_span else None
-                cell_amount = cell_amount.strip() if isinstance(cell_amount, str) else None
+                return export_value
 
-                # Check for special contract types
-                if "Two-Way" in cell_text:
-                    contract_values.append("Two-Way")
-                elif "UFA" in cell_text:
-                    contract_values.append("UFA")
-                elif "RFA" in cell_text:
-                    contract_values.append("RFA")
-                else:
-                    # Extract dollar amounts
-                    salary_matches = f"${cell_amount}" if cell_amount else None
-                    if salary_matches == "$-10":
-                        salary_matches = None
-                    contract_values.append(salary_matches)
+            values = [
+                get_value(cell)
+                for cell in cells[3:]
+            ]
+            values = values[:5]
 
-            # Limit to first 5 seasons
-            contract_values = contract_values[:5]
-
-            # Pad with None if fewer than expected seasons
-            while len(contract_values) < len(season_headers):
-                contract_values.append(None)
-
-            # Append the extracted data
-            data.append([player_name, player_link, position, age] + contract_values)
+            data.append([player, link, position, age, *values])
 
         return data
 
@@ -153,7 +132,7 @@ def scrape_team_contracts(team, session):
     # Extract data from all found tables
     all_data = []
     for table in tables:
-        all_data.extend(extract_table(table, season_headers))
+        all_data.extend(extract_table(table))
 
     columns = ["Player", "Player Link", "Position", "Age"] + season_headers
     return pd.DataFrame(all_data, columns=columns)
@@ -162,18 +141,6 @@ def scrape_all_teams():
     """
     Scrape contract data for all NBA teams from Spotrac.
     """
-    teams = [
-        "atlanta-hawks", "boston-celtics", "brooklyn-nets", "charlotte-hornets",
-        "chicago-bulls", "cleveland-cavaliers", "dallas-mavericks", "denver-nuggets",
-        "detroit-pistons", "golden-state-warriors", "houston-rockets", "indiana-pacers",
-        "la-clippers", "los-angeles-lakers", "memphis-grizzlies", "miami-heat",
-        "milwaukee-bucks", "minnesota-timberwolves", "new-orleans-pelicans",
-        "new-york-knicks", "oklahoma-city-thunder", "orlando-magic", "philadelphia-76ers",
-        "phoenix-suns", "portland-trail-blazers", "sacramento-kings", "san-antonio-spurs",
-        "toronto-raptors", "utah-jazz", "washington-wizards",
-    ]
-
-    # Scrape all teams concurrently
     all_data = []
 
     # Use a session for connection pooling
@@ -184,7 +151,7 @@ def scrape_all_teams():
         with ThreadPoolExecutor(max_workers=6) as executor:
             futures = {
                 executor.submit(scrape_team_contracts, team, session): team
-                for team in teams
+                for team in TEAMS
             }
 
             # Collect results as they complete
@@ -237,7 +204,7 @@ def scrape_player_contracts(url, session):
 
 if __name__ == "__main__":
     # Example usage: Scrape Oklahoma City Thunder contracts and print the resulting DataFrame
-    team_df = scrape_team_contracts("oklahoma-city-thunder", requests.Session())
+    team_df = scrape_team_contracts("charlotte-hornets", requests.Session())
     print(team_df)
 
     # Example usage: Scrape contract details for Alex Caruso and print the resulting DataFrame
