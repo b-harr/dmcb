@@ -1,29 +1,32 @@
 import os
 import sys
 import logging
-import argparse
-import re
 import pandas as pd
-import time
 
 
-log_file = os.path.join("logs", "get_contracts.log")
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    handlers=[
-        logging.FileHandler(log_file, mode="a", encoding="utf-8"),
-        logging.StreamHandler(sys.stdout)
-    ]
-)
+LOG_DIR = "logs"
+LOG_FILE = "pull_contracts.log"
+OUTPUT_DIR = "data"
+OUTPUT_FILE = "spotrac_contracts.csv"
+
 
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(base_dir)
 
-OUTPUT_DIR = "data"
-OUTPUT_FILE = "spotrac_contracts.csv"
+os.makedirs(LOG_DIR, exist_ok=True)
+log_path = os.path.join(LOG_DIR, LOG_FILE)
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    handlers=[
+        logging.FileHandler(log_path, mode="a", encoding="utf-8"),
+        logging.StreamHandler(sys.stdout)
+    ]
+)
+
 os.makedirs(OUTPUT_DIR, exist_ok=True)
-OUTPUT_CSV = os.path.join(OUTPUT_DIR, OUTPUT_FILE)
+output_path = os.path.join(OUTPUT_DIR, OUTPUT_FILE)
 
 from utils.spotrac_scraper import scrape_all_teams
 from utils.text_formatter import make_player_key, make_title_case
@@ -141,7 +144,7 @@ def main():
     df = scrape_all()
     df = process_data(df)
     df = add_owner(df)
-    save_data(df, OUTPUT_CSV)
+    save_data(df, output_path)
 
 
 if __name__ == "__main__":
