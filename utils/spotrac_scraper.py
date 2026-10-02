@@ -91,6 +91,8 @@ def scrape_team_contracts(team, session):
 
             def get_value(cell: str):
                 export_value = cell.get("data-export").strip() if cell.get("data-export") else None
+                if export_value == "0":
+                    export_value = "$0"
                 pill = cell.select_one(".pill-start")
                 pill_value = pill.get_text(strip=True) if pill else None
 
