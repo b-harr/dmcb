@@ -58,14 +58,15 @@ def process_data(df: pd.DataFrame) -> pd.DataFrame:
         # Add derived columns for Player Key and Team Link
         df["Player Key"] = df["Player"].apply(make_player_key)
         df["Team Link"] = df["Team"].apply(lambda team: f"https://www.spotrac.com/nba/{team}/yearly")
-        
+
         # Format, sort, and reorder columns
         df["Team"] = df["Team"].apply(make_title_case)
         df = df.sort_values(by=["Player Key", "Team"], ignore_index=True)
         required_columns = ["Player", "Player Link", "Player Key", "Team", "Team Link", "Position", "Age"]
         dynamic_columns = [col for col in df.columns if col.startswith("20")]
         column_order = required_columns + dynamic_columns
-        
+
+        logging.info("Processed and formatted contract data.")
         return df[column_order]
     except Exception as e:
         logging.error(f"Data processing failed: {e}")
@@ -96,6 +97,7 @@ def get_owners(sheet_name="Contracts") -> pd.DataFrame:
 
 def merge_owners(contracts: pd.DataFrame, owners: pd.DataFrame) -> pd.DataFrame:
     if contracts.empty:
+        logging.info("Contracts DataFrame is empty, returning as is.")
         return contracts
 
     merged_df = contracts.copy()
@@ -108,6 +110,8 @@ def merge_owners(contracts: pd.DataFrame, owners: pd.DataFrame) -> pd.DataFrame:
 
         merged_df["Player Key"] = merged_df["Player Key"].astype("string").str.strip()
         merged_df["Owner"] = merged_df["Player Key"].map(owner_lookup).fillna("")
+
+        logging.info("Merged owner data into contracts DataFrame.")
     else:
         merged_df["Owner"] = ""
 
@@ -115,8 +119,6 @@ def merge_owners(contracts: pd.DataFrame, owners: pd.DataFrame) -> pd.DataFrame:
     return merged_df[other_columns + ["Owner"]]
 
 def save_data(df: pd.DataFrame, output_csv: str) -> None:
-    logging.info(f"Saving data to CSV: {output_csv}")
-
     if df is None or df.empty:
         logging.warning("No data provided to save.")
         return
@@ -131,8 +133,8 @@ def main():
     contracts = scrape_all()
     contracts = process_data(contracts)
     owners = get_owners(sheet_name="Contracts")
-    df = merge_owners(contracts, owners)
-    save_data(df, output_path)
+    data = merge_owners(contracts, owners)
+    save_data(data, output_path)
 
 
 if __name__ == "__main__":
