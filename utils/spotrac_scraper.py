@@ -144,6 +144,7 @@ def scrape_team_with_retries(team: str, session: requests.Session) -> pd.DataFra
 
 def scrape_teams() -> pd.DataFrame:
     all_data = []
+    failures = []
 
     # Use a session for connection pooling
     with requests.Session() as session:
@@ -165,8 +166,15 @@ def scrape_teams() -> pd.DataFrame:
                         df["Team"] = team
                         all_data.append(df)
                         logging.info(f"✔ Finished {team}")
+                    else:
+                        failures.append(f"{team}: no data returned")
+                        logging.error(f"{team} returned no data")
                 except Exception as e:
                     logging.error(f"{team} failed: {e}")
+                    failures.append(f"{team}: {e}")
+
+    if failures:
+        raise RuntimeError("One or more teams failed to scrape: " + "; ".join(failures))
 
     return pd.concat(all_data, ignore_index=True) if all_data else pd.DataFrame()
 
