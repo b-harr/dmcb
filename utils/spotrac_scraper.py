@@ -170,6 +170,22 @@ def scrape_teams() -> pd.DataFrame:
 
     return pd.concat(all_data, ignore_index=True) if all_data else pd.DataFrame()
 
+def scrape_player_details(soup: BeautifulSoup) -> pd.DataFrame:
+    table = soup.find("div", class_="contract-details")
+
+    details = []
+    for label, value in zip(
+        table.find_all("div", class_="label"),
+        table.find_all("div", class_="value"),
+    ):
+        details.append((
+            label.get_text(strip=True),
+            value.get_text(strip=True),
+        ))
+
+    df = pd.DataFrame(details).set_index(0).T
+    return df
+
 def scrape_player(url: str, session: requests.Session) -> tuple[str | None, str | None]:
     try:
         # Make a request to the player's contract page
@@ -204,7 +220,7 @@ def scrape_player(url: str, session: requests.Session) -> tuple[str | None, str 
 
 if __name__ == "__main__":
     # Example usage: Scrape Oklahoma City Thunder contracts and print the resulting DataFrame
-    team_df = scrape_team("charlotte-hornets", requests.Session())
+    team_df = scrape_team("toronto-raptors", requests.Session())
     print(team_df)
 
     # Example usage: Scrape contract details for Alex Caruso and print the resulting DataFrame
