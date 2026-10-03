@@ -14,8 +14,8 @@ HEADERS = {
         "Version/26.6.2 Safari/605.1.15"
     )
 }
-MAX_RETRIES = 3
-RETRY_DELAY = 2
+MAX_RETRIES = 5
+RETRY_DELAY = 5
 TIMEOUT = 10
 TEAMS = [
     "atlanta-hawks", "boston-celtics", "brooklyn-nets",
