@@ -235,6 +235,7 @@ $RECYCLE.BIN/
 # End of https://www.toptal.com/developers/gitignore/api/windows,macos,python
 
 ### Folders ###
-/secrets/
+secrets/
 logs/
+.logs/
 cache/

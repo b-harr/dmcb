@@ -4,7 +4,7 @@ import logging
 import pandas as pd
 
 
-LOG_DIR = "logs"
+LOG_DIR = ".logs"
 LOG_FILE = "pull_contracts.log"
 OUTPUT_DIR = "data"
 OUTPUT_FILE = "spotrac_contracts.csv"
