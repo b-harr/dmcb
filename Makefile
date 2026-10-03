@@ -28,13 +28,13 @@
 # -------------------------
 # Manage player contract data
 pull-contracts:
-	python3 scripts/get_contracts.py --update-csv --no-update-sheets
+	python3 scripts/pull_contracts.py
 
 push-contracts:
-	python3 scripts/get_contracts.py --no-update-csv --update-sheets
+	python3 scripts/push_contracts.py
 
 update-contracts:
-	python3 scripts/get_contracts.py --update-csv --update-sheets
+	python3 scripts/pull_contracts.py && python3 scripts/push_contracts.py
 
 # -------------------------
 # Contract Types
