@@ -28,7 +28,7 @@ logging.basicConfig(
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 output_path = os.path.join(OUTPUT_DIR, OUTPUT_FILE)
 
-from utils.spotrac_scraper import scrape_all_teams
+from utils.spotrac_scraper import scrape_teams
 from utils.text_formatter import make_player_key, make_title_case
 from utils.sheets_manager import GoogleSheetsManager
 
@@ -36,7 +36,7 @@ from utils.sheets_manager import GoogleSheetsManager
 def scrape_all() -> pd.DataFrame | None:
     logging.info("Starting to scrape team contracts from Spotrac...")
     try:
-        df = scrape_all_teams()
+        df = scrape_teams()
         if df is None or df.empty:
             logging.warning("No data was returned from the scrape.")
             return None
@@ -71,61 +71,48 @@ def process_data(df: pd.DataFrame) -> pd.DataFrame:
         logging.error(f"Data processing failed: {e}")
         return pd.DataFrame()
 
-def get_owner(df: pd.DataFrame, sheet_name="Contracts") -> pd.DataFrame:
+def get_owners(sheet_name="Contracts") -> pd.DataFrame:
     try:
         sheets_manager = GoogleSheetsManager()
         raw_data = sheets_manager.read_data(sheet_name=sheet_name)
     except Exception as e:
         logging.warning(f"Could not read owner data from Google Sheets '{sheet_name}': {e}")
-        return df
+        return pd.DataFrame(columns=["Player", "Player Link", "Player Key", "Owner"])
 
     if not raw_data:
-        return df
+        return pd.DataFrame(columns=["Player", "Player Link", "Player Key", "Owner"])
 
     header = raw_data[0]
     rows = raw_data[1:] if len(raw_data) > 1 else []
 
     if len(header) <= 16:
         logging.warning("Google Sheets 'Contracts' tab does not contain the expected owner column (Q).")
-        return df
+        return pd.DataFrame(columns=["Player", "Player Link", "Player Key", "Owner"])
 
     owner_df = pd.DataFrame(rows, columns=[str(col).strip() for col in header])
     owner_df = owner_df.iloc[:, [0, 1, 2, 16]].copy()
     owner_df.columns = ["Player", "Player Link", "Player Key", "Owner"]
+    return owner_df
 
-    owner_df["Player Key"] = owner_df["Player Key"].astype(str).str.strip()
-    owner_df = owner_df.dropna(subset=["Player Key"])
-    owner_df = owner_df[owner_df["Player Key"] != ""]
+def merge_owners(contracts: pd.DataFrame, owners: pd.DataFrame) -> pd.DataFrame:
+    if contracts.empty:
+        return contracts
 
-    owner_lookup = {}
-    for _, row in owner_df.iterrows():
-        key = row["Player Key"]
-        owner = row["Owner"]
-        owner_lookup.setdefault(key, owner)
+    merged_df = contracts.copy()
+    if "Player Key" in merged_df.columns and "Player Key" in owners.columns and "Owner" in owners.columns:
+        owner_data = owners[["Player Key", "Owner"]].copy()
+        owner_data["Player Key"] = owner_data["Player Key"].astype("string").str.strip()
+        owner_data = owner_data.dropna(subset=["Player Key"])
+        owner_data = owner_data[owner_data["Player Key"] != ""]
+        owner_lookup = owner_data.drop_duplicates("Player Key", keep="first").set_index("Player Key")["Owner"]
 
-    if df.empty:
-        return df
-
-    merged_df = df.copy()
-    merged_df["Player Key"] = merged_df["Player Key"].astype(str).str.strip()
-    merged_df["Owner"] = merged_df["Player Key"].map(owner_lookup)
-    merged_df["Owner"] = merged_df["Owner"].replace({None: ""}).fillna("")
+        merged_df["Player Key"] = merged_df["Player Key"].astype("string").str.strip()
+        merged_df["Owner"] = merged_df["Player Key"].map(owner_lookup).fillna("")
+    else:
+        merged_df["Owner"] = ""
 
     other_columns = [col for col in merged_df.columns if col != "Owner"]
-    
     return merged_df[other_columns + ["Owner"]]
-
-def add_owner(df: pd.DataFrame) -> pd.DataFrame:
-    logging.info("Adding Owner column to the DataFrame...")
-    if df is None or df.empty:
-        logging.warning("No data provided to add Owner column.")
-        return pd.DataFrame()
-
-    try:
-        return get_owner(df, sheet_name="Contracts")
-    except Exception as e:
-        logging.error(f"Failed to add Owner column: {e}")
-        return pd.DataFrame()
 
 def save_data(df: pd.DataFrame, output_csv: str) -> None:
     logging.info(f"Saving data to CSV: {output_csv}")
@@ -141,9 +128,10 @@ def save_data(df: pd.DataFrame, output_csv: str) -> None:
         logging.error(f"Failed to save data to CSV: {e}")
 
 def main():
-    df = scrape_all()
-    df = process_data(df)
-    df = add_owner(df)
+    contracts = scrape_all()
+    contracts = process_data(contracts)
+    owners = get_owners(sheet_name="Contracts")
+    df = merge_owners(contracts, owners)
     save_data(df, output_path)
 
 
