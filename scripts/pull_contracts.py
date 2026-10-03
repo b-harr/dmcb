@@ -50,7 +50,6 @@ def process_data(df: pd.DataFrame) -> pd.DataFrame:
     if df is None or df.empty:
         logging.warning("No data provided to process.")
         return pd.DataFrame()
-
     try:
         # Exclude rows where Player is "Incomplete Roster Charge"
         df = df[df["Player"] != "Incomplete Roster Charge"]
@@ -110,7 +109,6 @@ def merge_owners(contracts: pd.DataFrame, owners: pd.DataFrame) -> pd.DataFrame:
 
         merged_df["Player Key"] = merged_df["Player Key"].astype("string").str.strip()
         merged_df["Owner"] = merged_df["Player Key"].map(owner_lookup).fillna("")
-
         logging.info("Merged owner data into contracts DataFrame.")
     else:
         merged_df["Owner"] = ""
@@ -122,7 +120,6 @@ def save_data(df: pd.DataFrame, output_csv: str) -> None:
     if df is None or df.empty:
         logging.warning("No data provided to save.")
         return
-
     try:
         df.to_csv(output_csv, index=False)
         logging.info(f"Data saved successfully to {output_csv}.")
