@@ -1,19 +1,12 @@
+import logging
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import time
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
-import re
-import logging
-import time
-from concurrent.futures import ThreadPoolExecutor, as_completed
 
-# Configure pandas display options to show all columns
-pd.set_option('display.max_columns', None)
-pd.set_option('display.width', None)
-
-# Set up logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
-# Global constants
 HEADERS = {
     "User-Agent": (
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
@@ -37,12 +30,12 @@ TEAMS = [
     "toronto-raptors", "utah-jazz", "washington-wizards",
 ]
 
+# Configure pandas display options to show all columns
+pd.set_option('display.max_columns', None)
+pd.set_option('display.width', None)
 
-def scrape_team_contracts(team, session):
-    """
-    Scrape contract data for a specific NBA team from Spotrac.
-    """
-    # Construct the URL for the team's contracts page
+
+def scrape_team(team: str, session: requests.Session) -> pd.DataFrame | None:
     url = f"https://www.spotrac.com/nba/{team}/yearly"
 
     # Retry logic for handling transient errors
@@ -74,7 +67,7 @@ def scrape_team_contracts(team, session):
     soup = BeautifulSoup(response.content, "html.parser")
 
     # Function to extract data from a table
-    def extract_table(table):
+    def extract_table(table: BeautifulSoup) -> list[list[str] | None]:
         data = []
         for row in table.select("tbody tr"):
             cells = row.find_all("td")
@@ -89,7 +82,7 @@ def scrape_team_contracts(team, session):
             position = cells[1].get("data-export").strip() if cells[1].get("data-export") else None
             age = cells[2].get("data-export").strip() if cells[2].get("data-export") else None
 
-            def get_value(cell: str):
+            def get_value(cell: BeautifulSoup) -> str | None:
                 export_value = cell.get("data-export").strip() if cell.get("data-export") else None
                 if export_value == "0":
                     export_value = "$0"
@@ -139,10 +132,17 @@ def scrape_team_contracts(team, session):
     columns = ["Player", "Player Link", "Position", "Age"] + season_headers
     return pd.DataFrame(all_data, columns=columns)
 
-def scrape_all_teams():
-    """
-    Scrape contract data for all NBA teams from Spotrac.
-    """
+def scrape_team_with_retries(team: str, session: requests.Session) -> pd.DataFrame | None:
+    for attempt in range(1, MAX_RETRIES + 1):
+        try:
+            return scrape_team(team, session)
+        except Exception as e:
+            if attempt == MAX_RETRIES:
+                raise
+            logging.warning(f"{team} scrape failed ({attempt}/{MAX_RETRIES}), retrying: {e}")
+            time.sleep(RETRY_DELAY)
+
+def scrape_teams() -> pd.DataFrame:
     all_data = []
 
     # Use a session for connection pooling
@@ -152,7 +152,7 @@ def scrape_all_teams():
         # Use ThreadPoolExecutor for concurrent scraping
         with ThreadPoolExecutor(max_workers=6) as executor:
             futures = {
-                executor.submit(scrape_team_contracts, team, session): team
+                executor.submit(scrape_team_with_retries, team, session): team
                 for team in TEAMS
             }
 
@@ -170,10 +170,7 @@ def scrape_all_teams():
 
     return pd.concat(all_data, ignore_index=True) if all_data else pd.DataFrame()
 
-def scrape_player_contracts(url, session):
-    """
-    Scrape contract details for a specific player from Spotrac.
-    """
+def scrape_player(url: str, session: requests.Session) -> tuple[str | None, str | None]:
     try:
         # Make a request to the player's contract page
         response = session.get(url, headers=HEADERS, timeout=TIMEOUT)
@@ -201,14 +198,15 @@ def scrape_player_contracts(url, session):
         return signed_using_value, drafted_value
 
     except Exception as e:
+        logging.error(f"Failed to scrape player from {url}: {e}")
         return None, None
 
 
 if __name__ == "__main__":
     # Example usage: Scrape Oklahoma City Thunder contracts and print the resulting DataFrame
-    team_df = scrape_team_contracts("charlotte-hornets", requests.Session())
+    team_df = scrape_team("charlotte-hornets", requests.Session())
     print(team_df)
 
     # Example usage: Scrape contract details for Alex Caruso and print the resulting DataFrame
-    player_df = scrape_player_contracts("https://www.spotrac.com/nba/player/_/id/21076/alex-caruso", requests.Session())
+    player_df = scrape_player("https://www.spotrac.com/nba/player/_/id/21076/alex-caruso", requests.Session())
     print(player_df)
