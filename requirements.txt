@@ -4,4 +4,5 @@ gspread>=6.2.1
 lxml>=6.0.2
 nba_api>=1.11.4
 pandas>=3.0.5
+pytest>=9.1.1
 requests>=2.34.2

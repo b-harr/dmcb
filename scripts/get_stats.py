@@ -29,9 +29,9 @@ logger = logging.getLogger()
 logger.info("Script execution started.")
 
 # Import required custom utilities
-from utils.scrape_bbref import scrape_nba_totals
+from utils.bbref_scraper import scrape_nba_totals
 from utils.text_formatter import make_player_key
-from utils.google_sheets_manager import GoogleSheetsManager
+from utils.sheets_manager import GoogleSheetsManager
 
 # Columns that require numeric conversion for calculations
 numeric_columns = ["PTS", "TRB", "AST", "STL", "BLK", "TOV", "PF", "G", "MP"]

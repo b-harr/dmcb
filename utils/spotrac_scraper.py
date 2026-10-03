@@ -1,0 +1,236 @@
+import logging
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import time
+import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+
+HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+        "AppleWebKit/605.1.15 (KHTML, like Gecko) "
+        "Version/26.6.2 Safari/605.1.15"
+    )
+}
+MAX_RETRIES = 3
+RETRY_DELAY = 2
+TIMEOUT = 10
+TEAMS = [
+    "atlanta-hawks", "boston-celtics", "brooklyn-nets",
+    "charlotte-hornets", "chicago-bulls", "cleveland-cavaliers",
+    "dallas-mavericks", "denver-nuggets", "detroit-pistons",
+    "golden-state-warriors", "houston-rockets", "indiana-pacers",
+    "la-clippers", "los-angeles-lakers", "memphis-grizzlies",
+    "miami-heat", "milwaukee-bucks", "minnesota-timberwolves",
+    "new-orleans-pelicans", "new-york-knicks", "oklahoma-city-thunder",
+    "orlando-magic", "philadelphia-76ers", "phoenix-suns",
+    "portland-trail-blazers", "sacramento-kings", "san-antonio-spurs",
+    "toronto-raptors", "utah-jazz", "washington-wizards",
+]
+
+# Configure pandas display options to show all columns
+pd.set_option('display.max_columns', None)
+pd.set_option('display.width', None)
+
+
+def scrape_team(team: str, session: requests.Session) -> pd.DataFrame | None:
+    url = f"https://www.spotrac.com/nba/{team}/yearly"
+
+    # Retry logic for handling transient errors
+    for attempt in range(1, MAX_RETRIES + 1):
+        try:
+            response = session.get(url, headers=HEADERS, timeout=TIMEOUT)
+
+            if response.status_code == 200:
+                # Successful response
+                break
+            elif response.status_code == 502:
+                # Bad Gateway, retry
+                logging.warning(f"502 for {team} ({attempt}/{MAX_RETRIES})")
+                time.sleep(RETRY_DELAY)
+            else:
+                # Other HTTP errors
+                logging.error(f"{team}: HTTP {response.status_code}")
+                return None
+
+        except requests.RequestException as e:
+            # Network-related errors, wait before retrying
+            logging.warning(f"{team}: {e} ({attempt}/{MAX_RETRIES})")
+            time.sleep(RETRY_DELAY)
+    else:
+        # All retries exhausted
+        logging.error(f"{team}: failed after retries")
+        return None
+
+    soup = BeautifulSoup(response.content, "html.parser")
+
+    # Function to extract data from a table
+    def extract_table(table: BeautifulSoup) -> list[list[str] | None]:
+        data = []
+        for row in table.select("tbody tr"):
+            cells = row.find_all("td")
+
+            # Ensure there are enough cells
+            if len(cells) < 2:
+                continue
+
+            # Extract player name and link
+            player = cells[0].get("data-export").strip() if cells[0].get("data-export") else None
+            link = cells[0].find("a")["href"] if cells[0].find("a") else None
+            position = cells[1].get("data-export").strip() if cells[1].get("data-export") else None
+            age = cells[2].get("data-export").strip() if cells[2].get("data-export") else None
+
+            def get_value(cell: BeautifulSoup) -> str | None:
+                export_value = cell.get("data-export").strip() if cell.get("data-export") else None
+                if export_value == "0":
+                    export_value = "$0"
+                pill = cell.select_one(".pill-start")
+                pill_value = pill.get_text(strip=True) if pill else None
+
+                for status in ("UFA", "RFA", "Two-Way"):
+                    if pill_value.startswith(status):
+                        return status
+
+                if pill_value.startswith("$"):
+                    return pill_value.replace(",", "")
+
+                return export_value
+
+            values = [
+                get_value(cell)
+                for cell in cells[3:]
+            ]
+            values = values[:5]
+
+            data.append([player, link, position, age, *values])
+
+        return data
+
+    # Find both active and pending contract tables
+    tables = []
+    for table_id in ["dataTable-active", "dataTable-pending"]:
+        table = soup.find("table", {"id": table_id})
+        if table is not None:
+            tables.append(table)
+
+    if not tables:
+        logging.warning(f"No contracts tables found for {team}")
+        return None
+
+    # Extract season headers from the first table
+    headers = [th.text.strip() for th in tables[0].find_all("th")]
+    season_headers = [h for h in headers if h.startswith("20")]
+    season_headers = season_headers[:5]
+
+    # Extract data from all found tables
+    all_data = []
+    for table in tables:
+        all_data.extend(extract_table(table))
+
+    columns = ["Player", "Player Link", "Position", "Age"] + season_headers
+    return pd.DataFrame(all_data, columns=columns)
+
+def scrape_team_with_retries(team: str, session: requests.Session) -> pd.DataFrame | None:
+    for attempt in range(1, MAX_RETRIES + 1):
+        try:
+            return scrape_team(team, session)
+        except Exception as e:
+            if attempt == MAX_RETRIES:
+                raise
+            logging.warning(f"{team} scrape failed ({attempt}/{MAX_RETRIES}), retrying: {e}")
+            time.sleep(RETRY_DELAY)
+
+def scrape_teams() -> pd.DataFrame:
+    all_data = []
+    failures = []
+
+    # Use a session for connection pooling
+    with requests.Session() as session:
+        session.headers.update(HEADERS)
+
+        # Use ThreadPoolExecutor for concurrent scraping
+        with ThreadPoolExecutor(max_workers=6) as executor:
+            futures = {
+                executor.submit(scrape_team_with_retries, team, session): team
+                for team in TEAMS
+            }
+
+            # Collect results as they complete
+            for future in as_completed(futures):
+                team = futures[future]
+                try:
+                    df = future.result()
+                    if df is not None:
+                        df["Team"] = team
+                        all_data.append(df)
+                        logging.info(f"✔ Finished {team}")
+                    else:
+                        failures.append(f"{team}: no data returned")
+                        logging.error(f"{team} returned no data")
+                except Exception as e:
+                    logging.error(f"{team} failed: {e}")
+                    failures.append(f"{team}: {e}")
+
+    if failures:
+        raise RuntimeError("One or more teams failed to scrape: " + "; ".join(failures))
+
+    return pd.concat(all_data, ignore_index=True) if all_data else pd.DataFrame()
+
+def scrape_player_details(soup: BeautifulSoup) -> pd.DataFrame:
+    table = soup.find("div", class_="contract-details")
+
+    details = []
+    for label, value in zip(
+        table.find_all("div", class_="label"),
+        table.find_all("div", class_="value"),
+    ):
+        details.append((
+            label.get_text(strip=True),
+            value.get_text(strip=True),
+        ))
+
+    df = pd.DataFrame(details).set_index(0).T
+    return df
+
+def scrape_player(url: str, session: requests.Session) -> tuple[str | None, str | None]:
+    try:
+        # Make a request to the player's contract page
+        response = session.get(url, headers=HEADERS, timeout=TIMEOUT)
+        soup = BeautifulSoup(response.content, "html.parser")
+
+        # Extract "Signed Using" details
+        signed_using_selector = "#contracts > div > div > div.contract-wrapper.mb-5 > div.contract-details.row.m-0 > div:nth-child(5) > div.label"
+        signed_using_element = soup.select_one(signed_using_selector)
+
+        # Get the text of the next sibling element which contains the value
+        signed_using_value = (
+            signed_using_element.find_next_sibling().get_text().strip()
+            if signed_using_element else None
+        )
+
+        # Extract "Drafted" details
+        drafted_selector = "#main > section > article > div.row.m-0.mt-0.pb-3 > div.col-md-6 > div > div:nth-child(1) > span"
+        drafted_element = soup.select_one(drafted_selector)
+
+        drafted_value = (
+            drafted_element.get_text().strip()
+            if drafted_element else None
+        )
+
+        return signed_using_value, drafted_value
+
+    except Exception as e:
+        logging.error(f"Failed to scrape player from {url}: {e}")
+        return None, None
+
+
+if __name__ == "__main__":
+    # Example usage: Scrape Oklahoma City Thunder contracts and print the resulting DataFrame
+    team_df = scrape_team("toronto-raptors", requests.Session())
+    print(team_df)
+
+    # Example usage: Scrape contract details for Alex Caruso and print the resulting DataFrame
+    player_df = scrape_player("https://www.spotrac.com/nba/player/_/id/21076/alex-caruso", requests.Session())
+    print(player_df)

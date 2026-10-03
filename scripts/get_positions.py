@@ -23,9 +23,9 @@ logger = logging.getLogger()
 logger.info("The script started successfully.")
 
 # Import custom utilities
-from utils.scrape_sportsws import scrape_sportsws_positions
+from utils.sportsws_scraper import scrape_sportsws_positions
 from utils.text_formatter import make_player_key
-from utils.google_sheets_manager import GoogleSheetsManager
+from utils.sheets_manager import GoogleSheetsManager
 
 
 def merge_owner_from_google_sheets(df, sheet_name="Contracts"):

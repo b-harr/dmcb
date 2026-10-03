@@ -28,8 +28,8 @@ logger.info("get_contract_types.py started successfully.")
 # -------------------------------------------------
 # Imports
 # -------------------------------------------------
-from utils.google_sheets_manager import GoogleSheetsManager
-from utils.scrape_spotrac import scrape_player_contracts, HEADERS
+from utils.sheets_manager import GoogleSheetsManager
+from utils.spotrac_scraper import scrape_player_contracts, HEADERS
 from utils.text_formatter import make_title_case
 
 
