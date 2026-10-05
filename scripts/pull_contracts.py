@@ -4,17 +4,18 @@ import logging
 import pandas as pd
 
 
+base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(base_dir)
+
 LOG_DIR = ".logs"
 LOG_FILE = "pull_contracts.log"
 OUTPUT_DIR = "data"
 OUTPUT_FILE = "spotrac_contracts.csv"
 
-
-base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.append(base_dir)
-
 os.makedirs(LOG_DIR, exist_ok=True)
 log_path = os.path.join(LOG_DIR, LOG_FILE)
+os.makedirs(OUTPUT_DIR, exist_ok=True)
+output_path = os.path.join(OUTPUT_DIR, OUTPUT_FILE)
 
 logging.basicConfig(
     level=logging.INFO,
@@ -24,9 +25,6 @@ logging.basicConfig(
         logging.StreamHandler(sys.stdout)
     ]
 )
-
-os.makedirs(OUTPUT_DIR, exist_ok=True)
-output_path = os.path.join(OUTPUT_DIR, OUTPUT_FILE)
 
 from utils.spotrac_scraper import scrape_teams
 from utils.text_formatter import make_player_key, make_title_case
