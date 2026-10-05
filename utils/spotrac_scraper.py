@@ -1,4 +1,5 @@
 import logging
+import json
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import time
 import requests
@@ -179,20 +180,43 @@ def scrape_teams() -> pd.DataFrame:
     return pd.concat(all_data, ignore_index=True) if all_data else pd.DataFrame()
 
 def scrape_player_details(soup: BeautifulSoup) -> pd.DataFrame:
+    details = {}
+
+    for script in soup.select('script[type="application/ld+json"]'):
+        try:
+            structured_data = json.loads(script.string or script.get_text())
+        except json.JSONDecodeError:
+            continue
+
+        if structured_data.get("@type") == "Person":
+            details["Player"] = structured_data.get("name")
+            details["Link"] = structured_data.get("url")
+            break
+
+    profile = soup.select_one("#main article > div.row.m-0.mt-0.pb-3")
+    if profile is not None:
+        team_position = profile.select_one(".col-md-12.text-yellow.fw-bold span")
+        if team_position is not None:
+            team_link = team_position.find("a")
+            if team_link is not None:
+                team = team_link.get_text(strip=True)
+                details["Team"] = team
+                details["Position"] = team_position.get_text(" ", strip=True).replace(team, "", 1).strip(" ,")
+
+        for label in profile.find_all("strong"):
+            value = label.find_next_sibling("span")
+            if value is not None:
+                details[label.get_text(strip=True).rstrip(":")] = value.get_text(" ", strip=True)
+
     table = soup.find("div", class_="contract-details")
+    if table is not None:
+        for label, value in zip(
+            table.find_all("div", class_="label"),
+            table.find_all("div", class_="value"),
+        ):
+            details[label.get_text(strip=True).rstrip(":")] = value.get_text(strip=True)
 
-    details = []
-    for label, value in zip(
-        table.find_all("div", class_="label"),
-        table.find_all("div", class_="value"),
-    ):
-        details.append((
-            label.get_text(strip=True),
-            value.get_text(strip=True),
-        ))
-
-    df = pd.DataFrame(details).set_index(0).T
-    return df
+    return pd.DataFrame([details])
 
 def scrape_player(url: str, session: requests.Session) -> tuple[str | None, str | None]:
     try:
