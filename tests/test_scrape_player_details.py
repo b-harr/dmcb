@@ -9,6 +9,7 @@ base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(base_dir)
 
 from utils.spotrac_scraper import scrape_player_details
+from utils.text_formatter import make_player_key
 
 HEADERS = {
     "User-Agent": (
@@ -18,7 +19,7 @@ HEADERS = {
     )
 }
 TIMEOUT = 10
-OUTPUT_DIR = ".cache"
+OUTPUT_DIR = os.path.join(".cache", "players")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 
@@ -42,12 +43,27 @@ def scrape_player(soup: BeautifulSoup) -> pd.DataFrame:
     df = scrape_player_details(soup)
     return df
 
-def print_details(df: pd.DataFrame) -> None:
-    print(df)
+def add_player_key(df: pd.DataFrame) -> pd.DataFrame:
+    df["Key"] = df["Player"].apply(make_player_key)
+    return df
+
+def print_details(df: pd.DataFrame) -> pd.DataFrame:
+    columns = [
+        "Player",
+        "Link",
+        "Key",
+        "Drafted",
+        "Signed Using",
+    ]
+    details = df[columns]
+    print(details)
+    return details
 
 
 if __name__ == "__main__":
     url = get_url()
     soup = save_page(url)
     df = scrape_player(soup)
-    print_details(df)
+    df = add_player_key(df)
+    #print_details(df)
+    print(df)
