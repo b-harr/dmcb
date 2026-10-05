@@ -29,7 +29,7 @@ logger.info("get_contract_types.py started successfully.")
 # Imports
 # -------------------------------------------------
 from utils.sheets_manager import GoogleSheetsManager
-from utils.spotrac_scraper import scrape_player_contracts, HEADERS
+from utils.spotrac_scraper import scrape_player, HEADERS
 from utils.text_formatter import make_title_case
 
 
@@ -150,7 +150,7 @@ def main(update_csv=False, update_sheets=True, sheet_name="Contract Types"):
 
             with ThreadPoolExecutor(max_workers=5) as executor:
                 futures = {
-                    executor.submit(scrape_player_contracts, link, session): link
+                    executor.submit(scrape_player, link, session): link
                     for link in to_scrape
                 }
 
