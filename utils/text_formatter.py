@@ -2,107 +2,78 @@ import unicodedata
 import re
 
 
-# Set consistent player key when naming conflicts among sources exist
 PLAYER_KEY_OVERRIDES = {
     "cam-thomas": "cameron-thomas",
     "oliviermaxence-prosper": "olivier-maxence-prosper",
     "herbert-jones": "herb-jones",
     "tristan-dasilva": "tristan-da-silva",
     #"yang-hansen": "hansen-yang",
-    # add more as needed
+}
+CAPITALIZED_WORDS = {
+    "la", "rfa", "ufa", "mle",
 }
 MINOR_WORDS = {
     "a", "an", "the", "and", "or",
     "in", "on", "of", "for", "to",
-    "by", "with", "at", "vs"
+    "by", "with", "at", "vs",
 }
 HYPHENATED_WORDS = {
-    "non", "mid", "bi", "re"
+    "non", "mid", "bi", "re",
 }
 
 
-def make_player_key(name):
-    """
-    Cleans a player's name and generates a unique key for consistent cross-site merging.
-
-    Args:
-        name (str): The player's full name.
-
-    Returns:
-        str: A normalized, cleaned key for the player's name without suffixes.
-    """
-    normalized_name = unicodedata.normalize("NFD", name).encode("ascii", "ignore").decode("utf-8")  # Remove accents
-    cleaned_name = normalized_name.lower().strip()  # Convert to lowercase and trim spaces
+def make_player_key(name: str) -> str:
+    # Remove accents and convert to lowercase
+    name = unicodedata.normalize("NFD", name).encode("ascii", "ignore").decode("utf-8")
+    name = name.lower().strip()
 
     # Normalize spaces and special characters
-    cleaned_name = re.sub(r"\s+", "-", cleaned_name)  # Replace spaces with hyphens
-    cleaned_name = re.sub(r"[^\w-]", "", cleaned_name)  # Remove non-alphanumeric characters
-    player_key = re.sub(r"-(sr|jr|ii|iii|iv|v|vi|vii)$", "", cleaned_name)  # Remove common suffixes
+    name = re.sub(r"\s+", "-", name)
+    name = re.sub(r"[^\w-]", "", name)
+
+    # Remove common suffixes
+    key = re.sub(r"-(sr|jr|ii|iii|iv|v|vi|vii)$", "", name)
 
     # Apply overrides if the cleaned name matches any known exceptions
-    if player_key in PLAYER_KEY_OVERRIDES:
-        return PLAYER_KEY_OVERRIDES[player_key]
-    
-    return player_key
+    if key in PLAYER_KEY_OVERRIDES:
+        return PLAYER_KEY_OVERRIDES[key]
 
-def make_title_case(text):
-    """
-    Capitalizes specific prefixes and applies title case to the rest of the text.
+    return key
 
-    Args:
-        text (str): The input text to format.
-
-    Returns:
-        str or None: The formatted text, or None if the input is None.
-    """    
-    if text is None:
-        return None
-
+def make_title_case(text: str) -> str:
     # Split the text into words by spaces or hyphens
     words = re.split(r"[-\s]", text)
     formatted_words = []
     i = 0
 
+    # Iterate through each word and apply title case rules
     while i < len(words):
         word = words[i].lower()
-        
-        # Handle 'LA' specifically
-        if word == "la":
-            formatted_words.append("LA")
-        elif word == "rfa":
-            formatted_words.append("RFA")
-        elif word == "ufa":
-            formatted_words.append("UFA")
-        elif word == "mle":
-            formatted_words.append("MLE")
+
+        # Handle common abbreviations
+        if word in CAPITALIZED_WORDS:
+            formatted_words.append(word.upper())
+
         # Handle exception words with hyphenation
         elif word in HYPHENATED_WORDS and i < len(words) - 1:
             formatted_words.append(f"{word.capitalize()}-{words[i + 1].capitalize()}")
-            i += 1  # Skip the next word as it's already processed
+            # Skip the next word as it's already processed
+            i += 1
+
         # Handle minor words
         elif word in MINOR_WORDS:
             formatted_words.append(word if i != 0 and i != len(words) - 1 else word.capitalize())
+
         # Capitalize alphabetic words; retain numbers
         else:
             formatted_words.append(word.capitalize() if word.isalpha() else word)
-        
+
+        # Move to the next word
         i += 1
 
     # Join the formatted words with spaces
-    formatted_words = " ".join(formatted_words)
+    title_text = " ".join(formatted_words)
     # Special case: Replace "Sign and Trade" with "Sign-and-Trade"
-    formatted_words = re.sub("Sign and Trade", "Sign-and-Trade", formatted_words)
-    return formatted_words
+    title_text = re.sub("Sign and Trade", "Sign-and-Trade", title_text)
 
-
-if __name__ == "__main__":
-    # Test make_player_key
-    print(make_player_key("LeBron James Jr."))
-    print(make_player_key("José Álvarez III"))
-    
-    # Test format_text
-    print(make_title_case("sign and trade deal"))
-    print(make_title_case("LA Lakers vs non-stop"))
-    print(make_title_case("Non taxpayer bi annual Mid Level Exception"))
-    print(make_title_case("re signed extension"))
-    print(make_title_case("resigned from league"))
+    return title_text
