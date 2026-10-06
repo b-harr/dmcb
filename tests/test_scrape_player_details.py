@@ -8,8 +8,7 @@ from bs4 import BeautifulSoup
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(base_dir)
 
-from utils.spotrac_scraper import scrape_player_details
-from utils.text_formatter import make_player_key
+from utils.spotrac_scraper import scrape_player
 
 HEADERS = {
     "User-Agent": (
@@ -38,32 +37,14 @@ def save_page(url: str) -> BeautifulSoup:
         return soup
     else:
         print(f"Failed to fetch page. Status code: {response.status_code}")
+        return None
 
-def scrape_player(soup: BeautifulSoup) -> pd.DataFrame:
-    df = scrape_player_details(soup)
-    return df
-
-def add_player_key(df: pd.DataFrame) -> pd.DataFrame:
-    df["Key"] = df["Player"].apply(make_player_key)
-    return df
-
-def print_details(df: pd.DataFrame) -> pd.DataFrame:
-    columns = [
-        "Player",
-        "Link",
-        "Key",
-        "Drafted",
-        "Signed Using",
-    ]
-    details = df[columns]
-    print(details)
-    return details
-
-
-if __name__ == "__main__":
+def main():
     url = get_url()
     soup = save_page(url)
     df = scrape_player(soup)
-    df = add_player_key(df)
-    #print_details(df)
     print(df)
+
+
+if __name__ == "__main__":
+    main()
