@@ -8,8 +8,8 @@ sys.path.append(base_dir)
 from utils.text_formatter import make_title_case
 
 
-class TestPlayerKey(unittest.TestCase):
-    def test_make_player_key(self):
+class TestMakeTitleCase(unittest.TestCase):
+    def test_make_title_case(self):
         self.assertEqual(make_title_case("sign and trade deal"), "Sign-and-Trade Deal")
         self.assertEqual(make_title_case("non taxpayer bi annual mle"), "Non-Taxpayer Bi-Annual MLE")
         self.assertEqual(make_title_case("la-lakers"), "LA Lakers")
