@@ -41,8 +41,7 @@ def save_page(url: str) -> BeautifulSoup:
 
 def main():
     url = get_url()
-    soup = save_page(url)
-    df = scrape_player(soup)
+    df = scrape_player(url)
     print(df)
 
 
