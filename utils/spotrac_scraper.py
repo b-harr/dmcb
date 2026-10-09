@@ -104,14 +104,7 @@ def get_contract_value(cell: BeautifulSoup) -> str | None:
 def scrape_team(team: str) -> pd.DataFrame | None:
     url = f"https://www.spotrac.com/nba/{team}/yearly"
 
-    try:
-        response = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
-        response.raise_for_status()
-    except requests.RequestException as e:
-        logging.error(f"Error fetching {url}: {e}")
-        return None
-
-    soup = BeautifulSoup(response.content, "html.parser")
+    soup = scrape_team_url(url)
 
     # Find both active and pending contract tables
     tables = []
@@ -250,3 +243,6 @@ if __name__ == "__main__":
 
     player = scrape_player("https://www.spotrac.com/nba/player/_/id/82196")
     print(player)
+
+    df = scrape_teams()
+    print(df)
