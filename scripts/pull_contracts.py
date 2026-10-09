@@ -7,8 +7,8 @@ import pandas as pd
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(base_dir)
 
-from utils.spotrac_scraper import scrape_teams
 from utils.text_formatter import make_player_key, make_title_case
+from utils.spotrac_scraper import scrape_teams
 from utils.sheets_manager import GoogleSheetsManager
 
 LOG_PATH = os.path.join(".logs", "pull_contracts.log")
