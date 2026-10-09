@@ -3,6 +3,7 @@ import sys
 import logging
 import time
 import requests
+import re
 from bs4 import BeautifulSoup
 import pandas as pd
 import json
@@ -51,6 +52,9 @@ PLAYER_DETAIL_COLUMNS = [
     #"College",
     # Add more columns as needed
 ]
+OUTPUT_DIR = os.path.join(".cache")
+os.makedirs(OUTPUT_DIR, exist_ok=True)
+
 
 def scrape_team_url(url: str) -> pd.DataFrame | None:
     try:
@@ -62,6 +66,21 @@ def scrape_team_url(url: str) -> pd.DataFrame | None:
 
     soup = BeautifulSoup(response.content, "html.parser")
     return soup
+
+def save_team_page(team: str) -> BeautifulSoup:
+    cache_dir = os.path.join(OUTPUT_DIR, "teams")
+    os.makedirs(cache_dir, exist_ok=True)
+    filename = team + ".html"
+
+    try:
+        soup = scrape_team_url(f"https://www.spotrac.com/nba/{team}/yearly/")
+        with open(os.path.join(cache_dir, filename), "w", encoding="utf-8") as f:
+            f.write(soup.prettify())
+        print(f"Page saved to {filename}")
+        return soup
+    except Exception as e:
+        logging.error(f"Failed to scrape team page {team}: {e}")
+        return None
 
 def extract_team_contracts(table: BeautifulSoup) -> list[list[str] | None]:
     data = []
@@ -101,10 +120,12 @@ def get_contract_value(cell: BeautifulSoup) -> str | None:
 
     return export_value
 
-def scrape_team(team: str) -> pd.DataFrame | None:
+def scrape_team(team: str) -> pd.DataFrame:
     url = f"https://www.spotrac.com/nba/{team}/yearly"
 
-    soup = scrape_team_url(url)
+    soup = save_team_page(team)
+    if soup is None:
+        return pd.DataFrame()
 
     # Find both active and pending contract tables
     tables = []
@@ -115,7 +136,7 @@ def scrape_team(team: str) -> pd.DataFrame | None:
 
     if not tables:
         logging.warning(f"No contracts tables found for {team}")
-        return None
+        return pd.DataFrame()
 
     # Extract season headers from the first table
     headers = [th.text.strip() for th in tables[0].find_all("th")]
@@ -188,6 +209,22 @@ def scrape_player_url(url: str) -> pd.DataFrame | None:
     soup = BeautifulSoup(response.content, "html.parser")
     return soup
 
+def save_player_page(url: str) -> BeautifulSoup:
+    cache_dir = os.path.join(OUTPUT_DIR, "players")
+    os.makedirs(cache_dir, exist_ok=True)
+    filename = re.sub("https://www.spotrac.com/nba/player/_/id/", "", url)
+    filename = re.sub("/", "-", filename) + ".html"
+
+    try:
+        soup = scrape_player_url(url)
+        with open(os.path.join(cache_dir, filename), "w", encoding="utf-8") as f:
+            f.write(soup.prettify())
+        print(f"Page saved to {filename}")
+        return soup
+    except Exception as e:
+        logging.error(f"Failed to scrape player page {url}: {e}")
+        return None
+
 def scrape_player_details(soup: BeautifulSoup) -> pd.DataFrame:
     details = {}
 
@@ -228,21 +265,43 @@ def scrape_player_details(soup: BeautifulSoup) -> pd.DataFrame:
     return pd.DataFrame([details])
 
 def scrape_player(url: str) -> pd.DataFrame:
-    soup = scrape_player_url(url)
+    soup = save_player_page(url)
     if soup is None:
         return pd.DataFrame()
     data = scrape_player_details(soup)
     data["Key"] = data["Player"].apply(make_player_key)
-
     return data[PLAYER_DETAIL_COLUMNS]
+    #return data
+
+def scrape_players(urls: list[str]) -> pd.DataFrame:
+    all_data = []
+    failures = []
+
+    with ThreadPoolExecutor(max_workers=5) as executor:
+        futures = {executor.submit(scrape_player, url): url for url in urls}
+        for future in as_completed(futures):
+            url = futures[future]
+            try:
+                df = future.result()
+                if not df.empty:
+                    all_data.append(df)
+                    logging.info(f"✔ Finished {url}")
+                else:
+                    failures.append(f"{url}: no data returned")
+                    logging.error(f"{url} returned no data")
+            except Exception as e:
+                logging.error(f"{url} failed: {e}")
+                failures.append(f"{url}: {e}")
+
+    if failures:
+        raise RuntimeError("One or more players failed to scrape: " + "; ".join(failures))
+
+    return pd.concat(all_data, ignore_index=True) if all_data else pd.DataFrame()
 
 
 if __name__ == "__main__":
-    team = scrape_team("detroit-pistons")
+    team = scrape_team("boston-celtics")
     print(team)
 
-    player = scrape_player("https://www.spotrac.com/nba/player/_/id/82196")
+    player = scrape_player("https://www.spotrac.com/nba/player/_/id/23598/jayson-tatum")
     print(player)
-
-    df = scrape_teams()
-    print(df)
