@@ -12,19 +12,24 @@ sys.path.append(base_dir)
 from utils.text_formatter import make_player_key
 from utils.spotrac_scraper import scrape_player
 
-LOG_PATH = os.path.join(".logs", "pull_details.log")
-INPUT_PATH = os.path.join("data", "spotrac_contracts.csv")
-OUTPUT_PATH = os.path.join("data", "contract_details.csv")
+LOG_DIR = os.path.join(".logs")
+LOG_FILE = "pull_details.log"
+DATA_DIR = os.path.join("data")
+INPUT_FILE = "spotrac_contracts.csv"
+OUTPUT_FILE = "contract_details.csv"
 
-os.makedirs(os.path.dirname(LOG_PATH), exist_ok=True)
-os.makedirs(os.path.dirname(INPUT_PATH), exist_ok=True)
-os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
+os.makedirs(LOG_DIR, exist_ok=True)
+os.makedirs(DATA_DIR, exist_ok=True)
+
+log_path = os.path.join(LOG_DIR, LOG_FILE)
+input_path = os.path.join(DATA_DIR, INPUT_FILE)
+output_path = os.path.join(DATA_DIR, OUTPUT_FILE)
 
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
     handlers=[
-        logging.FileHandler(LOG_PATH, mode="a", encoding="utf-8"),
+        logging.FileHandler(log_path, mode="a", encoding="utf-8"),
         logging.StreamHandler(sys.stdout)
     ]
 )
@@ -186,7 +191,7 @@ def scrape_players_with_retries(urls: list[str]) -> pd.DataFrame:
     return pd.concat(all_details, ignore_index=True)
 
 def main():
-    df = get_players_from_csv(INPUT_PATH)
+    df = get_players_from_csv(input_path)
     df = filter_active_players(df)
     urls = return_player_urls_to_scrape(df)
     details = scrape_players(urls)

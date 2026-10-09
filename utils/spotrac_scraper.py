@@ -14,7 +14,18 @@ sys.path.append(base_dir)
 
 from utils.text_formatter import make_player_key
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+CACHE_DIR = os.path.join(".cache")
+TEAM_CACHE_DIR = os.path.join(CACHE_DIR, "teams")
+PLAYER_CACHE_DIR = os.path.join(CACHE_DIR, "players")
+
+os.makedirs(CACHE_DIR, exist_ok=True)
+os.makedirs(TEAM_CACHE_DIR, exist_ok=True)
+os.makedirs(PLAYER_CACHE_DIR, exist_ok=True)
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
 HEADERS = {
     "User-Agent": (
@@ -26,6 +37,7 @@ HEADERS = {
 MAX_RETRIES = 3
 RETRY_DELAY = 2
 TIMEOUT = 10
+
 TEAMS = [
     "atlanta-hawks", "boston-celtics", "brooklyn-nets",
     "charlotte-hornets", "chicago-bulls", "cleveland-cavaliers",
@@ -39,21 +51,11 @@ TEAMS = [
     "toronto-raptors", "utah-jazz", "washington-wizards",
 ]
 PLAYER_DETAIL_COLUMNS = [
-    "Player",
-    "Link",
-    "Key",
-    "Drafted",
-    "Signed Using",
-    #"Team",
-    #"Position",
-    #"Age",
-    #"Exp",
-    #"Country",
-    #"College",
-    # Add more columns as needed
+    "Player", "Link", "Key",
+    "Drafted", "Signed Using",
+    #"Team", "Position", "Age",
+    #"Exp", "Country", "College",
 ]
-OUTPUT_DIR = os.path.join(".cache")
-os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 
 def scrape_team_url(url: str) -> pd.DataFrame | None:
@@ -68,7 +70,7 @@ def scrape_team_url(url: str) -> pd.DataFrame | None:
     return soup
 
 def save_team_page(team: str) -> BeautifulSoup:
-    cache_dir = os.path.join(OUTPUT_DIR, "teams")
+    cache_dir = os.path.join(TEAM_CACHE_DIR)
     os.makedirs(cache_dir, exist_ok=True)
     filename = team + ".html"
 
@@ -76,7 +78,6 @@ def save_team_page(team: str) -> BeautifulSoup:
         soup = scrape_team_url(f"https://www.spotrac.com/nba/{team}/yearly/")
         with open(os.path.join(cache_dir, filename), "w", encoding="utf-8") as f:
             f.write(soup.prettify())
-        print(f"Page saved to {filename}")
         return soup
     except Exception as e:
         logging.error(f"Failed to scrape team page {team}: {e}")
@@ -210,7 +211,7 @@ def scrape_player_url(url: str) -> pd.DataFrame | None:
     return soup
 
 def save_player_page(url: str) -> BeautifulSoup:
-    cache_dir = os.path.join(OUTPUT_DIR, "players")
+    cache_dir = os.path.join(PLAYER_CACHE_DIR)
     os.makedirs(cache_dir, exist_ok=True)
     filename = re.sub("https://www.spotrac.com/nba/player/_/id/", "", url)
     filename = re.sub("/", "-", filename) + ".html"
@@ -219,7 +220,6 @@ def save_player_page(url: str) -> BeautifulSoup:
         soup = scrape_player_url(url)
         with open(os.path.join(cache_dir, filename), "w", encoding="utf-8") as f:
             f.write(soup.prettify())
-        print(f"Page saved to {filename}")
         return soup
     except Exception as e:
         logging.error(f"Failed to scrape player page {url}: {e}")

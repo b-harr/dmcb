@@ -3,7 +3,6 @@ import sys
 import logging
 import pandas as pd
 
-
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(base_dir)
 
@@ -11,17 +10,22 @@ from utils.text_formatter import make_player_key, make_title_case
 from utils.spotrac_scraper import scrape_teams
 from utils.sheets_manager import GoogleSheetsManager
 
-LOG_PATH = os.path.join(".logs", "pull_contracts.log")
-OUTPUT_PATH = os.path.join("data", "spotrac_contracts.csv")
+LOG_DIR = os.path.join(".logs")
+DATA_DIR = os.path.join("data")
+LOG_FILE = "pull_contracts.log"
+OUTPUT_FILE = "spotrac_contracts.csv"
 
-os.makedirs(os.path.dirname(LOG_PATH), exist_ok=True)
-os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
+os.makedirs(LOG_DIR, exist_ok=True)
+os.makedirs(DATA_DIR, exist_ok=True)
+
+log_path = os.path.join(LOG_DIR, LOG_FILE)
+output_path = os.path.join(DATA_DIR, OUTPUT_FILE)
 
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
     handlers=[
-        logging.FileHandler(LOG_PATH, mode="a", encoding="utf-8"),
+        logging.FileHandler(log_path, mode="a", encoding="utf-8"),
         logging.StreamHandler(sys.stdout)
     ]
 )
@@ -125,7 +129,7 @@ def main():
     contracts = process_data(contracts)
     owners = get_owners(sheet_name="Contracts")
     data = merge_owners(contracts, owners)
-    save_data(data, OUTPUT_PATH)
+    save_data(data, output_path)
 
 
 if __name__ == "__main__":
