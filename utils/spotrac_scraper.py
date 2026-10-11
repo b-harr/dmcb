@@ -109,7 +109,7 @@ def get_contract_value(cell: BeautifulSoup) -> str | None:
     pill = cell.select_one(".pill-start")
     pill_value = pill.get_text(strip=True) if pill else None
 
-    for status in ("UFA", "RFA", "Two-Way"):
+    for status in ("UFA", "RFA", "Two-Way", "Exhibit 10"):
         if pill_value.startswith(status):
             return status
 
