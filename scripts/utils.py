@@ -369,7 +369,7 @@ def _process_sportsws_data(df: pd.DataFrame) -> pd.DataFrame:
     column_order = ["Name", "Player Link", "Player Key", "Position"]
     return df[column_order].sort_values(by="Player Key").reset_index(drop=True)
 
-def scrape_bbref(year):
+def scrape_bbref(year: int) -> pd.DataFrame:
     url = f"https://www.basketball-reference.com/leagues/NBA_{year}_totals.html"
 
     soup = _save_page(url, f".cache/stats/bbref_{year}.html")
