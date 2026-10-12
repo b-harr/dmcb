@@ -356,7 +356,7 @@ def scrape_nba_stats(year: int) -> pd.DataFrame:
 
     return df
 
-def scrape_dmcb_owner(sheet: str, output: str) -> pd.DataFrame:
+def scrape_owners(sheet: str, output: str) -> pd.DataFrame:
     try:
         sheets_manager = GoogleSheetsManager()
         raw_data = sheets_manager.read_data(sheet)
@@ -389,6 +389,35 @@ def scrape_dmcb_owner(sheet: str, output: str) -> pd.DataFrame:
         logging.error(f"Failed to save data to CSV: {e}")
 
     return df
+
+def merge_owners(df: pd.DataFrame) -> pd.DataFrame:
+    if df.empty:
+        logging.info("DataFrame is empty, returning as is.")
+        return df
+
+    owners_path = os.path.join("data", "dmcb_owners.csv")
+    owners = pd.read_csv(owners_path)
+
+    if owners.empty:
+        logging.info("Owners DataFrame is empty, returning as is.")
+        return df
+
+    merged_df = df.copy()
+    if "Player Key" in merged_df.columns and "Player Key" in owners.columns and "Owner" in owners.columns:
+        owner_data = owners[["Player Key", "Owner"]].copy()
+        owner_data["Player Key"] = owner_data["Player Key"].astype("string").str.strip()
+        owner_data = owner_data.dropna(subset=["Player Key"])
+        owner_data = owner_data[owner_data["Player Key"] != ""]
+        owner_lookup = owner_data.drop_duplicates("Player Key", keep="first").set_index("Player Key")["Owner"]
+
+        merged_df["Player Key"] = merged_df["Player Key"].astype("string").str.strip()
+        merged_df["Owner"] = merged_df["Player Key"].map(owner_lookup).fillna("")
+        logging.info("Merged owner data into contracts DataFrame.")
+    else:
+        merged_df["Owner"] = ""
+
+    other_columns = [col for col in merged_df.columns if col != "Owner"]
+    return merged_df[other_columns + ["Owner"]]
 
 def _save_page(url: str, output: str) -> BeautifulSoup:
     try:
