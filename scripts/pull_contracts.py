@@ -6,9 +6,7 @@ import pandas as pd
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(base_dir)
 
-from utils.text_formatter import make_player_key, make_title_case
-from utils.spotrac_scraper import scrape_teams
-from utils.sheets_manager import GoogleSheetsManager
+from utils import make_player_key, make_title_case, scrape_teams, GoogleSheetsManager
 
 LOG_DIR = os.path.join(".logs")
 DATA_DIR = os.path.join("data")
@@ -69,12 +67,12 @@ def process_data(df: pd.DataFrame) -> pd.DataFrame:
         logging.error(f"Data processing failed: {e}")
         return pd.DataFrame()
 
-def get_owners(sheet_name="Contracts") -> pd.DataFrame:
+def get_owners(sheet="Contracts") -> pd.DataFrame:
     try:
         sheets_manager = GoogleSheetsManager()
-        raw_data = sheets_manager.read_data(sheet_name=sheet_name)
+        raw_data = sheets_manager.read_data(sheet=sheet)
     except Exception as e:
-        logging.warning(f"Could not read owner data from Google Sheets '{sheet_name}': {e}")
+        logging.warning(f"Could not read owner data from Google Sheets '{sheet}': {e}")
         return pd.DataFrame(columns=["Player", "Player Link", "Player Key", "Owner"])
 
     if not raw_data:
@@ -127,7 +125,7 @@ def save_data(df: pd.DataFrame, output_csv: str) -> None:
 def main():
     contracts = scrape_all()
     contracts = process_data(contracts)
-    owners = get_owners(sheet_name="Contracts")
+    owners = get_owners(sheet="Contracts")
     data = merge_owners(contracts, owners)
     save_data(data, output_path)
 

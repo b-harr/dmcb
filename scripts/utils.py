@@ -10,8 +10,9 @@ import unicodedata
 import pandas as pd
 from bs4 import BeautifulSoup
 from lxml import html
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from nba_api.stats.endpoints import leaguedashplayerstats
 from dotenv import load_dotenv
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from urllib.parse import urlparse
 
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -69,6 +70,68 @@ TEAMS = [
 ]
 
 
+class GoogleSheetsManager:
+    def __init__(self):
+        try:
+            logging.info("Initializing GoogleSheetsManager...")
+            self.gc = gspread.service_account(filename=GOOGLE_SHEETS_CREDENTIALS)
+            self.sheet = self.gc.open_by_url(GOOGLE_SHEETS_URL)
+
+            with open(GOOGLE_SHEETS_CREDENTIALS, "r") as file:
+                credentials = json.load(file)
+                self.service_account_email = credentials.get("client_email")
+
+            logging.info(f"Successfully connected to Google Sheets. Service Account Email: {self.service_account_email}")
+        except Exception as e:
+            logging.error(f"Failed to initialize GoogleSheetsManager: {e}")
+            raise
+
+    def get_worksheet(self, sheet: str):
+        try:
+            worksheet = self.sheet.worksheet(sheet)
+            logging.info(f"Accessed worksheet: {sheet}")
+            return worksheet
+        except Exception as e:
+            logging.error(f"Error accessing worksheet '{sheet}': {e}")
+            raise
+
+    def read_data(self, sheet: str):
+        try:
+            worksheet = self.get_worksheet(sheet)
+            data = worksheet.get_all_values()
+            logging.info(f"Read {len(data)} rows from worksheet '{sheet}'.")
+            return data
+        except Exception as e:
+            logging.error(f"Error reading data from worksheet '{sheet}': {e}")
+            raise
+
+    def write_data(self, data: pd.DataFrame, sheet: str, cell: str):
+        try:
+            worksheet = self.get_worksheet(sheet)
+            worksheet.update(cell, data)
+            logging.info(f"Written data to worksheet '{sheet}' starting at '{cell}'.")
+        except Exception as e:
+            logging.error(f"Error writing data to worksheet '{sheet}': {e}")
+            raise
+
+    def clear_data(self, sheet: str):
+        try:
+            worksheet = self.get_worksheet(sheet)
+            worksheet.clear()
+            logging.info(f"Cleared data from worksheet '{sheet}'.")
+        except Exception as e:
+            logging.error(f"Error clearing data in worksheet '{sheet}': {e}")
+            raise
+
+    def clear_range(self, sheet: str, range: str):
+        try:
+            worksheet = self.get_worksheet(sheet)
+            worksheet.batch_clear([range])
+            logging.info(f"Cleared range '{range}' in worksheet '{sheet}'.")
+        except Exception as e:
+            logging.error(f"Error clearing range '{range}' in worksheet '{sheet}': {e}")
+            raise
+
 def make_player_key(name: str) -> str:
     # Remove accents and convert to lowercase
     name = unicodedata.normalize("NFD", name).encode("ascii", "ignore").decode("utf-8")
@@ -125,6 +188,208 @@ def make_title_case(text: str) -> str:
 
     return title_text
 
+def scrape_team(team: str) -> pd.DataFrame:
+    url = f"https://www.spotrac.com/nba/{team}/yearly"
+
+    soup = _save_page(url, f".cache/teams/{team}.html")
+    if soup is None:
+        return pd.DataFrame()
+
+    # Find both active and pending contract tables
+    tables = []
+    for table_id in ["dataTable-active", "dataTable-pending"]:
+        table = soup.find("table", {"id": table_id})
+        if table is not None:
+            tables.append(table)
+
+    if not tables:
+        logging.warning(f"No contracts tables found for {team}")
+        return pd.DataFrame()
+
+    # Extract season headers from the first table
+    headers = [th.text.strip() for th in tables[0].find_all("th")]
+    season_headers = [h for h in headers if h.startswith("20")]
+    season_headers = season_headers[:5]
+
+    # Extract data from all found tables
+    data = []
+    for table in tables:
+        data.extend(_extract_team_contracts(table))
+
+    columns = ["Player", "Player Link", "Position", "Age"] + season_headers
+
+    return pd.DataFrame(data, columns=columns)
+
+def scrape_teams() -> pd.DataFrame:
+    all_data = []
+    failures = []
+
+    # Use a session for connection pooling
+    with requests.Session() as session:
+        session.headers.update(HEADERS)
+
+        # Use ThreadPoolExecutor for concurrent scraping
+        with ThreadPoolExecutor(max_workers=6) as executor:
+            futures = {
+                executor.submit(_scrape_team_with_retries, team): team
+                for team in TEAMS
+            }
+
+            # Collect results as they complete
+            for future in as_completed(futures):
+                team = futures[future]
+                try:
+                    df = future.result()
+                    if df is not None:
+                        df["Team"] = team
+                        all_data.append(df)
+                        logging.info(f"✔ Finished {team}")
+                    else:
+                        failures.append(f"{team}: no data returned")
+                        logging.error(f"{team} returned no data")
+                except Exception as e:
+                    logging.error(f"{team} failed: {e}")
+                    failures.append(f"{team}: {e}")
+
+    if failures:
+        raise RuntimeError("One or more teams failed to scrape: " + "; ".join(failures))
+
+    return pd.concat(all_data, ignore_index=True) if all_data else pd.DataFrame()
+
+def scrape_player(url: str) -> pd.DataFrame:
+    player = "-".join(urlparse(url).path.rstrip("/").split("/")[-2:])
+
+    soup = _save_page(url, f".cache/players/{player}.html")
+    if soup is None:
+        return pd.DataFrame()
+    data = _extract_player_details(soup)
+    data["Key"] = data["Player"].apply(make_player_key)
+    columns = ["Player", "Player Link", "Player Key", "Signed Using", "Drafted"]
+    return data[columns]
+
+def scrape_players(urls: list[str]) -> pd.DataFrame:
+    all_data = []
+    failures = []
+
+    with ThreadPoolExecutor(max_workers=5) as executor:
+        futures = {executor.submit(scrape_player, url): url for url in urls}
+        for future in as_completed(futures):
+            url = futures[future]
+            try:
+                df = future.result()
+                if not df.empty:
+                    all_data.append(df)
+                    logging.info(f"✔ Finished {url}")
+                else:
+                    failures.append(f"{url}: no data returned")
+                    logging.error(f"{url} returned no data")
+            except Exception as e:
+                logging.error(f"{url} failed: {e}")
+                failures.append(f"{url}: {e}")
+
+    if failures:
+        raise RuntimeError("One or more players failed to scrape: " + "; ".join(failures))
+
+    return pd.concat(all_data, ignore_index=True) if all_data else pd.DataFrame()
+
+def scrape_positions() -> pd.DataFrame:
+    df = _scrape_sportsws_stats()
+    df = _process_sportsws_data(df)
+    return df
+
+def scrape_bbref_stats(year: int) -> pd.DataFrame:
+    url = f"https://www.basketball-reference.com/leagues/NBA_{year}_totals.html"
+
+    soup = _save_page(url, f".cache/stats/bbref_{year}.html")
+    table = soup.find("table", {"id": "totals_stats"})
+    if not table:
+        raise ValueError("Table not found. Ensure the page structure has not changed.")
+
+    headers = [th.get_text() for th in table.find("thead").find_all("th")][1:]
+    headers.extend(["Player Link", "Team Link"])
+    rows = table.find("tbody").find_all("tr")
+
+    data = []
+    for row in rows:
+        if row.find("td"):
+            row_data = [td.get_text() for td in row.find_all("td")]
+            links = row.find_all("a")
+            player_link, team_link = None, None
+
+            for link in links:
+                href = link.get("href", "")
+                if "/players/" in href:
+                    player_link = "https://www.basketball-reference.com" + href
+                elif "/teams/" in href:
+                    team_link = "https://www.basketball-reference.com" + href
+
+            row_data.append(player_link)
+            row_data.append(team_link)
+            data.append(row_data)
+
+    return pd.DataFrame(data, columns=headers)
+
+def scrape_nba_stats(year: int) -> pd.DataFrame:
+    season_str = f"{year-1}-{str(year)[-2:]}"  # e.g., 2027 => 2026-27
+
+    stats = leaguedashplayerstats.LeagueDashPlayerStats(season=season_str)
+    df = stats.get_data_frames()[0]
+
+    df = df.dropna(subset=["PLAYER_NAME"])
+
+    df.rename(columns={
+        "PLAYER_NAME": "Player",
+        "TEAM_ABBREVIATION": "Team",
+        "GP": "G",
+        "MIN": "MP",
+        "PTS": "PTS",
+        "REB": "TRB",
+        "AST": "AST",
+        "STL": "STL",
+        "BLK": "BLK",
+        "TO": "TOV",
+        "PF": "PF"
+    }, inplace=True)
+
+    column_order = ["Player", "Team", "G", "MP", "PTS", "TRB", "AST", "STL", "BLK", "TOV", "PF"]
+    df = df[column_order]
+
+    return df
+
+def scrape_dmcb_owner(sheet: str, output: str) -> pd.DataFrame:
+    try:
+        sheets_manager = GoogleSheetsManager()
+        raw_data = sheets_manager.read_data(sheet)
+    except Exception as e:
+        logging.warning(f"Could not read owner data from Google Sheets '{sheet}': {e}")
+        return pd.DataFrame()
+
+    if not raw_data:
+        return pd.DataFrame()
+
+    header = raw_data[0]
+    rows = raw_data[1:] if len(raw_data) > 1 else []
+
+    if len(header) < 5:
+        logging.warning("Google Sheets 'Contracts' tab does not contain the expected owner column (Q).")
+        return pd.DataFrame()
+
+    df = pd.DataFrame(rows, columns=[str(col).strip() for col in header])
+    df = df.iloc[:, [0, 3]].copy()
+    df.columns = ["Owner", "Player"]
+
+    df["Player Key"] = df["Player"].apply(make_player_key)
+    df = df.dropna(subset=["Player Key"])
+    df = df[df["Player Key"] != ""]
+
+    try:
+        df.to_csv(output, index=False)
+        logging.info(f"Data saved to {output}")
+    except Exception as e:
+        logging.error(f"Failed to save data to CSV: {e}")
+
+    return df
+
 def _save_page(url: str, output: str) -> BeautifulSoup:
     try:
         response = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
@@ -175,38 +440,6 @@ def _extract_team_contracts(table: BeautifulSoup) -> list[list[str] | None]:
 
     return data
 
-def scrape_team(team: str) -> pd.DataFrame:
-    url = f"https://www.spotrac.com/nba/{team}/yearly"
-
-    soup = _save_page(url, f".cache/teams/{team}.html")
-    if soup is None:
-        return pd.DataFrame()
-
-    # Find both active and pending contract tables
-    tables = []
-    for table_id in ["dataTable-active", "dataTable-pending"]:
-        table = soup.find("table", {"id": table_id})
-        if table is not None:
-            tables.append(table)
-
-    if not tables:
-        logging.warning(f"No contracts tables found for {team}")
-        return pd.DataFrame()
-
-    # Extract season headers from the first table
-    headers = [th.text.strip() for th in tables[0].find_all("th")]
-    season_headers = [h for h in headers if h.startswith("20")]
-    season_headers = season_headers[:5]
-
-    # Extract data from all found tables
-    data = []
-    for table in tables:
-        data.extend(_extract_team_contracts(table))
-
-    columns = ["Player", "Player Link", "Position", "Age"] + season_headers
-
-    return pd.DataFrame(data, columns=columns)
-
 def _scrape_team_with_retries(team: str) -> pd.DataFrame | None:
     for attempt in range(1, MAX_RETRIES + 1):
         try:
@@ -216,42 +449,6 @@ def _scrape_team_with_retries(team: str) -> pd.DataFrame | None:
                 raise
             logging.warning(f"{team} scrape failed ({attempt}/{MAX_RETRIES}), retrying: {e}")
             time.sleep(RETRY_DELAY)
-
-def scrape_teams() -> pd.DataFrame:
-    all_data = []
-    failures = []
-
-    # Use a session for connection pooling
-    with requests.Session() as session:
-        session.headers.update(HEADERS)
-
-        # Use ThreadPoolExecutor for concurrent scraping
-        with ThreadPoolExecutor(max_workers=6) as executor:
-            futures = {
-                executor.submit(_scrape_team_with_retries, team): team
-                for team in TEAMS
-            }
-
-            # Collect results as they complete
-            for future in as_completed(futures):
-                team = futures[future]
-                try:
-                    df = future.result()
-                    if df is not None:
-                        df["Team"] = team
-                        all_data.append(df)
-                        logging.info(f"✔ Finished {team}")
-                    else:
-                        failures.append(f"{team}: no data returned")
-                        logging.error(f"{team} returned no data")
-                except Exception as e:
-                    logging.error(f"{team} failed: {e}")
-                    failures.append(f"{team}: {e}")
-
-    if failures:
-        raise RuntimeError("One or more teams failed to scrape: " + "; ".join(failures))
-
-    return pd.concat(all_data, ignore_index=True) if all_data else pd.DataFrame()
 
 def _extract_player_details(soup: BeautifulSoup) -> pd.DataFrame:
     details = {}
@@ -292,43 +489,7 @@ def _extract_player_details(soup: BeautifulSoup) -> pd.DataFrame:
 
     return pd.DataFrame([details])
 
-def scrape_player(url: str) -> pd.DataFrame:
-    player = "-".join(urlparse(url).path.rstrip("/").split("/")[-2:])
-
-    soup = _save_page(url, f".cache/players/{player}.html")
-    if soup is None:
-        return pd.DataFrame()
-    data = _extract_player_details(soup)
-    data["Key"] = data["Player"].apply(make_player_key)
-    columns = ["Player", "Player Link", "Player Key", "Signed Using", "Drafted"]
-    return data[columns]
-
-def scrape_players(urls: list[str]) -> pd.DataFrame:
-    all_data = []
-    failures = []
-
-    with ThreadPoolExecutor(max_workers=5) as executor:
-        futures = {executor.submit(scrape_player, url): url for url in urls}
-        for future in as_completed(futures):
-            url = futures[future]
-            try:
-                df = future.result()
-                if not df.empty:
-                    all_data.append(df)
-                    logging.info(f"✔ Finished {url}")
-                else:
-                    failures.append(f"{url}: no data returned")
-                    logging.error(f"{url} returned no data")
-            except Exception as e:
-                logging.error(f"{url} failed: {e}")
-                failures.append(f"{url}: {e}")
-
-    if failures:
-        raise RuntimeError("One or more players failed to scrape: " + "; ".join(failures))
-
-    return pd.concat(all_data, ignore_index=True) if all_data else pd.DataFrame()
-
-def scrape_sportsws() -> pd.DataFrame:
+def _scrape_sportsws_stats() -> pd.DataFrame:
     url = "https://sports.ws/nba/stats"
     try:
         response = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
@@ -367,98 +528,5 @@ def _process_sportsws_data(df: pd.DataFrame) -> pd.DataFrame:
         "https://sports.ws/nba/", "", regex=False
     ).apply(make_player_key)
     column_order = ["Name", "Player Link", "Player Key", "Position"]
+    df = df[~df["Player Key"].str.contains("placeholder", case=False, na=False)].copy()
     return df[column_order].sort_values(by="Player Key").reset_index(drop=True)
-
-def scrape_bbref(year: int) -> pd.DataFrame:
-    url = f"https://www.basketball-reference.com/leagues/NBA_{year}_totals.html"
-
-    soup = _save_page(url, f".cache/stats/bbref_{year}.html")
-    table = soup.find("table", {"id": "totals_stats"})
-    if not table:
-        raise ValueError("Table not found. Ensure the page structure has not changed.")
-
-    headers = [th.get_text() for th in table.find("thead").find_all("th")][1:]
-    headers.extend(["Player Link", "Team Link"])
-    rows = table.find("tbody").find_all("tr")
-
-    data = []
-    for row in rows:
-        if row.find("td"):
-            row_data = [td.get_text() for td in row.find_all("td")]
-            links = row.find_all("a")
-            player_link, team_link = None, None
-
-            for link in links:
-                href = link.get("href", "")
-                if "/players/" in href:
-                    player_link = "https://www.basketball-reference.com" + href
-                elif "/teams/" in href:
-                    team_link = "https://www.basketball-reference.com" + href
-
-            row_data.append(player_link)
-            row_data.append(team_link)
-            data.append(row_data)
-
-    return pd.DataFrame(data, columns=headers)
-
-class GoogleSheetsManager:
-    def __init__(self):
-        try:
-            logging.info("Initializing GoogleSheetsManager...")
-            self.gc = gspread.service_account(filename=GOOGLE_SHEETS_CREDENTIALS)
-            self.sheet = self.gc.open_by_url(GOOGLE_SHEETS_URL)
-
-            with open(GOOGLE_SHEETS_CREDENTIALS, "r") as file:
-                credentials = json.load(file)
-                self.service_account_email = credentials.get("client_email")
-                
-            logging.info(f"Successfully connected to Google Sheets. Service Account Email: {self.service_account_email}")
-        except Exception as e:
-            logging.error(f"Failed to initialize GoogleSheetsManager: {e}")
-            raise
-
-    def get_worksheet(self, sheet: str):
-        try:
-            worksheet = self.sheet.worksheet(sheet)
-            logging.info(f"Accessed worksheet: {sheet}")
-            return worksheet
-        except Exception as e:
-            logging.error(f"Error accessing worksheet '{sheet}': {e}")
-            raise
-
-    def read_data(self, sheet: str):
-        try:
-            worksheet = self.get_worksheet(sheet)
-            data = worksheet.get_all_values()
-            logging.info(f"Read {len(data)} rows from worksheet '{sheet}'.")
-            return data
-        except Exception as e:
-            logging.error(f"Error reading data from worksheet '{sheet}': {e}")
-            raise
-
-    def write_data(self, data: pd.DataFrame, sheet: str, cell: str):
-        try:
-            worksheet = self.get_worksheet(sheet)
-            worksheet.update(cell, data)
-            logging.info(f"Written data to worksheet '{sheet}' starting at '{cell}'.")
-        except Exception as e:
-            logging.error(f"Error writing data to worksheet '{sheet}': {e}")
-            raise
-
-    def clear_data(self, sheet: str):
-        try:
-            worksheet = self.get_worksheet(sheet)
-            worksheet.clear()
-            logging.info(f"Cleared data from worksheet '{sheet}'.")
-        except Exception as e:
-            logging.error(f"Error clearing data in worksheet '{sheet}': {e}")
-            raise
-
-    def clear_range(self, sheet: str, range: str):
-        try:
-            worksheet = self.get_worksheet(sheet)
-            worksheet.batch_clear([range])
-            logging.info(f"Cleared range '{range}' in worksheet '{sheet}'.")
-        except Exception as e:
-            logging.error(f"Error clearing range '{range}' in worksheet '{sheet}': {e}")
-            raise

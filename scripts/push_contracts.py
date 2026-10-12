@@ -5,18 +5,21 @@ import pandas as pd
 import re
 import time
 
-
-LOG_DIR = ".logs"
-LOG_FILE = "push_contracts.log"
-INPUT_DIR = "data"
-INPUT_FILE = "spotrac_contracts.csv"
-
-
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(base_dir)
 
+from utils import GoogleSheetsManager
+
+LOG_DIR = os.path.join(".logs")
+DATA_DIR = os.path.join("data")
+LOG_FILE = "push_contracts.log"
+INPUT_FILE = "spotrac_contracts.csv"
+
 os.makedirs(LOG_DIR, exist_ok=True)
+os.makedirs(DATA_DIR, exist_ok=True)
+
 log_path = os.path.join(LOG_DIR, LOG_FILE)
+input_path = os.path.join(DATA_DIR, INPUT_FILE)
 
 logging.basicConfig(
     level=logging.INFO,
@@ -26,11 +29,6 @@ logging.basicConfig(
         logging.StreamHandler(sys.stdout)
     ]
 )
-
-os.makedirs(INPUT_DIR, exist_ok=True)
-input_path = os.path.join(INPUT_DIR, INPUT_FILE)
-
-from utils.sheets_manager import GoogleSheetsManager
 
 
 def load_contracts(input_csv: str) -> pd.DataFrame:

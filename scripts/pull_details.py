@@ -9,8 +9,7 @@ import pandas as pd
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(base_dir)
 
-from utils.text_formatter import make_player_key
-from utils.spotrac_scraper import scrape_player
+from utils import make_player_key, scrape_player
 
 LOG_DIR = os.path.join(".logs")
 LOG_FILE = "pull_details.log"
