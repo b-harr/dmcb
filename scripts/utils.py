@@ -300,7 +300,7 @@ def scrape_positions() -> pd.DataFrame:
 def scrape_bbref_stats(year: int) -> pd.DataFrame:
     url = f"https://www.basketball-reference.com/leagues/NBA_{year}_totals.html"
 
-    soup = _save_page(url, f".cache/stats/bbref_{year}.html")
+    soup = _save_page(url, f".cache/stats/bbref-{year}.html")
     table = soup.find("table", {"id": "totals_stats"})
     if not table:
         raise ValueError("Table not found. Ensure the page structure has not changed.")
