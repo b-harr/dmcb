@@ -6,7 +6,7 @@ import pandas as pd
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(base_dir)
 
-from utils import make_player_key, make_title_case, scrape_teams, GoogleSheetsManager
+from scripts.utils import make_player_key, make_title_case, scrape_teams, GoogleSheetsManager
 
 LOG_DIR = os.path.join(".logs")
 DATA_DIR = os.path.join("data")

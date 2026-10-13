@@ -54,26 +54,26 @@ update-types:
 # -------------------------
 # Manage Basketball-Reference player stats
 pull-stats:
-	python3 scripts/get_stats.py --update-csv --no-update-sheets
+	python3 scripts/pull_stats.py
 
 push-stats:
-	python3 scripts/get_stats.py --no-update-csv --update-sheets
+	python3 scripts/push_stats.py
 
 update-stats:
-	python3 scripts/get_stats.py --update-csv --update-sheets
+	python3 scripts/pull_stats.py && python3 scripts/push_stats.py
 
 # -------------------------
 # Positions
 # -------------------------
 # Manage Sports.ws position data
 pull-positions:
-	python3 scripts/get_positions.py --update-csv --no-update-sheets
+	python3 scripts/pull_positions.py
 
 push-positions:
-	python3 scripts/get_positions.py --no-update-csv --update-sheets
+	python3 scripts/push_positions.py
 
 update-positions:
-	python3 scripts/get_positions.py --update-csv --update-sheets
+	python3 scripts/pull_positions.py && python3 scripts/push_positions.py
 
 # -------------------------
 # Groups
@@ -89,4 +89,4 @@ update-all: update-contracts update-types update-stats update-positions
 # Default
 # -------------------------
 # If no target is specified, pull stats, positions, and contracts data by default
-default: pull-stats pull-positions pull-contracts
+default: update-stats pull-positions pull-contracts

@@ -8,34 +8,18 @@ import argparse
 import requests
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-# -------------------------------------------------
-# Paths
-# -------------------------------------------------
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(base_dir)
+
+from scripts.utils import HEADERS, GoogleSheetsManager, scrape_player, make_title_case
 
 input_csv = os.path.join("data", "spotrac_contracts.csv")
 output_csv = os.path.join("data", "contract_types.csv")
 os.makedirs("data", exist_ok=True)
 
-# -------------------------------------------------
-# Logging
-# -------------------------------------------------
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
-logger = logging.getLogger()
-logger.info("get_contract_types.py started successfully.")
-
-# -------------------------------------------------
-# Imports
-# -------------------------------------------------
-from utils.sheets_manager import GoogleSheetsManager
-from utils.spotrac_scraper import scrape_player, HEADERS
-from utils.text_formatter import make_title_case
 
 
-# -------------------------------------------------
-# Helpers
-# -------------------------------------------------
 def get_links_to_scrape(unique_links, output_csv_path):
     if not os.path.exists(output_csv_path):
         return unique_links
@@ -55,7 +39,7 @@ def get_links_to_scrape(unique_links, output_csv_path):
             )
             cleaned_df = existing_df.loc[~missing_mask].copy()
             cleaned_df.to_csv(output_csv_path, index=False)
-            logger.info(
+            logging.info(
                 f"Removed {missing_mask.sum()} rows with missing contract metadata from {output_csv_path}"
             )
         else:
@@ -69,22 +53,15 @@ def get_links_to_scrape(unique_links, output_csv_path):
 
     return [link for link in unique_links if link in missing_links or link not in existing_links]
 
-
-# -------------------------------------------------
-# Main
-# -------------------------------------------------
 def main(update_csv=False, update_sheets=True, sheet_name="Contract Types"):
-    logger.info(f"Loading Spotrac source data: {input_csv}")
+    logging.info(f"Loading Spotrac source data: {input_csv}")
 
     try:
         salary_data = pd.read_csv(input_csv)
     except Exception as e:
-        logger.error(f"Failed to load {input_csv}: {e}")
+        logging.error(f"Failed to load {input_csv}: {e}")
         return
 
-    # -------------------------------------------------
-    # Active players only
-    # -------------------------------------------------
     active_data = salary_data[
         (salary_data["2026-27"] != "Two-Way") &
         (salary_data["2026-27"] != "-")
@@ -97,11 +74,8 @@ def main(update_csv=False, update_sheets=True, sheet_name="Contract Types"):
         .tolist()
     )
 
-    logger.info(f"Found {len(unique_links)} active players")
+    logging.info(f"Found {len(unique_links)} active players")
 
-    # -------------------------------------------------
-    # CSV update logic
-    # -------------------------------------------------
     if update_csv:
         if os.path.exists(output_csv):
             existing_df = pd.read_csv(output_csv)
@@ -115,14 +89,14 @@ def main(update_csv=False, update_sheets=True, sheet_name="Contract Types"):
         existing_links = set(cleaned_df["Player Link"].dropna().astype(str))
         to_scrape = get_links_to_scrape(unique_links, output_csv)
 
-        logger.info(
+        logging.info(
             f"Existing: {len(existing_links)} | "
             f"To scrape: {len(to_scrape)}"
         )
 
         # If all players have been scraped, reset and start from the beginning
         if len(to_scrape) == 0 and len(existing_links) > 0:
-            logger.info("All players have been scraped. Resetting and starting from the beginning.")
+            logging.info("All players have been scraped. Resetting and starting from the beginning.")
             existing_df = pd.DataFrame(
                 columns=["Player", "Player Link", "Player Key", "Signed Using", "Drafted"]
             )
@@ -130,9 +104,6 @@ def main(update_csv=False, update_sheets=True, sheet_name="Contract Types"):
             existing_links = set()
             to_scrape = unique_links
 
-        # -------------------------------------------------
-        # Fast lookup dict (thread-safe)
-        # -------------------------------------------------
         player_lookup = (
             active_data
             .drop_duplicates(subset=["Player Link"])
@@ -140,9 +111,6 @@ def main(update_csv=False, update_sheets=True, sheet_name="Contract Types"):
             .to_dict("index")
         )
 
-        # -------------------------------------------------
-        # Threaded scraping (BIG WIN)
-        # -------------------------------------------------
         start_time = time.time()
 
         with requests.Session() as session:
@@ -168,7 +136,7 @@ def main(update_csv=False, update_sheets=True, sheet_name="Contract Types"):
                         signed_using, drafted = future.result()
                         signed_using = make_title_case(signed_using)
                     except Exception as e:
-                        logger.warning(f"Failed to scrape {player_name}: {e}")
+                        logging.warning(f"Failed to scrape {player_name}: {e}")
                         continue
 
                     row = {
@@ -188,15 +156,12 @@ def main(update_csv=False, update_sheets=True, sheet_name="Contract Types"):
                     rate = elapsed / idx
                     remaining = rate * (len(to_scrape) - idx)
 
-                    logger.info(
+                    logging.info(
                         f"Processed {idx}/{len(to_scrape)} "
                         f"- {player_name} | "
                         f"ETA {int(remaining//60):02d}:{int(remaining%60):02d}"
                     )
 
-        # -------------------------------------------------
-        # Post-processing / cleanup
-        # -------------------------------------------------
         df = pd.read_csv(output_csv)
 
         # Determine cutoff year
@@ -219,13 +184,10 @@ def main(update_csv=False, update_sheets=True, sheet_name="Contract Types"):
         df = df[~exclude_mask].sort_values("Player Key", ignore_index=True)
         df.to_csv(output_csv, index=False)
 
-        logger.info(
+        logging.info(
             f"Filtered expired RFA/UFA contracts (≤ {first_year})"
         )
 
-    # -------------------------------------------------
-    # Google Sheets update
-    # -------------------------------------------------
     if update_sheets:
         try:
             df = pd.read_csv(output_csv).fillna("")
@@ -246,15 +208,12 @@ def main(update_csv=False, update_sheets=True, sheet_name="Contract Types"):
                 start_cell="A2",
             )
 
-            logger.info(f"Google Sheets '{sheet_name}' updated successfully")
+            logging.info(f"Google Sheets '{sheet_name}' updated successfully")
 
         except Exception as e:
-            logger.error(f"Google Sheets update failed: {e}")
+            logging.error(f"Google Sheets update failed: {e}")
 
 
-# -------------------------------------------------
-# CLI
-# -------------------------------------------------
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Classify Spotrac contract types"

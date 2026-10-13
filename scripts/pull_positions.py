@@ -6,7 +6,7 @@ import pandas as pd
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(base_dir)
 
-from utils import scrape_positions, merge_owners
+from scripts.utils import scrape_positions, merge_owners
 
 LOG_DIR = os.path.join(".logs")
 DATA_DIR = os.path.join("data")
@@ -49,7 +49,6 @@ def main():
     positions = scrape_sportsws_positions()
     data = merge_fantasy_owners(positions)
     save_positions_data(data, output_path)
-    print(data)
 
 
 if __name__ == "__main__":
