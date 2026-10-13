@@ -29,11 +29,11 @@ def print_df(df: pd.DataFrame) -> None:
     print(df)
 
 def main():
-    team = ask_team()
-    contracts = get_contracts(team)
-    urls = list_urls(contracts)
-    details = get_all_details(urls)
-    formatted_details = format_signed(details)
+    team_name = ask_team()
+    team_contracts = get_contracts(team_name)
+    player_urls = list_urls(team_contracts)
+    contract_details = get_all_details(player_urls)
+    formatted_details = format_signed(contract_details)
     print_df(formatted_details)
 
 
