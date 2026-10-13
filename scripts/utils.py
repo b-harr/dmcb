@@ -45,7 +45,7 @@ PLAYER_KEY_OVERRIDES = {
 }
 
 CAPITALIZED_WORDS = {
-    "la", "rfa", "ufa", "mle",
+    "la", "rfa", "ufa", "mle", "na"
 }
 MINOR_WORDS = {
     "a", "an", "the", "and", "or",
@@ -258,6 +258,7 @@ def scrape_player(url: str) -> pd.DataFrame:
         return pd.DataFrame()
     data = _extract_player_details(soup)
     data["Player Key"] = data["Player"].apply(make_player_key)
+    data["Signed Using"] = data["Signed Using"].replace("", "NA")
     if "Drafted" not in data.columns:
         data["Drafted"] = "Undrafted"
     columns = ["Player", "Player Link", "Player Key", "Signed Using", "Drafted"]
@@ -415,9 +416,7 @@ def merge_owners(df: pd.DataFrame) -> pd.DataFrame:
     other_columns = [col for col in merged_df.columns if col != "Owner"]
     return merged_df[other_columns + ["Owner"]]
 
-def _save_page(
-    url: str, output: str, session: requests.Session | None = None
-) -> BeautifulSoup | None:
+def _save_page(url: str, output: str, session: requests.Session | None = None) -> BeautifulSoup | None:
     try:
         if session is None:
             response = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
