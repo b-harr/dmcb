@@ -263,7 +263,7 @@ def scrape_player(url: str) -> pd.DataFrame:
     if soup is None:
         return pd.DataFrame()
     data = _extract_player_details(soup)
-    data["Key"] = data["Player"].apply(make_player_key)
+    data["Player Key"] = data["Player"].apply(make_player_key)
     columns = ["Player", "Player Link", "Player Key", "Signed Using", "Drafted"]
     return data[columns]
 
@@ -490,7 +490,7 @@ def _extract_player_details(soup: BeautifulSoup) -> pd.DataFrame:
 
         if structured_data.get("@type") == "Person":
             details["Player"] = structured_data.get("name")
-            details["Link"] = structured_data.get("url")
+            details["Player Link"] = structured_data.get("url")
             break
 
     profile = soup.select_one("#main article > div.row.m-0.mt-0.pb-3")
