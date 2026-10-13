@@ -188,12 +188,12 @@ def make_title_case(text: str) -> str:
 
     return title_text
 
-def scrape_team(team: str) -> pd.DataFrame:
+def scrape_team(team: str, session: requests.Session | None = None) -> pd.DataFrame:
     url = f"https://www.spotrac.com/nba/{team}/yearly"
 
-    soup = _save_page(url, f".cache/teams/{team}.html")
+    soup = _save_page(url, f".cache/teams/{team}.html", session=session)
     if soup is None:
-        return pd.DataFrame()
+        raise RuntimeError(f"Could not fetch contracts for {team}")
 
     # Find both active and pending contract tables
     tables = []
@@ -203,8 +203,7 @@ def scrape_team(team: str) -> pd.DataFrame:
             tables.append(table)
 
     if not tables:
-        logging.warning(f"No contracts tables found for {team}")
-        return pd.DataFrame()
+        raise ValueError(f"No contracts tables found for {team}")
 
     # Extract season headers from the first table
     headers = [th.text.strip() for th in tables[0].find_all("th")]
@@ -224,32 +223,27 @@ def scrape_teams() -> pd.DataFrame:
     all_data = []
     failures = []
 
-    # Use a session for connection pooling
-    with requests.Session() as session:
-        session.headers.update(HEADERS)
+    with ThreadPoolExecutor(max_workers=6) as executor:
+        futures = {
+            executor.submit(_scrape_team_with_retries, team): team
+            for team in TEAMS
+        }
 
-        # Use ThreadPoolExecutor for concurrent scraping
-        with ThreadPoolExecutor(max_workers=6) as executor:
-            futures = {
-                executor.submit(_scrape_team_with_retries, team): team
-                for team in TEAMS
-            }
+        for future in as_completed(futures):
+            team = futures[future]
+            try:
+                df = future.result()
+                if df is None or df.empty:
+                    failures.append(f"{team}: no data returned")
+                    logging.error(f"{team} returned no data")
+                    continue
 
-            # Collect results as they complete
-            for future in as_completed(futures):
-                team = futures[future]
-                try:
-                    df = future.result()
-                    if df is not None:
-                        df["Team"] = team
-                        all_data.append(df)
-                        logging.info(f"✔ Finished {team}")
-                    else:
-                        failures.append(f"{team}: no data returned")
-                        logging.error(f"{team} returned no data")
-                except Exception as e:
-                    logging.error(f"{team} failed: {e}")
-                    failures.append(f"{team}: {e}")
+                df["Team"] = team
+                all_data.append(df)
+                logging.info(f"✔ Finished {team}")
+            except Exception as e:
+                logging.error(f"{team} failed: {e}")
+                failures.append(f"{team}: {e}")
 
     if failures:
         raise RuntimeError("One or more teams failed to scrape: " + "; ".join(failures))
@@ -264,6 +258,8 @@ def scrape_player(url: str) -> pd.DataFrame:
         return pd.DataFrame()
     data = _extract_player_details(soup)
     data["Player Key"] = data["Player"].apply(make_player_key)
+    if "Drafted" not in data.columns:
+        data["Drafted"] = "Undrafted"
     columns = ["Player", "Player Link", "Player Key", "Signed Using", "Drafted"]
     return data[columns]
 
@@ -419,9 +415,14 @@ def merge_owners(df: pd.DataFrame) -> pd.DataFrame:
     other_columns = [col for col in merged_df.columns if col != "Owner"]
     return merged_df[other_columns + ["Owner"]]
 
-def _save_page(url: str, output: str) -> BeautifulSoup:
+def _save_page(
+    url: str, output: str, session: requests.Session | None = None
+) -> BeautifulSoup | None:
     try:
-        response = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
+        if session is None:
+            response = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
+        else:
+            response = session.get(url, timeout=TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
         logging.error(f"Error fetching {url}: {e}")
@@ -470,14 +471,16 @@ def _extract_team_contracts(table: BeautifulSoup) -> list[list[str] | None]:
     return data
 
 def _scrape_team_with_retries(team: str) -> pd.DataFrame | None:
-    for attempt in range(1, MAX_RETRIES + 1):
-        try:
-            return scrape_team(team)
-        except Exception as e:
-            if attempt == MAX_RETRIES:
-                raise
-            logging.warning(f"{team} scrape failed ({attempt}/{MAX_RETRIES}), retrying: {e}")
-            time.sleep(RETRY_DELAY)
+    with requests.Session() as session:
+        session.headers.update(HEADERS)
+        for attempt in range(1, MAX_RETRIES + 1):
+            try:
+                return scrape_team(team, session=session)
+            except Exception as e:
+                if attempt == MAX_RETRIES:
+                    raise
+                logging.warning(f"{team} scrape failed ({attempt}/{MAX_RETRIES}), retrying: {e}")
+                time.sleep(RETRY_DELAY)
 
 def _extract_player_details(soup: BeautifulSoup) -> pd.DataFrame:
     details = {}
