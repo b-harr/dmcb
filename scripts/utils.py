@@ -56,7 +56,7 @@ HYPHENATED_WORDS = {
     "non", "mid", "bi", "re",
 }
 
-TEAMS = [
+TEAMS = {
     "atlanta-hawks", "boston-celtics", "brooklyn-nets",
     "charlotte-hornets", "chicago-bulls", "cleveland-cavaliers",
     "dallas-mavericks", "denver-nuggets", "detroit-pistons",
@@ -67,7 +67,7 @@ TEAMS = [
     "orlando-magic", "philadelphia-76ers", "phoenix-suns",
     "portland-trail-blazers", "sacramento-kings", "san-antonio-spurs",
     "toronto-raptors", "utah-jazz", "washington-wizards",
-]
+}
 
 
 class GoogleSheetsManager:
@@ -142,7 +142,7 @@ def make_player_key(name: str) -> str:
     name = re.sub(r"[^\w-]", "", name)
 
     # Remove common suffixes
-    key = re.sub(r"-(sr|jr|ii|iii|iv|v|vi|vii)$", "", name)
+    key = re.sub(r"-(sr|jr|ii|iii|iv|v|vi|vii|viii|ix|x)$", "", name)
 
     # Apply overrides if the cleaned name matches any known exceptions
     if key in PLAYER_KEY_OVERRIDES:
@@ -436,10 +436,22 @@ def _extract_team_contracts(table: BeautifulSoup) -> list[list[str] | None]:
     for row in table.select("tbody tr"):
         cells = row.find_all("td")
 
-        player = cells[0].get("data-export").strip() if cells[0].get("data-export") else None
-        link = cells[0].find("a")["href"] if cells[0].find("a") else None
-        position = cells[1].get("data-export").strip() if cells[1].get("data-export") else None
-        age = cells[2].get("data-export").strip() if cells[2].get("data-export") else None
+        player_cell = cells[0]
+        player_link = player_cell.find("a")
+        player = player_cell.get("data-export", "").strip()
+        if not player and player_link:
+            player = player_link.get_text(strip=True)
+        player = player or None
+        link = player_link["href"] if player_link else None
+        position_age = player_cell.select_one("div.text-muted")
+        if position_age is not None:
+            match = re.search(r"\(([^,]+),\s*(\d+)\)", position_age.get_text(strip=True))
+            position, age = match.groups() if match else (None, None)
+            contract_cells = cells[1:]
+        else:
+            position = cells[1].get("data-export", "").strip() or None
+            age = cells[2].get("data-export", "").strip() or None
+            contract_cells = cells[3:]
 
         def _get_contract_value(cell: BeautifulSoup) -> str | None:
             export_value = cell.get("data-export").strip() if cell.get("data-export") else None
@@ -460,7 +472,7 @@ def _extract_team_contracts(table: BeautifulSoup) -> list[list[str] | None]:
 
         values = [
             _get_contract_value(cell)
-            for cell in cells[3:]
+            for cell in contract_cells
         ]
         # Limit to the first 5 seasons of contract values
         values = values[:5]

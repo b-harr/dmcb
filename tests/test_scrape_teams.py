@@ -12,7 +12,7 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 def main():
     nba_contracts = scrape_teams()
-    print(nba_contracts.to_string(index=False))
+    print(nba_contracts)
 
 
 if __name__ == "__main__":
