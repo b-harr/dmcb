@@ -1,127 +1,235 @@
-import os
-import sys
 import logging
+import os
+import re
+import sys
+import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
 import pandas as pd
 
-base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.append(base_dir)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if BASE_DIR not in sys.path:
+    sys.path.insert(0, BASE_DIR)
 
 from scripts.utils import scrape_players
 
-LOG_DIR = os.path.join(".logs")
-LOG_FILE = "pull_details.log"
-DATA_DIR = os.path.join("data")
-INPUT_FILE = "spotrac_contracts.csv"
-OUTPUT_FILE = "contract_details.csv"
+DATA_DIR = os.path.join(BASE_DIR, "data")
+LOG_DIR = os.path.join(BASE_DIR, ".logs")
+INPUT_PATH = os.path.join(DATA_DIR, "spotrac_contracts.csv")
+OUTPUT_PATH = os.path.join(DATA_DIR, "contract_types.csv")
+OUTPUT_COLUMNS = ["Player", "Player Link", "Player Key", "Signed Using", "Drafted"]
+MAX_WORKERS = 5
+MAX_RETRIES = 3
+RETRY_DELAY = 2
 
 os.makedirs(LOG_DIR, exist_ok=True)
-os.makedirs(DATA_DIR, exist_ok=True)
-
-log_path = os.path.join(LOG_DIR, LOG_FILE)
-input_path = os.path.join(DATA_DIR, INPUT_FILE)
-output_path = os.path.join(DATA_DIR, OUTPUT_FILE)
-
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
     handlers=[
-        logging.FileHandler(log_path, mode="a", encoding="utf-8"),
-        logging.StreamHandler(sys.stdout)
-    ]
+        logging.FileHandler(os.path.join(LOG_DIR, "pull_details.log"), encoding="utf-8"),
+        logging.StreamHandler(sys.stdout),
+    ],
 )
-
-HEADERS = {
-    "User-Agent": (
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-        "AppleWebKit/605.1.15 (KHTML, like Gecko) "
-        "Version/26.6.2 Safari/605.1.15"
-    )
-}
-MAX_RETRIES = 3
-RETRY_DELAY = 2
-TIMEOUT = 10
+logger = logging.getLogger(__name__)
 
 
-def get_players_from_csv(input_path: str) -> list[str]:
-    try:
-        return pd.read_csv(input_path)
-    except Exception as e:
-        logging.error(f"Error reading {input_path}: {e}")
-        return []
+class ForbiddenScrapeError(RuntimeError):
+    pass
 
-def filter_active_players(df: pd.DataFrame) -> pd.DataFrame:
-    if df.empty:
-        logging.warning("The DataFrame is empty. No active players to filter.")
-        return df
-    try:
-        active_players = df[
-            (df["Player"] != "Two-Way") &
-            (df["Player"] != "-")
-        ]
-        return active_players
-    except KeyError as e:
-        logging.error(f"Missing expected column in DataFrame: {e}")
-        return pd.DataFrame()
 
-def get_player_urls_to_scrape(df: pd.DataFrame) -> list[str]:
-    missing_columns = ["Signed Using", "Drafted"]
+def _has_signed_using(value: object) -> bool:
+    if pd.isna(value):
+        return False
+    return str(value).strip().casefold() not in {"", "na", "n/a", "none", "nan"}
 
-    if set(missing_columns).issubset(df.columns):
-        missing_mask = (
-            df[missing_columns].isna().all(axis=1) |
-            df[missing_columns].eq("").all(axis=1)
-        )
 
-        if missing_mask.any():
-            missing_urls = set(
-                df.loc[missing_mask, "Player Link"].dropna().astype(str)
-            )
-            cleaned_df = df.loc[~missing_mask, "Player Link"].dropna().astype(str)
-        else:
-            missing_urls = set()
-            cleaned_df = df
-    else:
-        logging.warning(f"Missing expected columns in DataFrame: {missing_columns}")
-        missing_urls = set()
-        cleaned_df = df
+def get_player_urls_to_scrape(
+    contracts: pd.DataFrame, contract_types: pd.DataFrame
+) -> list[str]:
+    if "Player Link" not in contracts.columns:
+        raise ValueError("Spotrac contracts data must contain a 'Player Link' column")
 
-    existing_urls = set(cleaned_df["Player Link"].dropna().astype(str))
-
-    for link in existing_urls:
-        if link in missing_urls:
-            logging.info(f"Player link '{link}' already exists in the DataFrame. Skipping scraping.")
-            missing_urls.discard(link)
-
-def return_player_urls_to_scrape(df: pd.DataFrame) -> list[str]:
-    if df.empty:
-        logging.warning("The DataFrame is empty. No player URLs to return.")
-        return []
-    try:
-        urls = df["Player Link"].dropna().unique().tolist()
-        return urls
-    except KeyError as e:
-        logging.error(f"Missing expected column in DataFrame: {e}")
-        return []
-
-def select_columns(df: pd.DataFrame) -> pd.DataFrame:
-    columns = [
-        "Player",
-        "Link",
-        "Key",
-        "Drafted",
-        "Signed Using",
-        "College"
+    season_columns = [
+        column
+        for column in contracts.columns
+        if re.fullmatch(r"\d{4}-\d{2}", str(column))
     ]
-    details = df[columns]
-    return details
+    if season_columns:
+        first_values = contracts[season_columns[0]].astype("string").str.strip().str.casefold()
+        contracts = contracts.loc[~first_values.eq("two-way").fillna(False)]
 
-def main():
-    df = get_players_from_csv(input_path)
-    df = filter_active_players(df)
-    urls = return_player_urls_to_scrape(df)
-    details = scrape_players(urls)
-    details = select_columns(details)
-    print(details)
+    source_links = (
+        contracts["Player Link"].dropna().astype(str).str.strip().drop_duplicates().tolist()
+    )
+    source_links = [link for link in source_links if link]
+
+    if contract_types.empty or "Player Link" not in contract_types.columns:
+        return source_links
+
+    if "Signed Using" not in contract_types.columns:
+        return source_links
+
+    complete_rows = contract_types.loc[
+        contract_types["Signed Using"].map(_has_signed_using), "Player Link"
+    ]
+    complete_links = set(complete_rows.dropna().astype(str).str.strip())
+    return [link for link in source_links if link not in complete_links]
+
+
+def _scrape_player_with_retries(player_url: str) -> pd.Series:
+    for attempt in range(1, MAX_RETRIES + 1):
+        try:
+            result = scrape_players([player_url])
+            if result.empty:
+                raise RuntimeError("scraper returned no player details")
+
+            details = result.iloc[0].copy()
+            if not _has_signed_using(details.get("Signed Using")):
+                details["Signed Using"] = "Not Listed"
+                logger.info(
+                    "%s has no Signed Using value on its Spotrac page; recording 'Not Listed'",
+                    player_url,
+                )
+            return details
+        except Exception as error:
+            if "403 client error: forbidden for url" in str(error).casefold():
+                raise ForbiddenScrapeError(str(error)) from error
+            if attempt == MAX_RETRIES:
+                raise RuntimeError(
+                    f"Failed to scrape after {MAX_RETRIES} attempts: {error}"
+                ) from error
+
+            delay = RETRY_DELAY * attempt
+            logger.warning(
+                "%s scrape attempt %s/%s failed: %s; retrying in %ss",
+                player_url,
+                attempt,
+                MAX_RETRIES,
+                error,
+                delay,
+            )
+            time.sleep(delay)
+
+    raise RuntimeError(f"Failed to scrape {player_url}")
+
+
+def _save_contract_types(contract_types: pd.DataFrame) -> None:
+    temporary_path = f"{OUTPUT_PATH}.tmp"
+    contract_types = contract_types.reindex(columns=OUTPUT_COLUMNS).sort_values(
+        "Player Key", kind="stable", na_position="last"
+    )
+    contract_types.to_csv(temporary_path, index=False)
+    os.replace(temporary_path, OUTPUT_PATH)
+
+
+def _upsert_contract_details(
+    contract_types: pd.DataFrame,
+    source_player: pd.Series,
+    details: pd.Series,
+) -> pd.DataFrame:
+    player_url = str(source_player["Player Link"]).strip()
+    row = {
+        "Player": source_player.get("Player", details.get("Player", "")),
+        "Player Link": player_url,
+        "Player Key": source_player.get("Player Key", details.get("Player Key", "")),
+        "Signed Using": details.get("Signed Using", ""),
+        "Drafted": details.get("Drafted", ""),
+    }
+
+    matching_rows = contract_types["Player Link"].astype("string").str.strip().eq(player_url)
+    if matching_rows.any():
+        contract_types.loc[matching_rows, OUTPUT_COLUMNS] = [row[column] for column in OUTPUT_COLUMNS]
+    else:
+        contract_types = pd.concat(
+            [contract_types, pd.DataFrame([row], columns=OUTPUT_COLUMNS)],
+            ignore_index=True,
+        )
+    return contract_types
+
+
+def main() -> pd.DataFrame:
+    logger.info("Loading Spotrac contracts from %s", INPUT_PATH)
+    contracts = pd.read_csv(INPUT_PATH)
+    if not {"Player", "Player Link", "Player Key"}.issubset(contracts.columns):
+        raise ValueError("Spotrac contracts data is missing required player columns")
+    contracts["Player Link"] = contracts["Player Link"].astype("string").str.strip()
+
+    if os.path.exists(OUTPUT_PATH):
+        contract_types = pd.read_csv(OUTPUT_PATH)
+    else:
+        contract_types = pd.DataFrame(columns=OUTPUT_COLUMNS)
+
+    for column in OUTPUT_COLUMNS:
+        if column not in contract_types.columns:
+            contract_types[column] = pd.NA
+    contract_types = contract_types.reindex(columns=OUTPUT_COLUMNS)
+    contract_types["_signed_using_present"] = contract_types["Signed Using"].map(
+        _has_signed_using
+    )
+    contract_types = (
+        contract_types.sort_values("_signed_using_present", kind="stable")
+        .drop_duplicates("Player Link", keep="last")
+        .drop(columns="_signed_using_present")
+        .reset_index(drop=True)
+    )
+
+    urls_to_scrape = get_player_urls_to_scrape(contracts, contract_types)
+    logger.info("Found %s players missing a Signed Using value", len(urls_to_scrape))
+    _save_contract_types(contract_types)
+    if not urls_to_scrape:
+        return contract_types.sort_values("Player Key", kind="stable", na_position="last").reset_index(drop=True)
+
+    source_players = (
+        contracts.dropna(subset=["Player Link"])
+        .drop_duplicates("Player Link", keep="first")
+        .set_index("Player Link")
+    )
+    started_at = time.time()
+    failures = []
+
+    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+        futures = {
+            executor.submit(_scrape_player_with_retries, url): url
+            for url in urls_to_scrape
+        }
+
+        for completed_count, future in enumerate(as_completed(futures), start=1):
+            player_url = futures[future]
+            try:
+                details = future.result()
+                source_player = source_players.loc[player_url]
+                contract_types = _upsert_contract_details(
+                    contract_types, source_player, details
+                )
+                _save_contract_types(contract_types)
+                logger.info(
+                    "Saved %s/%s: %s",
+                    completed_count,
+                    len(urls_to_scrape),
+                    source_player["Player"],
+                )
+            except ForbiddenScrapeError as error:
+                for pending_future in futures:
+                    if pending_future is not future:
+                        pending_future.cancel()
+                logger.critical("Stopping after a forbidden response: %s", error)
+                raise
+            except Exception as error:
+                failures.append(f"{player_url}: {error}")
+                logger.error("Failed %s: %s", player_url, error)
+
+    elapsed = time.time() - started_at
+    logger.info(
+        "Finished in %.1fs: %s succeeded, %s failed",
+        elapsed,
+        len(urls_to_scrape) - len(failures),
+        len(failures),
+    )
+    if failures:
+        logger.warning("Unfinished player scrapes: %s", "; ".join(failures))
+
+    return contract_types.sort_values("Player Key", kind="stable", na_position="last").reset_index(drop=True)
 
 
 if __name__ == "__main__":

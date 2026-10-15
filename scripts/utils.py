@@ -425,6 +425,8 @@ def _save_page(url: str, output: str, session: requests.Session | None = None) -
         response.raise_for_status()
     except requests.RequestException as e:
         logging.error(f"Error fetching {url}: {e}")
+        if isinstance(e, requests.HTTPError) and getattr(e.response, "status_code", None) == 403:
+            raise
         return None
     soup = BeautifulSoup(response.content, "html.parser")
     with open(output, "w", encoding="utf-8") as file:
