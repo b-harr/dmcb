@@ -3,20 +3,26 @@ import sys
 import logging
 import pandas as pd
 
-
-LOG_DIR = ".logs"
-LOG_FILE = "pull_contracts.log"
-OUTPUT_DIR = "data"
-OUTPUT_FILE = "spotrac_contracts.csv"
-
-
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(base_dir)
 
+from scripts.utils import make_player_key, make_title_case, scrape_teams, GoogleSheetsManager, save_owned, scrape_owners
+
+LOG_DIR = os.path.join(".logs")
+DATA_DIR = os.path.join("data")
+LOG_FILE = "pull_contracts.log"
+OUTPUT_FILE = "spotrac_contracts.csv"
+OWNED_OUTPUT_FILE = "owned_contracts.csv"
+
 os.makedirs(LOG_DIR, exist_ok=True)
+os.makedirs(DATA_DIR, exist_ok=True)
+
 log_path = os.path.join(LOG_DIR, LOG_FILE)
+output_path = os.path.join(DATA_DIR, OUTPUT_FILE)
+owned_output_path = os.path.join(DATA_DIR, OWNED_OUTPUT_FILE)
 
 logging.basicConfig(
+    force=True,
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
     handlers=[
@@ -24,13 +30,6 @@ logging.basicConfig(
         logging.StreamHandler(sys.stdout)
     ]
 )
-
-os.makedirs(OUTPUT_DIR, exist_ok=True)
-output_path = os.path.join(OUTPUT_DIR, OUTPUT_FILE)
-
-from utils.spotrac_scraper import scrape_teams
-from utils.text_formatter import make_player_key, make_title_case
-from utils.sheets_manager import GoogleSheetsManager
 
 
 def scrape_all() -> pd.DataFrame | None:
@@ -71,12 +70,20 @@ def process_data(df: pd.DataFrame) -> pd.DataFrame:
         logging.error(f"Data processing failed: {e}")
         return pd.DataFrame()
 
-def get_owners(sheet_name="Contracts") -> pd.DataFrame:
+def update_owners():
+    sheet = "Owned"
+    output = os.path.join("data", "dmcb_owners.csv")
+    df = scrape_owners(sheet, output)
+    column_order = ["Player", "Player Key", "Owner"]
+    df = df[column_order].sort_values("Player Key")
+    df.to_csv(output, index=False)
+
+def get_owners(sheet="Contracts") -> pd.DataFrame:
     try:
         sheets_manager = GoogleSheetsManager()
-        raw_data = sheets_manager.read_data(sheet_name=sheet_name)
+        raw_data = sheets_manager.read_data(sheet=sheet)
     except Exception as e:
-        logging.warning(f"Could not read owner data from Google Sheets '{sheet_name}': {e}")
+        logging.warning(f"Could not read owner data from Google Sheets '{sheet}': {e}")
         return pd.DataFrame(columns=["Player", "Player Link", "Player Key", "Owner"])
 
     if not raw_data:
@@ -127,11 +134,13 @@ def save_data(df: pd.DataFrame, output_csv: str) -> None:
         logging.error(f"Failed to save data to CSV: {e}")
 
 def main():
+    update_owners()
     contracts = scrape_all()
     contracts = process_data(contracts)
-    owners = get_owners(sheet_name="Contracts")
+    owners = get_owners(sheet="Contracts")
     data = merge_owners(contracts, owners)
     save_data(data, output_path)
+    save_owned(data, owned_output_path)
 
 
 if __name__ == "__main__":
