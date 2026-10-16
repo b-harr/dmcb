@@ -5,20 +5,24 @@ import pandas as pd
 import re
 import time
 
-
-LOG_DIR = ".logs"
-LOG_FILE = "push_contracts.log"
-INPUT_DIR = "data"
-INPUT_FILE = "spotrac_contracts.csv"
-
-
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(base_dir)
 
+from scripts.utils import GoogleSheetsManager
+
+LOG_DIR = os.path.join(".logs")
+DATA_DIR = os.path.join("data")
+LOG_FILE = "push_contracts.log"
+INPUT_FILE = "spotrac_contracts.csv"
+
 os.makedirs(LOG_DIR, exist_ok=True)
+os.makedirs(DATA_DIR, exist_ok=True)
+
 log_path = os.path.join(LOG_DIR, LOG_FILE)
+input_path = os.path.join(DATA_DIR, INPUT_FILE)
 
 logging.basicConfig(
+    force=True,
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
     handlers=[
@@ -26,11 +30,6 @@ logging.basicConfig(
         logging.StreamHandler(sys.stdout)
     ]
 )
-
-os.makedirs(INPUT_DIR, exist_ok=True)
-input_path = os.path.join(INPUT_DIR, INPUT_FILE)
-
-from utils.sheets_manager import GoogleSheetsManager
 
 
 def load_contracts(input_csv: str) -> pd.DataFrame:
@@ -63,25 +62,21 @@ def process_data(df: pd.DataFrame) -> pd.DataFrame:
         df = df.fillna("")
         return df
 
-def update_sheets(df: pd.DataFrame, sheet_name: str, data_range: str) -> None:
-        logging.info(f"Updating Google Sheets: {sheet_name}")
+def update_sheets(df: pd.DataFrame, sheet: str, range: str) -> None:
+        logging.info(f"Updating Google Sheets: {sheet}")
         try:
-            # Generate a timestamp for logging and data tracking
             timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
 
-            # Initialize the Google Sheets manager and clear the target range
             sheets_manager = GoogleSheetsManager()
-            sheets_manager.clear_range(sheet_name=sheet_name, range_to_clear=data_range)
+            sheets_manager.clear_range(sheet, range)
 
             # Exclude the Owner column from the sheet write so it does not overwrite column M
             write_df = df.drop(columns=["Owner"]) if "Owner" in df.columns else df.copy()
 
-            # Write the processed data frame to the sheet starting from cell A1
-            sheets_manager.write_data([write_df.columns.tolist()] + write_df.values.tolist(), sheet_name=sheet_name, start_cell="A1")
+            sheets_manager.write_data([write_df.columns.tolist()] + write_df.values.tolist(), sheet=sheet, cell="A1")
             logging.info("Google Sheets updated successfully.")
 
-            # Write the timestamp to Google Sheets
-            sheets_manager.write_data([[f"{timestamp}"]], sheet_name=sheet_name, start_cell="AB2")
+            sheets_manager.write_data([[f"{timestamp}"]], sheet, cell="AB2")
             logging.info("Wrote timestamp to Google Sheets.")
         except Exception as e:
             logging.error(f"Failed to update Google Sheets: {e}")
@@ -89,7 +84,7 @@ def update_sheets(df: pd.DataFrame, sheet_name: str, data_range: str) -> None:
 def main():
     contracts = load_contracts(input_path)
     data = process_data(contracts)
-    update_sheets(data, sheet_name="Contracts", data_range="A1:L751")
+    update_sheets(data, sheet="Contracts", range="A1:L751")
 
 
 if __name__ == "__main__":
