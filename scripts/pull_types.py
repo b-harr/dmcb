@@ -1,10 +1,9 @@
-import logging
 import os
-import re
 import sys
+import logging
+import re
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
-
 import pandas as pd
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -24,10 +23,11 @@ RETRY_DELAY = 2
 
 os.makedirs(LOG_DIR, exist_ok=True)
 logging.basicConfig(
+    force=True,
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
     handlers=[
-        logging.FileHandler(os.path.join(LOG_DIR, "pull_details.log"), encoding="utf-8"),
+        logging.FileHandler(os.path.join(LOG_DIR, "pull_types.log"), encoding="utf-8"),
         logging.StreamHandler(sys.stdout),
     ],
 )

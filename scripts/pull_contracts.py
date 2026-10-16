@@ -22,6 +22,7 @@ output_path = os.path.join(DATA_DIR, OUTPUT_FILE)
 owned_output_path = os.path.join(DATA_DIR, OWNED_OUTPUT_FILE)
 
 logging.basicConfig(
+    force=True,
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
     handlers=[
