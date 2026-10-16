@@ -1,155 +1,85 @@
-# dmcb
+# DMCB Data Sync
 
-## Project Summary: NBA Fantasy Basketball Stats Automation
-This project is focused on automating the process of fetching, processing, and exporting NBA player statistics from Basketball-Reference for use in a fantasy basketball league hosted on Sports.ws. The processed data includes custom fantasy metrics and is synchronized with a Google Sheets document for easy sharing and analysis.
+Python scripts for collecting NBA player, contract, and position data and syncing CSV datasets with the DMCB Google Sheets workbook. Scraping and publishing are separate steps: `pull-*` commands update local CSV files, `push-*` commands publish those files, and `update-*` commands run both in sequence.
 
-# get_stats
+## Data Workflows
 
-A Python script to scrape player statistics from Basketball-Reference, process the data for fantasy basketball analysis, and sync the results to a Google Sheet.
+| Dataset | Pull command | Local output | Push command | Google Sheets tab |
+| --- | --- | --- | --- | --- |
+| Team contracts | `make pull-contracts` | `data/spotrac_contracts.csv`, `data/owned_contracts.csv`, `data/dmcb_owners.csv` | `make push-contracts` | `Contracts` |
+| Contract types | `make pull-types` | `data/contract_types.csv` | `make push-types` | `Contract Types` |
+| Player stats | `make pull-stats` | `data/bbref_stats.csv` | `make push-stats` | `Stats` |
+| Player positions | `make pull-positions` | `data/sportsws_positions.csv` | `make push-positions` | `Positions` |
 
----
+The contract workflow reads the `Owned` and `Contracts` tabs while pulling, to refresh and merge owner information. The stats pull currently requests the 2026 Basketball-Reference totals. Its derived columns include `FP`, `FPPG`, `FPPM`, `MPG`, and `FPR`.
 
-## Features
-- Scrapes the latest player statistics from Basketball-Reference.
-- Cleans, processes, and calculates advanced metrics (e.g., Fantasy Points, FPPG, FPPM).
-- Outputs a CSV file for local storage.
-- Automatically updates a Google Sheet with the processed data.
+## Setup
 
----
+Use Python 3.11 or newer and install the dependencies in a virtual environment:
 
-# get_positions
-
-A Python script to scrape player positions from Sports.ws and sync the results to a Google Sheet.
-
----
-
-# get_contracts
-
-A Python script to scrape team contracts from Spotrac, process the data, and save the output as a CSV file.
-
----
-
-# get_contract_types
-
-A Python script to scrape player contract types from Spotrac, process the data, and save the output as a CSV file.
-
----
-
-## Requirements
-- Python 3.8 or higher
-- Dependencies (see `requirements.txt`)
-
----
-
-## Setup Instructions
-
-### 1. Clone the Repository
 ```bash
-git clone <repository-url>
-cd dmcb
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
 ```
 
-### 2. Install Dependencies
-```bash
-pip3 install -r requirements.txt
-```
+For Google Sheets access, create a service account, download its JSON key, and share the workbook with the service account email. Store the key outside the repository, then create a root-level `.env` file:
 
-### 3. Set Up Environment Variables
-Create a `.env` file in the project root with the following keys:
 ```env
-GOOGLE_SHEETS_CREDENTIALS=path/to/credentials.json
+GOOGLE_SHEETS_CREDENTIALS=/absolute/path/to/service-account.json
+GOOGLE_SHEETS_URL=https://docs.google.com/spreadsheets/d/your-spreadsheet-id/edit
 ```
 
-### 4. Configure Google Sheets API
-- Follow [this guide](https://gspread.readthedocs.io/en/latest/oauth2.html) to create a service account and download the credentials JSON file.
-- Share the Google Sheet with the service account email from the JSON file.
+The workbook must contain the `Contracts`, `Owned`, `Contract Types`, `Stats`, and `Positions` tabs used by the scripts. `pull-contracts` needs access to both `Owned` and `Contracts`; push commands need access to their destination tab.
 
----
+## Commands
 
-## Usage
+Run one dataset workflow:
 
-Run the script from the command line to scrape contract data from the web and load it to a CSV:
 ```bash
-python3 scripts/get_contracts.py
+make update-contracts
+make update-types
+make update-stats
+make update-positions
 ```
 
-Run the script from the command line to read contract data from a CSV and load it to Google Sheets:
+Run all pull steps, all push steps, or all pull-and-push workflows:
+
 ```bash
-python3 scripts/get_contracts.py --no-update-csv --update-sheets
+make pull-all
+make push-all
+make update-all
 ```
 
----
+The default `make` target runs `update-stats`, `pull-positions`, and `pull-contracts`; it does not run the contract-type workflow. Individual scripts can also be run with `python scripts/pull_types.py` or `python scripts/push_types.py`.
 
-## Project Structure
+Logs are written under `.logs/`. Scraped datasets and archived source snapshots are stored under `data/`.
 
-```
-dmcb/  
-├── data/                                  # Directory for storing output data  
-│   ├── bbref_archive/                     # Basketball-Reference archived statistics  
-│   │   └── NBA_{year}_totals.csv          # Basketball-Reference yearly statistics data  
-│   ├── spotrac_archive/                   # Spotrac archived contracts  
-│   │   └── spotrac_contracts_{year}.csv   # Spotrac yearly contracts data  
-│   ├── bbref_stats.csv                    # Basketball-Reference statistics data  
-│   ├── contract_types.csv                 # Spotrac contract types by player  
-│   ├── sportsws_positions.csv             # Sports.ws default positions  
-│   └── spotrac_contracts.csv              # Spotrac contract data by NBA team  
-├── docs/                                  # Directory for storing output data  
-│   ├── dmcb_logo.png                      # DMCB "Riz" logo  
-│   ├── nba_cba_2023.pdf                   # 2023 NBA/NBAPA Collective Bargaining Agreement (PDF)  
-│   └── README.md                          # DMCB league rules  
-├── logs/                                  # Directory for storing output logs (excluded via .gitignore)  
-├── notebooks/                             # Directory for storing Google Colab Jupyter notebooks  
-│   └── dmcb_colab.ipynb                   # Main Colab notebook  
-├── scripts/                               # Directory for individual Python scripts  
-│   ├── get_contract_types.py              # Scrapes contract types to CSV  
-│   ├── get_contracts.py                   # Scrapes Spotrac contracts to CSV  
-│   ├── get_positions.py                   # Syncs Sports.ws player positions to Google Sheets  
-│   └── get_stats.py                       # Syncs Basketball-Reference stats to Google Sheets  
-├── secrets/                               # Directory for secrets files (excluded via .gitignore)  
-├── tests/                                 # Directory for test scripts  
-│   ├── test_data_fetch.py                 # Tests data_fetcher  
-│   ├── test_file_handling.py              # Tests csv_handler  
-│   ├── test_format_text.py                # Tests text_formatter  
-│   └── test_google_sheets.py              # Tests google_sheets  
-├── utils/                                 # Directory for individual Python utilities  
-│   ├── __init__.py                        # Makes scripts executable  
-│   ├── google_sheets_manager.py           # Manages connections to Google Sheets  
-│   ├── scrape_bbref.py                    # Scrapes Basketball-Reference.com stats  
-│   ├── scrape_nba.py                      # Scrapes NBA.com stats  
-│   ├── scrape_sportsws.py                 # Scrapes Sports.ws positions  
-│   ├── scrape_spotrac.py                  # Scrapes Spotrac.com NBA contracts  
-│   └── text_formatter.py                  # Helper functions to process text  
-├── .env                                   # Environment variables (excluded via .gitignore)  
-├── .gitignore                             # Git ignore rules  
-├── README.md                              # Project documentation  
-└── requirements.txt                       # Python dependencies  
+## Repository Layout
+
+```text
+dmcb/
+├── data/
+│   ├── archive/
+│   ├── bbref_stats.csv
+│   ├── contract_types.csv
+│   ├── dmcb_owners.csv
+│   ├── owned_contracts.csv
+│   ├── sportsws_positions.csv
+│   └── spotrac_contracts.csv
+├── scripts/
+│   ├── pull_contracts.py       Scrape contracts and merge owner data
+│   ├── pull_positions.py       Scrape and merge player positions
+│   ├── pull_stats.py           Scrape player stats and calculate fantasy metrics
+│   ├── pull_types.py           Scrape contract types
+│   ├── push_contracts.py       Publish contracts
+│   ├── push_positions.py       Publish positions
+│   ├── push_stats.py           Publish stats
+│   ├── push_types.py           Publish contract types
+│   └── utils.py                Shared scraping, formatting, and Sheets utilities
+├── tests/                      Focused tests for scraping and data helpers
+├── Makefile                    Pull, push, and update workflows
+└── requirements.txt            Python dependencies
 ```
 
----
-
-## Metrics Processed
-`sync_bbref_stats.py`
-- **Fantasy Points** `FP`: Total fantasy points score `PTS + TRB + AST + STL + BLK - TOV - PF`.
-- **Fantasy Points Per Game** `FPPG`: Average fantasy points per game `FP / G`.
-- **Fantasy Points Per Minute** `FPPM`: Average fantasy points per minute `FP / MP`.
-- **Minutes Per Game** `MPG`: Average minutes played per game `MP / G`.
-- **Fantasy Point Rating** `FPR`: A combined metric that helps gauge overall fantasy value `FPPG * FPPM`.
-- **Fantasy Point Value** `FPV`: Measures value by comparing production relative to salary `FPR / $1M`.
-
----
-
-## Contributing
-We welcome contributions to improve this project. Here’s how you can help:
-
-1. **Fork the repository**.
-2. **Create a new branch** for your feature or bug fix (`git checkout -b feature-name`).
-3. **Commit your changes** (`git commit -am 'Add new feature'`).
-4. **Push to the branch** (`git push origin feature-name`).
-5. **Create a new pull request** to merge your changes.
-
-Please make sure your code passes all tests and adheres to the project’s coding standards before submitting a pull request.
-
----
-
-## License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Local configuration and generated directories such as `.env`, `.venv/`, `.cache/`, and `.logs/` are not shown. Keep Google service-account credentials local and out of version control.
