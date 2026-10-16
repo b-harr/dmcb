@@ -47,6 +47,28 @@ class TestPullDetails(unittest.TestCase):
 
         self.assertEqual(saved["Player Key"].tolist(), ["abe", "zed"])
 
+    def test_upsert_uses_player_link_index(self):
+        source_players = pd.DataFrame(
+            {
+                "Player": ["Alondes Williams"],
+                "Player Key": ["alondes-williams"],
+            },
+            index=pd.Index(
+                ["https://www.spotrac.com/nba/player/_/id/78284/alondes-williams"],
+                name="Player Link",
+            ),
+        )
+        contract_types = pd.DataFrame(columns=pull_details.OUTPUT_COLUMNS)
+
+        updated = pull_details._upsert_contract_details(
+            contract_types,
+            source_players.iloc[0],
+            pd.Series({"Signed Using": "UFA", "Drafted": ""}),
+        )
+
+        self.assertEqual(updated.loc[0, "Player Link"], source_players.index[0])
+        self.assertEqual(updated.loc[0, "Signed Using"], "UFA")
+
     def test_403_response_is_not_swallowed_by_page_fetch(self):
         response = Mock()
         response.raise_for_status.side_effect = requests.HTTPError(

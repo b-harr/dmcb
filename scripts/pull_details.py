@@ -11,7 +11,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if BASE_DIR not in sys.path:
     sys.path.insert(0, BASE_DIR)
 
-from scripts.utils import scrape_players
+from scripts.utils import make_title_case, scrape_players
 
 DATA_DIR = os.path.join(BASE_DIR, "data")
 LOG_DIR = os.path.join(BASE_DIR, ".logs")
@@ -31,7 +31,6 @@ logging.basicConfig(
         logging.StreamHandler(sys.stdout),
     ],
 )
-logger = logging.getLogger(__name__)
 
 
 class ForbiddenScrapeError(RuntimeError):
@@ -86,9 +85,9 @@ def _scrape_player_with_retries(player_url: str) -> pd.Series:
 
             details = result.iloc[0].copy()
             if not _has_signed_using(details.get("Signed Using")):
-                details["Signed Using"] = "Not Listed"
-                logger.info(
-                    "%s has no Signed Using value on its Spotrac page; recording 'Not Listed'",
+                details["Signed Using"] = "NA"
+                logging.info(
+                    "%s has no Signed Using value on its Spotrac page; recording 'NA'",
                     player_url,
                 )
             return details
@@ -101,7 +100,7 @@ def _scrape_player_with_retries(player_url: str) -> pd.Series:
                 ) from error
 
             delay = RETRY_DELAY * attempt
-            logger.warning(
+            logging.warning(
                 "%s scrape attempt %s/%s failed: %s; retrying in %ss",
                 player_url,
                 attempt,
@@ -119,6 +118,9 @@ def _save_contract_types(contract_types: pd.DataFrame) -> None:
     contract_types = contract_types.reindex(columns=OUTPUT_COLUMNS).sort_values(
         "Player Key", kind="stable", na_position="last"
     )
+    contract_types["Signed Using"] = contract_types["Signed Using"].map(
+        lambda value: make_title_case(value) if isinstance(value, str) else value
+    )
     contract_types.to_csv(temporary_path, index=False)
     os.replace(temporary_path, OUTPUT_PATH)
 
@@ -128,7 +130,7 @@ def _upsert_contract_details(
     source_player: pd.Series,
     details: pd.Series,
 ) -> pd.DataFrame:
-    player_url = str(source_player["Player Link"]).strip()
+    player_url = str(source_player.name).strip()
     row = {
         "Player": source_player.get("Player", details.get("Player", "")),
         "Player Link": player_url,
@@ -149,7 +151,7 @@ def _upsert_contract_details(
 
 
 def main() -> pd.DataFrame:
-    logger.info("Loading Spotrac contracts from %s", INPUT_PATH)
+    logging.info("Loading Spotrac contracts from %s", INPUT_PATH)
     contracts = pd.read_csv(INPUT_PATH)
     if not {"Player", "Player Link", "Player Key"}.issubset(contracts.columns):
         raise ValueError("Spotrac contracts data is missing required player columns")
@@ -175,7 +177,7 @@ def main() -> pd.DataFrame:
     )
 
     urls_to_scrape = get_player_urls_to_scrape(contracts, contract_types)
-    logger.info("Found %s players missing a Signed Using value", len(urls_to_scrape))
+    logging.info("Found %s players missing a Signed Using value", len(urls_to_scrape))
     _save_contract_types(contract_types)
     if not urls_to_scrape:
         return contract_types.sort_values("Player Key", kind="stable", na_position="last").reset_index(drop=True)
@@ -203,7 +205,7 @@ def main() -> pd.DataFrame:
                     contract_types, source_player, details
                 )
                 _save_contract_types(contract_types)
-                logger.info(
+                logging.info(
                     "Saved %s/%s: %s",
                     completed_count,
                     len(urls_to_scrape),
@@ -213,21 +215,21 @@ def main() -> pd.DataFrame:
                 for pending_future in futures:
                     if pending_future is not future:
                         pending_future.cancel()
-                logger.critical("Stopping after a forbidden response: %s", error)
+                logging.critical("Stopping after a forbidden response: %s", error)
                 raise
             except Exception as error:
                 failures.append(f"{player_url}: {error}")
-                logger.error("Failed %s: %s", player_url, error)
+                logging.error("Failed %s: %s", player_url, error)
 
     elapsed = time.time() - started_at
-    logger.info(
+    logging.info(
         "Finished in %.1fs: %s succeeded, %s failed",
         elapsed,
         len(urls_to_scrape) - len(failures),
         len(failures),
     )
     if failures:
-        logger.warning("Unfinished player scrapes: %s", "; ".join(failures))
+        logging.warning("Unfinished player scrapes: %s", "; ".join(failures))
 
     return contract_types.sort_values("Player Key", kind="stable", na_position="last").reset_index(drop=True)
 
