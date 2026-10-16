@@ -6,7 +6,7 @@ import pandas as pd
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(base_dir)
 
-from scripts.utils import make_player_key, make_title_case, scrape_teams, GoogleSheetsManager, save_owned
+from scripts.utils import make_player_key, make_title_case, scrape_teams, GoogleSheetsManager, save_owned, scrape_owners
 
 LOG_DIR = os.path.join(".logs")
 DATA_DIR = os.path.join("data")
@@ -69,6 +69,14 @@ def process_data(df: pd.DataFrame) -> pd.DataFrame:
         logging.error(f"Data processing failed: {e}")
         return pd.DataFrame()
 
+def update_owners():
+    sheet = "Owned"
+    output = os.path.join("data", "dmcb_owners.csv")
+    df = scrape_owners(sheet, output)
+    column_order = ["Player", "Player Key", "Owner"]
+    df = df[column_order].sort_values("Player Key")
+    df.to_csv(output, index=False)
+
 def get_owners(sheet="Contracts") -> pd.DataFrame:
     try:
         sheets_manager = GoogleSheetsManager()
@@ -125,6 +133,7 @@ def save_data(df: pd.DataFrame, output_csv: str) -> None:
         logging.error(f"Failed to save data to CSV: {e}")
 
 def main():
+    update_owners()
     contracts = scrape_all()
     contracts = process_data(contracts)
     owners = get_owners(sheet="Contracts")
