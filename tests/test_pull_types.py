@@ -10,7 +10,7 @@ import requests
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(base_dir)
 
-from scripts import pull_details, utils
+from scripts import pull_types, utils
 
 
 class TestPullDetails(unittest.TestCase):
@@ -22,7 +22,7 @@ class TestPullDetails(unittest.TestCase):
             }
         )
 
-        urls = pull_details.get_player_urls_to_scrape(
+        urls = pull_types.get_player_urls_to_scrape(
             contracts, pd.DataFrame(columns=["Player Link", "Signed Using"])
         )
 
@@ -41,8 +41,8 @@ class TestPullDetails(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as directory:
             output_path = os.path.join(directory, "contract_types.csv")
-            with patch.object(pull_details, "OUTPUT_PATH", output_path):
-                pull_details._save_contract_types(contract_types)
+            with patch.object(pull_types, "OUTPUT_PATH", output_path):
+                pull_types._save_contract_types(contract_types)
             saved = pd.read_csv(output_path)
 
         self.assertEqual(saved["Player Key"].tolist(), ["abe", "zed"])
@@ -58,9 +58,9 @@ class TestPullDetails(unittest.TestCase):
                 name="Player Link",
             ),
         )
-        contract_types = pd.DataFrame(columns=pull_details.OUTPUT_COLUMNS)
+        contract_types = pd.DataFrame(columns=pull_types.OUTPUT_COLUMNS)
 
-        updated = pull_details._upsert_contract_details(
+        updated = pull_types._upsert_contract_details(
             contract_types,
             source_players.iloc[0],
             pd.Series({"Signed Using": "UFA", "Drafted": ""}),
@@ -81,9 +81,9 @@ class TestPullDetails(unittest.TestCase):
 
     def test_403_stops_player_retries(self):
         error = RuntimeError("403 Client Error: Forbidden for url 'https://example.com'")
-        with patch.object(pull_details, "scrape_players", side_effect=error) as scrape:
-            with self.assertRaises(pull_details.ForbiddenScrapeError):
-                pull_details._scrape_player_with_retries("https://example.com")
+        with patch.object(pull_types, "scrape_players", side_effect=error) as scrape:
+            with self.assertRaises(pull_types.ForbiddenScrapeError):
+                pull_types._scrape_player_with_retries("https://example.com")
 
         scrape.assert_called_once_with(["https://example.com"])
 

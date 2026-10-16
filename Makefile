@@ -41,7 +41,7 @@ update-contracts:
 # -------------------------
 # Manage Spotrac contract type data (RFA, UFA, 2-way, etc.)
 pull-types:
-	python3 scripts/get_contract_types.py --update-csv --no-update-sheets
+	python3 scripts/pull_types.py
 
 push-types:
 	python3 scripts/get_contract_types.py --no-update-csv --update-sheets
