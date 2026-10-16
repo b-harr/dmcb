@@ -416,6 +416,15 @@ def merge_owners(df: pd.DataFrame) -> pd.DataFrame:
     other_columns = [col for col in merged_df.columns if col != "Owner"]
     return merged_df[other_columns + ["Owner"]]
 
+def save_owned(df: pd.DataFrame, output: str) -> pd.DataFrame:
+    if "Owner" not in df.columns:
+        raise ValueError("DataFrame must contain an Owner column.")
+
+    owned_df = df[df["Owner"].fillna("").astype(str).str.strip().ne("")].copy()
+    owned_df.to_csv(output, index=False)
+    logging.info(f"Saved {len(owned_df)} owned contracts to {output}.")
+    return owned_df
+
 def _save_page(url: str, output: str, session: requests.Session | None = None) -> BeautifulSoup | None:
     try:
         if session is None:

@@ -6,18 +6,20 @@ import pandas as pd
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(base_dir)
 
-from scripts.utils import make_player_key, make_title_case, scrape_teams, GoogleSheetsManager
+from scripts.utils import make_player_key, make_title_case, scrape_teams, GoogleSheetsManager, save_owned
 
 LOG_DIR = os.path.join(".logs")
 DATA_DIR = os.path.join("data")
 LOG_FILE = "pull_contracts.log"
 OUTPUT_FILE = "spotrac_contracts.csv"
+OWNED_OUTPUT_FILE = "owned_contracts.csv"
 
 os.makedirs(LOG_DIR, exist_ok=True)
 os.makedirs(DATA_DIR, exist_ok=True)
 
 log_path = os.path.join(LOG_DIR, LOG_FILE)
 output_path = os.path.join(DATA_DIR, OUTPUT_FILE)
+owned_output_path = os.path.join(DATA_DIR, OWNED_OUTPUT_FILE)
 
 logging.basicConfig(
     level=logging.INFO,
@@ -128,6 +130,7 @@ def main():
     owners = get_owners(sheet="Contracts")
     data = merge_owners(contracts, owners)
     save_data(data, output_path)
+    save_owned(data, owned_output_path)
 
 
 if __name__ == "__main__":
