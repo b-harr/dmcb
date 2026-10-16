@@ -9,7 +9,6 @@ import time
 import unicodedata
 import pandas as pd
 from bs4 import BeautifulSoup
-from lxml import html
 from nba_api.stats.endpoints import leaguedashplayerstats
 from dotenv import load_dotenv
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -553,15 +552,16 @@ def _scrape_sportsws_stats() -> pd.DataFrame:
         logging.error(f"Error fetching data from {url}: {e}")
         return pd.DataFrame()
 
-    tree = html.fromstring(response.content)
-    players = tree.xpath("//td[1]//a")
+    soup = BeautifulSoup(response.content, "html.parser")
+    players = soup.select("td:first-child a")
 
     # Extract data into a list of dictionaries then convert to a DataFrame
     player_data = []
     for player in players:
-        name = player.text.strip() if player.text else ""
+        name = player.get_text(strip=True)
         link = "https://sports.ws" + player.get("href")
-        tail = player.tail.strip() if player.tail else ""
+        sibling = player.next_sibling
+        tail = sibling.strip() if isinstance(sibling, str) else ""
 
         player_data.append({"Name": name, "Player Link": link, "Tail": tail})
     df = pd.DataFrame(player_data)
