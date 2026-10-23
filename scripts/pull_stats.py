@@ -60,7 +60,7 @@ def get_fantasy_stats(year: int) -> pd.DataFrame:
         return
 
 def main():
-    df = get_fantasy_stats(2026)
+    df = get_fantasy_stats(2027)
 
 
 if __name__ == "__main__":
