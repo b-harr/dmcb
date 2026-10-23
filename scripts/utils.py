@@ -478,7 +478,7 @@ def _extract_team_contracts(table: BeautifulSoup) -> list[list[str] | None]:
             if pill_value.startswith("$"):
                 return pill_value.replace(",", "")
 
-            return export_value
+            return None
 
         values = [
             _get_contract_value(cell)
