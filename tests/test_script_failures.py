@@ -1,4 +1,5 @@
 import os
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -37,6 +38,32 @@ PUSH_UPDATERS = (
 
 
 class TestPushFailures(unittest.TestCase):
+    def test_missing_push_inputs_exit_nonzero(self):
+        scripts = (
+            "push_contracts.py",
+            "push_positions.py",
+            "push_stats.py",
+            "push_types.py",
+        )
+        environment = os.environ.copy()
+        environment["PYTHONPATH"] = os.pathsep.join(
+            (os.path.join(base_dir, "src"), base_dir)
+        )
+
+        for script in scripts:
+            with self.subTest(script=script), tempfile.TemporaryDirectory() as directory:
+                result = subprocess.run(
+                    [sys.executable, os.path.join(base_dir, "scripts", script)],
+                    cwd=directory,
+                    env=environment,
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                )
+
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("FileNotFoundError", result.stderr)
+
     def test_loaders_raise_for_missing_and_unreadable_files(self):
         for loader, filename in PUSH_LOADERS:
             with self.subTest(loader=loader.__name__, error="missing"):
