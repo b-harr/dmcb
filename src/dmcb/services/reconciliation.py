@@ -113,14 +113,12 @@ def compare_contracts(
     spotrac_seasons = sorted(
         (column for column in spotrac.columns if SEASON_PATTERN.fullmatch(str(column))),
         key=season_sort,
-        reverse=True,
     )
     existing_seasons = sorted(
         (column for column in existing.columns if SEASON_PATTERN.fullmatch(str(column))),
         key=season_sort,
-        reverse=True,
     )
-    seasons = spotrac_seasons or existing_seasons
+    seasons = (spotrac_seasons or existing_seasons)[:5]
     all_keys = sorted(
         set(spotrac_by_key)
         | set(existing_by_key)
@@ -204,7 +202,11 @@ def compare_contracts(
                 )
             )
 
-    return pd.DataFrame(comparisons, columns=COMPARISON_COLUMNS)
+    result = pd.DataFrame(comparisons, columns=COMPARISON_COLUMNS)
+    result = result[result["Status"] != "Unchanged"]
+    return result.sort_values(
+        ["Player Key", "Season"], kind="stable", ignore_index=True
+    )
 
 
 def _comparison_row(

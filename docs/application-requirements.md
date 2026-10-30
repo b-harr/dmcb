@@ -107,8 +107,10 @@ Features:
    Sheets), `Waived` (Sheets player absent from Spotrac), `Extended` (a new
    populated season after the latest season with an existing contract value),
    `Changed` (other value differences), or `Unchanged` (equal values or both
-   missing). Flag duplicate/ambiguous player keys separately and never treat
-   missing values as zero.
+   missing). Show only the five oldest available seasons, sort the comparison by
+   `Player Key` and `Season`, and omit `Unchanged` rows from the displayed
+   comparison. Flag duplicate/ambiguous player keys separately and never
+   treat missing values as zero.
 4. Support explicit writes to `Contracts`: match existing rows by `Player
    Key`, update data columns A-L in place, preserve Owner in M and unrelated
    cells, append new player keys only after showing a preview, and never
