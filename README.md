@@ -172,7 +172,7 @@ dmcb/
 │   │   ├── basketball_reference.py  Basketball-Reference stats service
 │   │   ├── spotrac.py          Spotrac scraping and contract services
 │   │   ├── sportsws.py         Sports.ws positions service
-│   │   └── google_sheets.py    Shared Google Sheets client
+│   │   └── google_sheets.py    Unified Google Sheets service and legacy manager API
 │   └── ui/                     PySide6 desktop interface
 ├── packaging/windows.iss       Windows installer script
 ├── tests/                      Focused tests for scraping and data helpers

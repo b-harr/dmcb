@@ -75,6 +75,7 @@ class TestUtilityConfiguration(unittest.TestCase):
         client.open_by_url.assert_called_once_with("https://example.test/sheet")
         self.assertIs(manager.sheet, spreadsheet)
         self.assertEqual(manager.service_account_email, "service@example.test")
+        self.assertIs(GoogleSheetsManager, sheets.GoogleSheetsService)
 
 
 class TestSpotracServices(unittest.TestCase):
@@ -658,14 +659,26 @@ class TestContractReconciliation(unittest.TestCase):
                 return self.sheet
 
         service = sheets.GoogleSheetsService.__new__(sheets.GoogleSheetsService)
-        service.manager = Manager()
+        service.sheet = Manager()
+        service.get_worksheet = service.sheet.get_worksheet
         plan = reconciliation.SheetWritePlan(
             updates=[reconciliation.CellUpdate("A2", "updated")]
         )
 
         with self.assertRaisesRegex(RuntimeError, "changed after the write preview"):
             service.apply_write_plan(plan, expected_sheet_values=[["Player Key"], ["old"]])
-        self.assertFalse(service.manager.sheet.updated)
+        self.assertFalse(service.sheet.sheet.updated)
+
+    def test_legacy_manager_write_and_clear_keyword_forms(self):
+        worksheet = Mock()
+        service = sheets.GoogleSheetsService.__new__(sheets.GoogleSheetsService)
+        service.get_worksheet = Mock(return_value=worksheet)
+
+        service.write_data([["value"]], sheet_name="Contracts", start_cell="A1")
+        service.clear_range(sheet_name="Types", range_to_clear="A:E")
+
+        worksheet.update.assert_called_once_with("A1", [["value"]])
+        worksheet.batch_clear.assert_called_once_with(["A:E"])
 
     def test_owned_tab_uses_confirmed_owner_and_player_columns(self):
         service = sheets.GoogleSheetsService.__new__(sheets.GoogleSheetsService)
