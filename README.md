@@ -134,6 +134,12 @@ they are not available under their default command names.
 
 ## Testing and CI
 
+Install the development tools, including Ruff, with:
+
+```bash
+python -m pip install -e ".[dev]"
+```
+
 Run the test suite with:
 
 ```bash
@@ -142,6 +148,8 @@ python -m unittest discover -s tests
 
 Pull requests targeting `main` and pushes to `main` run this suite in GitHub
 Actions on Python 3.11, 3.12, and 3.13.
+CI also runs `ruff check src scripts tests`; run the same check locally with
+`make lint`. Apply Ruff formatting locally with `make format`.
 
 Logs are written under `.logs/`. Scraped datasets and archived source snapshots are stored under `data/`.
 

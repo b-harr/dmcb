@@ -109,7 +109,9 @@ def compare_contracts(
     existing_by_key, duplicate_existing = _to_records_by_key(existing)
     owner_by_key, duplicate_owners = owner_index(owners)
 
-    season_sort = lambda column: int(str(column)[:4])
+    def season_sort(column: str) -> int:
+        return int(str(column)[:4])
+
     spotrac_seasons = sorted(
         (column for column in spotrac.columns if SEASON_PATTERN.fullmatch(str(column))),
         key=season_sort,

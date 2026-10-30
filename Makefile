@@ -31,7 +31,7 @@ ISCC ?= ISCC
 .PHONY: pull-types push-types update-types
 .PHONY: pull-stats push-stats update-stats
 .PHONY: pull-positions push-positions update-positions
-.PHONY: run-app check-pyinstaller check-macos check-windows
+.PHONY: run-app lint format check-pyinstaller check-macos check-windows
 .PHONY: build-gui build-macos-installer build-windows-installer
 .PHONY: pull-all push-all update-all
 
@@ -95,6 +95,12 @@ update-positions:
 run-app:
 	PYTHONPATH=src:. $(PYTHON) -m dmcb.app
 
+lint:
+	ruff check src scripts tests
+
+format:
+	ruff format src scripts tests
+
 check-pyinstaller:
 	@$(PYINSTALLER) --version >/dev/null 2>&1 || { \
 		printf '%s\n' 'PyInstaller is unavailable. Install it with: $(PYTHON) -m pip install -e ".[build]"'; \
@@ -150,6 +156,8 @@ help:
 		'  pull-* / push-* / update-*   Sync an individual dataset' \
 		'  pull-all / push-all / update-all' \
 		'  run-app                       Launch the desktop app' \
+		'  lint                          Run Ruff checks' \
+		'  format                        Format Python code with Ruff' \
 		'  build-gui                     Build the desktop application' \
 		'  build-macos-installer         Build the macOS disk image' \
 		'  build-windows-installer       Build the Windows installer'

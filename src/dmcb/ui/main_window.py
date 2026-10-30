@@ -346,6 +346,8 @@ class MainWindow(QMainWindow):
             )
             self.status_label.setText(f"No Sheets changes to write.{skipped}")
             return
+        credentials_path = self.credentials_path.text().strip()
+        spreadsheet_url = self.spreadsheet_url.text().strip()
         headers = [str(value) for value in raw_values[0]] if raw_values else []
         dialog = QDialog(self)
         dialog.setWindowTitle("Review Google Sheets changes")
