@@ -83,7 +83,7 @@ run-app:
 	PYTHONPATH=src:. $(PYTHON) -m dmcb.app
 
 build-gui:
-	$(PYTHON) -m PyInstaller --noconfirm --windowed --name DMCB --paths src --paths . src/dmcb/app.py
+	$(PYTHON) -m PyInstaller --noconfirm DMCB.spec
 
 build-macos-installer: build-gui
 	hdiutil create -volname "DMCB Commissioner" -srcfolder dist/DMCB.app -ov -format UDZO dist/DMCB-macos.dmg
