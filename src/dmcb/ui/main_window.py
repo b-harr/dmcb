@@ -33,6 +33,7 @@ from PySide6.QtWidgets import (
 from dmcb.config import AppConfig
 from dmcb.models.records import OWNER_SOURCE
 from dmcb.services import basketball_reference, reconciliation, sheets, spotrac, sportsws
+from scripts.utils import make_title_case
 
 LOGGER = logging.getLogger(__name__)
 
@@ -92,7 +93,7 @@ class MainWindow(QMainWindow):
         self.team_list = QListWidget()
         self.team_list.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
         for team in spotrac.available_teams():
-            item = QListWidgetItem(team.replace("-", " ").title())
+            item = QListWidgetItem(make_title_case(team))
             item.setData(Qt.ItemDataRole.UserRole, team)
             item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
             item.setCheckState(Qt.CheckState.Unchecked)
