@@ -32,23 +32,21 @@ logging.basicConfig(
 )
 
 
-def scrape_all() -> pd.DataFrame | None:
+def scrape_all() -> pd.DataFrame:
     logging.info("Starting to scrape team contracts from Spotrac...")
     try:
         df = scrape_teams()
         if df is None or df.empty:
-            logging.warning("No data was returned from the scrape.")
-            return None
+            raise RuntimeError("Spotrac returned no contract data")
         return df
     except Exception as e:
-        logging.error(f"Scrape failed: {e}")
-        return None
+        logging.exception("Failed to scrape contracts from Spotrac")
+        raise RuntimeError("Failed to scrape contracts from Spotrac") from e
 
 def process_data(df: pd.DataFrame) -> pd.DataFrame:
     logging.info("Starting to process scraped contract data...")
     if df is None or df.empty:
-        logging.warning("No data provided to process.")
-        return pd.DataFrame()
+        raise ValueError("No contract data provided to process")
     try:
         # Exclude rows where Player is "Incomplete Roster Charge"
         df = df[df["Player"] != "Incomplete Roster Charge"]
@@ -67,8 +65,8 @@ def process_data(df: pd.DataFrame) -> pd.DataFrame:
         logging.info("Processed and formatted contract data.")
         return df[column_order]
     except Exception as e:
-        logging.error(f"Data processing failed: {e}")
-        return pd.DataFrame()
+        logging.exception("Failed to process contract data")
+        raise RuntimeError("Failed to process contract data") from e
 
 def update_owners():
     sheet = "Owned"
@@ -83,18 +81,17 @@ def get_owners(sheet="Contracts") -> pd.DataFrame:
         sheets_manager = GoogleSheetsManager()
         raw_data = sheets_manager.read_data(sheet=sheet)
     except Exception as e:
-        logging.warning(f"Could not read owner data from Google Sheets '{sheet}': {e}")
-        return pd.DataFrame(columns=["Player", "Player Link", "Player Key", "Owner"])
+        logging.exception("Could not read owner data from Google Sheets '%s'", sheet)
+        raise RuntimeError(f"Could not read owner data from Google Sheets '{sheet}'") from e
 
     if not raw_data:
-        return pd.DataFrame(columns=["Player", "Player Link", "Player Key", "Owner"])
+        raise ValueError(f"Google Sheets '{sheet}' contains no owner data")
 
     header = raw_data[0]
     rows = raw_data[1:] if len(raw_data) > 1 else []
 
     if len(header) <= 16:
-        logging.warning("Google Sheets 'Contracts' tab does not contain the expected owner column (Q).")
-        return pd.DataFrame(columns=["Player", "Player Link", "Player Key", "Owner"])
+        raise ValueError(f"Google Sheets '{sheet}' does not contain the expected owner column (Q)")
 
     owner_df = pd.DataFrame(rows, columns=[str(col).strip() for col in header])
     owner_df = owner_df.iloc[:, [0, 1, 2, 16]].copy()
@@ -127,13 +124,13 @@ def merge_owners(contracts: pd.DataFrame, owners: pd.DataFrame) -> pd.DataFrame:
 
 def save_data(df: pd.DataFrame, output_csv: str) -> None:
     if df is None or df.empty:
-        logging.warning("No data provided to save.")
-        return
+        raise ValueError(f"Refusing to save empty contracts data to {output_csv}")
     try:
         df.to_csv(output_csv, index=False)
         logging.info(f"Data saved successfully to {output_csv}.")
     except Exception as e:
-        logging.error(f"Failed to save data to CSV: {e}")
+        logging.exception("Failed to save contracts data to %s", output_csv)
+        raise RuntimeError(f"Failed to save contracts data to {output_csv}") from e
 
 def main():
     update_owners()

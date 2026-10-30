@@ -34,17 +34,18 @@ NUMERIC_COLUMNS = ["PTS", "TRB", "AST", "STL", "BLK", "TOV", "PF", "G", "MP"]
 
 def load_stats(input_csv: str) -> pd.DataFrame:
     if not os.path.exists(input_csv):
-        logging.warning(f"Input CSV file does not exist: {input_csv}")
-        return pd.DataFrame()
+        raise FileNotFoundError(f"Input stats CSV does not exist: {input_csv}")
     try:
         df = pd.read_csv(input_csv)
         logging.info(f"Loaded contracts data from {input_csv}.")
         return df
     except Exception as e:
-        logging.error(f"Failed to load contracts data from CSV: {e}")
-        return pd.DataFrame()
+        raise RuntimeError(f"Failed to load stats data from {input_csv}") from e
 
 def update_sheets(df: pd.DataFrame, sheet: str) -> None:
+    if df.replace(r"^\s*$", pd.NA, regex=True).dropna(how="all").empty:
+        raise ValueError(f"Refusing to clear Google Sheets '{sheet}' with empty stats data")
+
     try:
         sheets_manager = GoogleSheetsManager()
         sheets_manager.clear_data(sheet)
@@ -58,7 +59,8 @@ def update_sheets(df: pd.DataFrame, sheet: str) -> None:
         sheets_manager.write_data([write_df.columns.tolist()] + write_df.values.tolist(), sheet, cell="A2")
         logging.info(f"Data successfully written to Google Sheets: {sheet}")
     except Exception as e:
-        logging.error(f"Error updating Google Sheets: {e}")
+        logging.exception("Failed to update Google Sheets '%s'", sheet)
+        raise RuntimeError(f"Failed to update Google Sheets '{sheet}'") from e
 
 def main():
     df = load_stats(input_path)

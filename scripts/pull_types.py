@@ -153,6 +153,8 @@ def _upsert_contract_details(
 def main() -> pd.DataFrame:
     logging.info("Loading Spotrac contracts from %s", INPUT_PATH)
     contracts = pd.read_csv(INPUT_PATH)
+    if contracts.empty:
+        raise ValueError(f"Spotrac contracts data is empty: {INPUT_PATH}")
     if not {"Player", "Player Link", "Player Key"}.issubset(contracts.columns):
         raise ValueError("Spotrac contracts data is missing required player columns")
     contracts["Player Link"] = contracts["Player Link"].astype("string").str.strip()
@@ -229,7 +231,9 @@ def main() -> pd.DataFrame:
         len(failures),
     )
     if failures:
-        logging.warning("Unfinished player scrapes: %s", "; ".join(failures))
+        message = "Unfinished player scrapes: " + "; ".join(failures)
+        logging.error(message)
+        raise RuntimeError(message)
 
     return contract_types.sort_values("Player Key", kind="stable", na_position="last").reset_index(drop=True)
 

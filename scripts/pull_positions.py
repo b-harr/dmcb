@@ -38,13 +38,13 @@ def merge_fantasy_owners(df: pd.DataFrame) -> pd.DataFrame:
 
 def save_positions_data(df: pd.DataFrame, output_csv: str) -> None:
     if df is None or df.empty:
-        logging.warning("No data provided to save.")
-        return
+        raise ValueError(f"Refusing to save empty positions data to {output_csv}")
     try:
         df.to_csv(output_csv, index=False)
         logging.info(f"Data saved successfully to {output_csv}.")
     except Exception as e:
-        logging.error(f"Failed to save data to CSV: {e}")
+        logging.exception("Failed to save positions data to %s", output_csv)
+        raise RuntimeError(f"Failed to save positions data to {output_csv}") from e
 
 def main():
     positions = scrape_sportsws_positions()
