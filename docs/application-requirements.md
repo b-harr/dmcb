@@ -2,10 +2,9 @@
 
 ## Status and scope
 
-This document records the confirmed requirements, a proposed roadmap, and a
-refined implementation prompt. It is not approval to begin implementation:
-first resolve the remaining questions at the end of the prompt and wait for
-the commissioner's go-ahead.
+This document records project context, a proposed roadmap, and one canonical
+implementation prompt. It is not approval to begin implementation: first
+resolve the questions in the prompt and wait for the commissioner's go-ahead.
 
 ## Existing project context
 
@@ -36,35 +35,6 @@ positions; CSV datasets in `data/`; Makefile workflows; and focused tests.
 
 The existing root [README](../README.md) documents setup and workflows. The
 league rules and current 16 fantasy franchises are in [docs/README.md](./README.md).
-
-## Confirmed requirements
-
-- **NBA team scope:** Select one NBA team, multiple NBA teams, or all **30
-  current NBA teams**. This selection is NBA teams, not the 16 fantasy
-  franchises.
-- **Fantasy Owner:** Associate player records with the DMCB fantasy Owner
-  found on the Google Sheets `Owned` tab.
-- **Spotrac team-contract record:** Preserve a structured record with
-  `Player`, `Player Link`, `Player Key`, `Team`, `Team Link`, `Position`,
-  `Age`, and every available contract-season value. The final displayed and
-  exported dataframe is limited to five contract-season columns. Proposed
-  default: retain the five most recent available seasons in the final
-  dataframe, while preserving all available years in the underlying record.
-- **Spotrac player-detail record:** Use a stable record/dataframe schema of
-  exactly `Player`, `Player Link`, `Player Key`, `Signed Using`, and `Drafted`.
-  Keep missing source values explicit. Do not silently add arbitrary fields
-  to this public schema.
-- **Google Sheets:** The app must read from and write to Sheets. Writes must
-  be explicit and user-triggered, with the destination and affected data
-  reviewed before changes are applied; scraping or comparison alone must not
-  overwrite data.
-- **Interface:** Start with a desktop application. Keep data and business
-  logic separate from the UI so a web interface can be added later without
-  replacing the data layer.
-- **Sources:** Continue to use public Spotrac contract data, Sports.ws default
-  positions, and Basketball-Reference statistics. CSVs must identify the
-  source of their fields.
-- **Platform:** Support macOS first and cross-platform use where practical.
 
 ## Proposed roadmap
 
@@ -217,16 +187,3 @@ small testable steps: reuse project patterns, add/update focused tests, run
 the smallest relevant validation, and report changes, launch instructions,
 and limitations.
 ```
-
-## Remaining decisions before implementation
-
-1. Confirm `Contracts` tab as comparison/write target, its columns, and the
-   `Owned` tab's player/Owner headers.
-2. Confirm comparison normalization/status behavior and whether five most
-   recent years is the correct default.
-3. Define write destinations, update semantics, and whether backup/undo is
-   needed.
-4. Specify Basketball-Reference seasons, fields, and derived metric behavior.
-5. Confirm whether the five-field player-detail schema is final or identify
-   additional named fields after reviewing representative source records.
-6. Confirm packaging requirements and cross-platform targets.
