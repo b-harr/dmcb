@@ -8,7 +8,7 @@ from typing import Any
 import pandas as pd
 
 from dmcb.models.records import CellUpdate, SheetWritePlan
-from scripts.utils import make_player_key
+from dmcb.utils import make_player_key
 
 SEASON_PATTERN = re.compile(r"^20\d{2}-\d{2}$")
 COMPARISON_COLUMNS = [

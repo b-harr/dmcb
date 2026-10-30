@@ -3,7 +3,7 @@ from __future__ import annotations
 import pandas as pd
 
 from dmcb.models.records import POSITIONS_SOURCE
-from scripts.utils import scrape_positions
+from dmcb.utils import scrape_positions
 
 
 def get_positions() -> pd.DataFrame:

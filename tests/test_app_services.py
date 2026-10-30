@@ -1,14 +1,74 @@
 import csv
+import json
 import tempfile
 import unittest
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 import pandas as pd
 from bs4 import BeautifulSoup
 
 from dmcb.models.records import PLAYER_DETAIL_COLUMNS
 from dmcb.services import reconciliation, sheets, spotrac
+from dmcb.utils import GoogleSheetsManager, scrape_owners
+
+
+class TestUtilityConfiguration(unittest.TestCase):
+    def test_scrape_owners_raises_when_sheets_read_fails(self):
+        error = RuntimeError("authentication failed")
+        with (
+            patch("dmcb.utils.GoogleSheetsManager") as manager_class,
+            self.assertRaisesRegex(RuntimeError, "worksheet 'Owned'") as raised,
+        ):
+            manager_class.return_value.read_data.side_effect = error
+            scrape_owners("Owned", "owners.csv")
+
+        self.assertIs(raised.exception.__cause__, error)
+
+    def test_scrape_owners_returns_schema_for_empty_worksheet(self):
+        with patch("dmcb.utils.GoogleSheetsManager") as manager_class:
+            manager_class.return_value.read_data.return_value = []
+            owners = scrape_owners("Owned", "owners.csv")
+
+        self.assertEqual(owners.columns.tolist(), ["Owner", "Player", "Player Key"])
+        self.assertTrue(owners.empty)
+
+    def test_scrape_owners_rejects_sheet_without_owner_and_player_columns(self):
+        with (
+            patch("dmcb.utils.GoogleSheetsManager") as manager_class,
+            self.assertRaisesRegex(ValueError, "Owner in column A.*Player in column D"),
+        ):
+            manager_class.return_value.read_data.return_value = [["Owner", "Player"]]
+            scrape_owners("Owned", "owners.csv")
+
+    def test_sheets_manager_reads_environment_when_initialized(self):
+        with tempfile.TemporaryDirectory() as directory:
+            credentials_path = Path(directory) / "credentials.json"
+            credentials_path.write_text(
+                json.dumps({"client_email": "service@example.test"}),
+                encoding="utf-8",
+            )
+            client = Mock()
+            spreadsheet = Mock()
+            client.open_by_url.return_value = spreadsheet
+            with (
+                patch.dict(
+                    "os.environ",
+                    {
+                        "GOOGLE_SHEETS_CREDENTIALS": str(credentials_path),
+                        "GOOGLE_SHEETS_URL": "https://example.test/sheet",
+                    },
+                ),
+                patch("dmcb.utils.load_dotenv") as load_dotenv,
+                patch("dmcb.utils.gspread.service_account", return_value=client) as service_account,
+            ):
+                manager = GoogleSheetsManager()
+
+        load_dotenv.assert_called_once_with()
+        service_account.assert_called_once_with(filename=str(credentials_path))
+        client.open_by_url.assert_called_once_with("https://example.test/sheet")
+        self.assertIs(manager.sheet, spreadsheet)
+        self.assertEqual(manager.service_account_email, "service@example.test")
 
 
 class TestSpotracServices(unittest.TestCase):

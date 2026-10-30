@@ -33,7 +33,7 @@ from PySide6.QtWidgets import (
 from dmcb.config import AppConfig
 from dmcb.models.records import OWNER_SOURCE
 from dmcb.services import basketball_reference, reconciliation, sheets, spotrac, sportsws
-from scripts.utils import make_title_case
+from dmcb.utils import make_title_case
 
 LOGGER = logging.getLogger(__name__)
 
