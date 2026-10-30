@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import re
 
 import pandas as pd
 import requests
@@ -36,13 +37,27 @@ def _scrape_sportsws_stats() -> pd.DataFrame:
         ) from error
 
     soup = BeautifulSoup(response.content, "html.parser")
+    table = soup.find("table")
+    if table is None:
+        raise ValueError(f"Sports.ws stats table was not found at {url}.")
+
     player_data = []
-    for player in soup.select("td:first-child a"):
+    for row_number, row in enumerate(table.select("tbody tr"), start=1):
+        player = row.select_one("td:first-child a")
+        if player is None:
+            continue
         name = player.get_text(strip=True)
         href = player.get("href")
         link = f"https://sports.ws{href}" if href else ""
         sibling = player.next_sibling
         tail = sibling.strip() if isinstance(sibling, str) else ""
+        match = re.search(r",\s*([\w*]+),\s*(\w+)", tail)
+        if not name or match is None:
+            raise ValueError(
+                f"Could not parse Sports.ws player row {row_number} "
+                f"({name or 'unknown player'}) at {url}: expected player name, "
+                "team, and position."
+            )
         player_data.append({"Name": name, "Player Link": link, "Tail": tail})
 
     columns = ["Name", "Player Link", "Team", "Position"]

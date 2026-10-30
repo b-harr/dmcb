@@ -107,6 +107,53 @@ class TestSpotracServices(unittest.TestCase):
         parsed = spotrac._extract_team_contracts(table, season_limit=None)
         self.assertEqual(parsed[0][4:], ["$1000000", "$0", None])
 
+    def test_team_scraper_reports_missing_table_with_team_and_url(self):
+        with (
+            patch.object(
+                spotrac.utils,
+                "_save_page",
+                return_value=BeautifulSoup("<html></html>", "html.parser"),
+            ),
+            self.assertRaisesRegex(
+                ValueError,
+                r"Spotrac contract tables were not found for team boston-celtics .*spotrac.com",
+            ),
+        ):
+            spotrac.scrape_team("boston-celtics")
+
+    def test_team_scraper_reports_missing_header_with_team_and_url(self):
+        page = BeautifulSoup(
+            '<table id="dataTable-active"><tbody></tbody></table>',
+            "html.parser",
+        )
+        with (
+            patch.object(spotrac.utils, "_save_page", return_value=page),
+            self.assertRaisesRegex(
+                ValueError,
+                r"Spotrac contract table is missing its header for team boston-celtics",
+            ),
+        ):
+            spotrac.scrape_team("boston-celtics")
+
+    def test_team_scraper_wraps_malformed_row_with_team_context(self):
+        page = BeautifulSoup(
+            """
+            <table id="dataTable-active">
+              <thead><tr><th>Player</th><th>2026-27</th></tr></thead>
+              <tbody><tr><td></td><td>$1,000,000</td></tr></tbody>
+            </table>
+            """,
+            "html.parser",
+        )
+        with (
+            patch.object(spotrac.utils, "_save_page", return_value=page),
+            self.assertRaisesRegex(
+                ValueError,
+                r"Could not parse Spotrac contracts for team boston-celtics .*contract row 1 is missing the player name",
+            ),
+        ):
+            spotrac.scrape_team("boston-celtics")
+
     def test_contract_scrape_preserves_all_years_and_displays_latest_five(self):
         source = pd.DataFrame(
             {
@@ -190,6 +237,21 @@ class TestSpotracServices(unittest.TestCase):
         scrape.assert_called_once()
         self.assertEqual(scrape.call_args.args[0], [player_url])
 
+    def test_player_scraper_reports_missing_identity_with_player_context(self):
+        url = "https://www.spotrac.com/nba/player/_/id/12345/test-player"
+        with (
+            patch.object(
+                spotrac.utils,
+                "_save_page",
+                return_value=BeautifulSoup("<html></html>", "html.parser"),
+            ),
+            self.assertRaisesRegex(
+                ValueError,
+                r"Could not parse Spotrac player details for 12345-test-player.*expected player identity",
+            ),
+        ):
+            spotrac.scrape_player(url)
+
 
 class TestSportswsService(unittest.TestCase):
     def test_positions_scraper_parses_and_sorts_player_data(self):
@@ -210,7 +272,7 @@ class TestSportswsService(unittest.TestCase):
 
     def test_positions_scraper_returns_empty_frame_with_schema_when_no_players(self):
         response = Mock()
-        response.content = b"<html><body>No player table</body></html>"
+        response.content = b"<table><tbody></tbody></table>"
         with patch("dmcb.services.sportsws.requests.get", return_value=response):
             positions = sportsws.scrape_positions()
 
@@ -219,6 +281,30 @@ class TestSportswsService(unittest.TestCase):
             ["Name", "Player Link", "Player Key", "Position"],
         )
         self.assertTrue(positions.empty)
+
+    def test_positions_scraper_reports_missing_table(self):
+        response = Mock()
+        response.content = b"<html><body>No player table</body></html>"
+        with (
+            patch("dmcb.services.sportsws.requests.get", return_value=response),
+            self.assertRaisesRegex(ValueError, "Sports.ws stats table was not found"),
+        ):
+            sportsws.scrape_positions()
+
+    def test_positions_scraper_reports_malformed_player_row(self):
+        response = Mock()
+        response.content = (
+            b"<table><tbody><tr><td><a href='/nba/test-player'>Test Player</a></td>"
+            b"</tr></tbody></table>"
+        )
+        with (
+            patch("dmcb.services.sportsws.requests.get", return_value=response),
+            self.assertRaisesRegex(
+                ValueError,
+                r"Could not parse Sports.ws player row 1 \(Test Player\).*team, and position",
+            ),
+        ):
+            sportsws.scrape_positions()
 
     def test_positions_scraper_reports_network_errors(self):
         with (
@@ -323,7 +409,43 @@ class TestBasketballReferenceService(unittest.TestCase):
     def test_stats_scraper_reports_missing_table(self):
         with (
             patch("dmcb.utils._save_page", return_value=BeautifulSoup("<html></html>", "html.parser")),
-            self.assertRaisesRegex(ValueError, "Table not found"),
+            self.assertRaisesRegex(
+                ValueError,
+                r"Basketball-Reference stats table 'totals_stats' was not found for season 2026",
+            ),
+        ):
+            basketball_reference.scrape_bbref_stats(2026)
+
+    def test_stats_scraper_reports_missing_header_section(self):
+        page = BeautifulSoup(
+            '<table id="totals_stats"><tbody></tbody></table>',
+            "html.parser",
+        )
+        with (
+            patch("dmcb.utils._save_page", return_value=page),
+            self.assertRaisesRegex(
+                ValueError,
+                r"Basketball-Reference stats table is missing its header for season 2026",
+            ),
+        ):
+            basketball_reference.scrape_bbref_stats(2026)
+
+    def test_stats_scraper_reports_malformed_row_with_season_and_url(self):
+        page = BeautifulSoup(
+            """
+            <table id="totals_stats">
+              <thead><tr><th>Rk</th><th>Player</th><th>Team</th></tr></thead>
+              <tbody><tr><td>A Player</td></tr></tbody>
+            </table>
+            """,
+            "html.parser",
+        )
+        with (
+            patch("dmcb.utils._save_page", return_value=page),
+            self.assertRaisesRegex(
+                ValueError,
+                r"Basketball-Reference stats row 1 has 1 cells; expected 2 for season 2026 .*basketball-reference.com",
+            ),
         ):
             basketball_reference.scrape_bbref_stats(2026)
 

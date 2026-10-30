@@ -14,19 +14,48 @@ def scrape_bbref_stats(year: int) -> pd.DataFrame:
     url = f"https://www.basketball-reference.com/leagues/NBA_{year}_totals.html"
     soup = utils._save_page(url, f".cache/stats/bbref-{year}.html")
     if soup is None:
-        raise RuntimeError(f"Could not fetch Basketball-Reference stats for {year}.")
+        raise RuntimeError(
+            f"Could not fetch Basketball-Reference stats for season {year} from {url}."
+        )
 
     table = soup.find("table", {"id": "totals_stats"})
     if not table:
-        raise ValueError("Table not found. Ensure the page structure has not changed.")
+        raise ValueError(
+            f"Basketball-Reference stats table 'totals_stats' was not found "
+            f"for season {year} at {url}."
+        )
 
-    headers = [header.get_text() for header in table.find("thead").find_all("th")][1:]
+    table_head = table.find("thead")
+    if table_head is None:
+        raise ValueError(
+            f"Basketball-Reference stats table is missing its header for season "
+            f"{year} at {url}."
+        )
+    header_cells = table_head.find_all("th")
+    headers = [header.get_text(strip=True) for header in header_cells][1:]
+    if "Player" not in headers:
+        raise ValueError(
+            f"Basketball-Reference stats table is missing the Player column "
+            f"for season {year} at {url}."
+        )
+
+    table_body = table.find("tbody")
+    if table_body is None:
+        raise ValueError(
+            f"Basketball-Reference stats table is missing its body for season "
+            f"{year} at {url}."
+        )
     headers.extend(["Player Link", "Team Link"])
     rows = []
-    for row in table.find("tbody").find_all("tr"):
+    for row_number, row in enumerate(table_body.find_all("tr"), start=1):
         if not row.find("td"):
             continue
         values = [cell.get_text() for cell in row.find_all("td")]
+        if len(values) != len(headers) - 2:
+            raise ValueError(
+                f"Basketball-Reference stats row {row_number} has {len(values)} "
+                f"cells; expected {len(headers) - 2} for season {year} at {url}."
+            )
         player_link, team_link = None, None
         for link in row.find_all("a"):
             href = link.get("href", "")
