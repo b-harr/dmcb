@@ -25,7 +25,7 @@ def format_signed(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 def print_df(df: pd.DataFrame) -> None:
-    print(f"Contract details: ")
+    print("Contract details: ")
     print(df)
 
 def main():

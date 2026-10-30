@@ -71,7 +71,8 @@
 * Google Sheets: https://docs.google.com/spreadsheets/d/1NgAl7GSl3jfehz4Sb3SmR_k1-QtQFm55fBPb3QOGYYw
 * Sports.ws: https://sports.ws/fantasy-basketball
 * Spotrac: https://www.spotrac.com/nba
-* Basketball-Reference: https://www.basketball-reference.com/leagues/NBA_2026_totals.html
+* Basketball-Reference (example, season-specific 2026 totals page):
+  https://www.basketball-reference.com/leagues/NBA_2026_totals.html
 * GitHub: https://github.com/b-harr/dmcb
 
 ---
