@@ -5,7 +5,6 @@ import requests
 import unicodedata
 import pandas as pd
 from bs4 import BeautifulSoup
-from nba_api.stats.endpoints import leaguedashplayerstats
 
 from dmcb.services.google_sheets import GoogleSheetsManager
 
@@ -149,33 +148,6 @@ def scrape_bbref_stats(year: int) -> pd.DataFrame:
     )
 
     return implementation(year)
-
-def scrape_nba_stats(year: int) -> pd.DataFrame:
-    season_str = f"{year-1}-{str(year)[-2:]}"  # e.g., 2027 => 2026-27
-
-    stats = leaguedashplayerstats.LeagueDashPlayerStats(season=season_str)
-    df = stats.get_data_frames()[0]
-
-    df = df.dropna(subset=["PLAYER_NAME"])
-
-    df.rename(columns={
-        "PLAYER_NAME": "Player",
-        "TEAM_ABBREVIATION": "Team",
-        "GP": "G",
-        "MIN": "MP",
-        "PTS": "PTS",
-        "REB": "TRB",
-        "AST": "AST",
-        "STL": "STL",
-        "BLK": "BLK",
-        "TO": "TOV",
-        "PF": "PF"
-    }, inplace=True)
-
-    column_order = ["Player", "Team", "G", "MP", "PTS", "TRB", "AST", "STL", "BLK", "TOV", "PF"]
-    df = df[column_order]
-
-    return df
 
 def scrape_owners(sheet: str, output: str) -> pd.DataFrame:
     try:

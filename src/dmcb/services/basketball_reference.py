@@ -51,7 +51,14 @@ def get_stats(season_end_year: int) -> pd.DataFrame:
 
     stats = scrape_bbref_stats(season_end_year)
     if stats.empty:
-        raise RuntimeError(f"Basketball-Reference returned no stats for {season_end_year}.")
+        raise RuntimeError(
+            f"Basketball-Reference returned no stats for {season_end_year}."
+        )
+    if "Player" not in stats.columns:
+        raise ValueError(
+            f"Basketball-Reference data for {season_end_year} is missing "
+            "the Player column."
+        )
 
     stats = stats[stats["Player"].fillna("").ne("League Average")].copy()
     stats["Player Key"] = stats["Player"].fillna("").map(utils.make_player_key)

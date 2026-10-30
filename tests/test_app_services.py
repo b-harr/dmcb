@@ -231,6 +231,48 @@ class TestSportswsService(unittest.TestCase):
 
 
 class TestBasketballReferenceService(unittest.TestCase):
+    def test_stats_uses_basketball_reference_and_adds_derived_columns(self):
+        source = pd.DataFrame(
+            [
+                {
+                    "Player": "A Player",
+                    "Player Link": "a-link",
+                    "Team Link": "team-link",
+                },
+                {"Player": "League Average", "Player Link": None, "Team Link": None},
+            ]
+        )
+        with patch.object(
+            basketball_reference, "scrape_bbref_stats", return_value=source
+        ):
+            stats = basketball_reference.get_stats(2027)
+
+        self.assertEqual(stats["Player"].tolist(), ["A Player"])
+        self.assertEqual(stats.iloc[0]["Data Source"], "Basketball-Reference")
+        self.assertEqual(stats.iloc[0]["Player Key"], "a-player")
+
+    def test_stats_raises_when_basketball_reference_returns_no_rows(self):
+        with (
+            patch.object(
+            basketball_reference, "scrape_bbref_stats", return_value=pd.DataFrame()
+            ),
+            self.assertRaisesRegex(
+                RuntimeError, "Basketball-Reference returned no stats"
+            ),
+        ):
+            basketball_reference.get_stats(2027)
+
+    def test_stats_raises_when_basketball_reference_data_lacks_player_column(self):
+        with (
+            patch.object(
+                basketball_reference,
+                "scrape_bbref_stats",
+                return_value=pd.DataFrame([{"Name": "A Player"}]),
+            ),
+            self.assertRaisesRegex(ValueError, "missing the Player column"),
+        ):
+            basketball_reference.get_stats(2027)
+
     def test_stats_scraper_extracts_player_and_team_links(self):
         soup = BeautifulSoup(
             """
