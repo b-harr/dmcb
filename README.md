@@ -11,7 +11,7 @@ Python scripts for collecting NBA player, contract, and position data and syncin
 | Player stats | `make pull-stats` | `data/bbref_stats.csv` | `make push-stats` | `Stats` |
 | Player positions | `make pull-positions` | `data/sportsws_positions.csv` | `make push-positions` | `Positions` |
 
-The contract workflow reads the `Owned` and `Contracts` tabs while pulling, to refresh and merge owner information. The stats pull currently requests the 2026 Basketball-Reference totals. Its derived columns include `FP`, `FPPG`, `FPPM`, `MPG`, and `FPR`.
+The contract workflow reads the `Owned` and `Contracts` tabs while pulling, to refresh and merge owner information. The stats pull currently requests Basketball-Reference totals for season end year 2027 (the 2026-27 season). Its derived columns include `FP`, `FPPG`, `FPPM`, `MPG`, and `FPR`.
 
 ## Commissioner Application
 
@@ -85,7 +85,9 @@ notarization; those credentials are intentionally not part of this project.
 
 ## Setup
 
-Use Python 3.11 or newer and install the dependencies in a virtual environment:
+The package declares Python 3.11 or newer. Continuous integration currently
+tests Python 3.11, 3.12, and 3.13. Install the dependencies in a virtual
+environment:
 
 ```bash
 python3 -m venv .venv
@@ -130,11 +132,16 @@ Set `PYTHON` when invoking Make to select a different interpreter, for example
 Packaging tools can be overridden with `PYINSTALLER`, `HDIUTIL`, and `ISCC` if
 they are not available under their default command names.
 
+## Testing and CI
+
 Run the test suite with:
 
 ```bash
 python -m unittest discover -s tests
 ```
+
+Pull requests targeting `main` and pushes to `main` run this suite in GitHub
+Actions on Python 3.11, 3.12, and 3.13.
 
 Logs are written under `.logs/`. Scraped datasets and archived source snapshots are stored under `data/`.
 

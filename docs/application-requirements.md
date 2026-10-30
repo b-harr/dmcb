@@ -16,12 +16,13 @@ positions; CSV datasets in `data/`; Makefile workflows; and focused tests.
   Owner is in column A and Player in column D. The `Contracts` tab is the
   comparison and write target. Existing local contract output has `Player`,
   `Player Link`, `Player Key`, `Team`, `Team Link`, `Position`, `Age`, season
-  columns, and `Owner`; current season columns are 2026-27 through 2030-31.
+  columns, and `Owner`; available season columns are determined by the source
+  data and change over time.
 - Existing Spotrac detail parsing discovers additional profile/contract
-  labels. In 187 cached public player pages, Country, Contract Terms, GTD at
-  Sign, Total GTD, and Signed Using appeared on all pages; Age appeared on
-  186, College on 177, Average Salary on 151, Exp on 117, Agent(s) on 111,
-  Drafted on 95, Free Agent on 69, and Maximum Value on 9.
+  labels. An earlier scan of 187 cached public player pages found that Country,
+  Contract Terms, GTD at Sign, Total GTD, and Signed Using appeared on all
+  pages; Age appeared on 186, College on 177, Average Salary on 151, Exp on
+  117, Agent(s) on 111, Drafted on 95, Free Agent on 69, and Maximum Value on 9.
 - Sports.ws positions and Basketball-Reference statistics already have pull
   workflows. The stats workflow currently selects a season in code and adds
   derived fantasy metrics; those metrics are not a verified implementation of
@@ -82,7 +83,11 @@ See the root [README](../README.md) for existing setup/workflows and
   write plans, and related services. Build or test each target platform in its
   native environment; PyInstaller does not cross-compile.
 
-## Canonical implementation prompt
+## Historical planning prompt (superseded)
+
+The prompt below is retained as project history only; it is not the current
+specification. Use the confirmed decisions and current implementation above,
+along with the root README, for maintained project behavior.
 
 ```text
 Act as a senior software engineer working in my existing dmcb/ repository.
