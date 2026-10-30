@@ -47,7 +47,8 @@ See the root [README](../README.md) for existing setup/workflows and
   reported rather than silently treated as a change.
 - Preserve all available Spotrac season values in the source record. Limit the
   final contract dataframe to five season columns, using the five most recent
-  available seasons.
+  available seasons. For contract comparison, use the five oldest available
+  seasons, order rows by `Player Key` and `Season`, and omit `Unchanged` rows.
 - Use a stable Spotrac detail schema: `Player`, `Player Link`, `Player Key`,
   `Signed Using`, `Drafted`, `Country`, `Contract Terms`, `Age`, `College`,
   `Exp`, `Agent(s)`, and `Free Agent`. Fields not present on a player's page
@@ -63,18 +64,21 @@ See the root [README](../README.md) for existing setup/workflows and
   Sheets without an explicit user action. Respect source terms, rate limits,
   and access restrictions; do not bypass anti-bot controls.
 
-## Roadmap
+## Current implementation
 
-1. Implement reusable typed source, reconciliation, Google Sheets, backup,
-   and CSV-export services without breaking current script entry points.
-2. Add focused tests for team/player selection, source normalization,
-   comparisons, owner matching, write plans, backup behavior, and exports.
-3. Build the PySide6 desktop workflows for contract retrieval, player details,
-   positions/stats, comparison review, CSV export, and confirmed Sheets writes.
-4. Add setup/launch documentation and package targets for macOS/Windows GUI
-   distribution and Linux CLI installation.
-5. Validate focused tests and supported packaging paths; clearly report any
-   source access or platform limitations.
+- The PySide6 app provides contract retrieval, player details, positions and
+  statistics, comparison review, CSV export, and confirmed Sheets writes.
+- Reusable Spotrac, Sports.ws, Basketball-Reference, reconciliation, and Google
+  Sheets services support the desktop workflows while existing script entry
+  points remain available.
+- Contract comparisons show the five oldest available seasons, ordered by
+  `Player Key` and `Season`, with `Unchanged` rows omitted. The contracts view
+  and its write data use the five most recent available seasons.
+- macOS and Windows packaging targets and a Linux `dmcb` command are
+  documented in the root [README](../README.md).
+- Focused tests cover scraping, normalization, comparison, owner matching,
+  write plans, and related services. Build or test each target platform in its
+  native environment; PyInstaller does not cross-compile.
 
 ## Canonical implementation prompt
 
