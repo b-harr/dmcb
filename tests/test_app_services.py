@@ -1,14 +1,47 @@
 import csv
+import json
 import tempfile
 import unittest
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 import pandas as pd
 from bs4 import BeautifulSoup
 
 from dmcb.models.records import PLAYER_DETAIL_COLUMNS
 from dmcb.services import reconciliation, sheets, spotrac
+from dmcb.utils import GoogleSheetsManager
+
+
+class TestUtilityConfiguration(unittest.TestCase):
+    def test_sheets_manager_reads_environment_when_initialized(self):
+        with tempfile.TemporaryDirectory() as directory:
+            credentials_path = Path(directory) / "credentials.json"
+            credentials_path.write_text(
+                json.dumps({"client_email": "service@example.test"}),
+                encoding="utf-8",
+            )
+            client = Mock()
+            spreadsheet = Mock()
+            client.open_by_url.return_value = spreadsheet
+            with (
+                patch.dict(
+                    "os.environ",
+                    {
+                        "GOOGLE_SHEETS_CREDENTIALS": str(credentials_path),
+                        "GOOGLE_SHEETS_URL": "https://example.test/sheet",
+                    },
+                ),
+                patch("dmcb.utils.load_dotenv") as load_dotenv,
+                patch("dmcb.utils.gspread.service_account", return_value=client) as service_account,
+            ):
+                manager = GoogleSheetsManager()
+
+        load_dotenv.assert_called_once_with()
+        service_account.assert_called_once_with(filename=str(credentials_path))
+        client.open_by_url.assert_called_once_with("https://example.test/sheet")
+        self.assertIs(manager.sheet, spreadsheet)
+        self.assertEqual(manager.service_account_email, "service@example.test")
 
 
 class TestSpotracServices(unittest.TestCase):

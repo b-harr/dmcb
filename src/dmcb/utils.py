@@ -13,13 +13,6 @@ from dotenv import load_dotenv
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from urllib.parse import urlparse
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
-
-load_dotenv()
-
-GOOGLE_SHEETS_CREDENTIALS = os.getenv("GOOGLE_SHEETS_CREDENTIALS")
-GOOGLE_SHEETS_URL = os.getenv("GOOGLE_SHEETS_URL")
-
 HEADERS = {
     "User-Agent": (
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
@@ -72,8 +65,10 @@ class GoogleSheetsManager:
         spreadsheet_url: str | None = None,
     ):
         try:
-            credentials_path = credentials_path or GOOGLE_SHEETS_CREDENTIALS
-            spreadsheet_url = spreadsheet_url or GOOGLE_SHEETS_URL
+            if not credentials_path or not spreadsheet_url:
+                load_dotenv()
+            credentials_path = credentials_path or os.getenv("GOOGLE_SHEETS_CREDENTIALS")
+            spreadsheet_url = spreadsheet_url or os.getenv("GOOGLE_SHEETS_URL")
             if not credentials_path:
                 raise ValueError("Google Sheets credentials path is not configured.")
             if not spreadsheet_url:
