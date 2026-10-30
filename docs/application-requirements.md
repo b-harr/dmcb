@@ -19,11 +19,14 @@ positions; CSV datasets in `data/`; Makefile workflows; and focused tests.
   identity, NBA team, position, age, and up to five season values.
 - Google Sheets access uses a local service-account JSON file. Existing
   workflows read the `Owned` and `Contracts` tabs. Owner extraction is
-  currently positional rather than based on verified header names.
+  currently positional rather than based on verified header names, but
+  using verified header names would be preferred.
 - The current Spotrac player-detail public helper emits the requested stable
   fields: `Player`, `Player Link`, `Player Key`, `Signed Using`, and `Drafted`.
   Its lower-level parser discovers additional fields from the page, but the
-  public helper discards those.
+  public helper discards those. Used data in .cache/players/ to recommend a
+  list of fields contained by a significant number of players to warrant
+  inclusion.
 - Sports.ws positions and Basketball-Reference statistics already have
   separate pull workflows and CSVs. The existing stats pull chooses its season
   in code and computes additional generic fantasy-point metrics; these should
@@ -38,7 +41,7 @@ league rules and current 16 fantasy franchises are in [docs/README.md](./README.
 
 - **NBA team scope:** Select one NBA team, multiple NBA teams, or all **30
   current NBA teams**. This selection is NBA teams, not the 16 fantasy
-  franchises. Do not claim there are 32 current NBA teams.
+  franchises.
 - **Fantasy Owner:** Associate player records with the DMCB fantasy Owner
   found on the Google Sheets `Owned` tab.
 - **Spotrac team-contract record:** Preserve a structured record with
