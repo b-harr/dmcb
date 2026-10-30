@@ -33,7 +33,7 @@ def scrape_team(
     url = f"https://www.spotrac.com/nba/{team}/yearly"
     soup = utils._save_page(url, f".cache/teams/{team}.html", session=session)
     if soup is None:
-        raise RuntimeError(f"Could not fetch contracts for {team}")
+        raise RuntimeError(f"Could not fetch Spotrac contracts for team {team} from {url}.")
 
     tables = [
         table
@@ -41,18 +41,40 @@ def scrape_team(
         if (table := soup.find("table", {"id": table_id})) is not None
     ]
     if not tables:
-        raise ValueError(f"No contracts tables found for {team}")
+        raise ValueError(
+            f"Spotrac contract tables were not found for team {team} at {url}."
+        )
 
-    headers = [header.text.strip() for header in tables[0].find_all("th")]
+    first_table = tables[0]
+    header_row = first_table.find("thead")
+    if header_row is None:
+        raise ValueError(
+            f"Spotrac contract table is missing its header for team {team} at {url}."
+        )
+    headers = [header.get_text(strip=True) for header in header_row.find_all("th")]
+    if not headers or not any(header.casefold().startswith("player") for header in headers):
+        raise ValueError(
+            f"Spotrac contract table is missing the Player header for team {team} "
+            f"at {url}."
+        )
+    if not first_table.find("tbody"):
+        raise ValueError(
+            f"Spotrac contract table is missing its body for team {team} at {url}."
+        )
     season_headers = [header for header in headers if header.startswith("20")]
     if season_limit is not None:
         season_headers = season_headers[:season_limit]
 
-    data = [
-        row
-        for table in tables
-        for row in _extract_team_contracts(table, season_limit=season_limit)
-    ]
+    try:
+        data = [
+            row
+            for table in tables
+            for row in _extract_team_contracts(table, season_limit=season_limit)
+        ]
+    except (IndexError, ValueError) as error:
+        raise ValueError(
+            f"Could not parse Spotrac contracts for team {team} at {url}: {error}"
+        ) from error
     columns = ["Player", "Player Link", "Position", "Age", *season_headers]
     return pd.DataFrame(data, columns=columns)
 
@@ -97,7 +119,10 @@ def scrape_player(
 
     data = _extract_player_details(soup)
     if data.empty or not data.iloc[0].get("Player"):
-        raise ValueError(f"Spotrac player page did not contain player identity: {url}")
+        raise ValueError(
+            f"Could not parse Spotrac player details for {player or url}: "
+            f"expected player identity in Person JSON-LD or the player profile at {url}."
+        )
     data["Player Key"] = data["Player"].apply(utils.make_player_key)
     legacy_defaults = detail_fields is None
     if "Signed Using" not in data:
@@ -151,14 +176,19 @@ def _extract_team_contracts(
     season_limit: int | None = 5,
 ) -> list[list[str | None]]:
     data: list[list[str | None]] = []
-    for row in table.select("tbody tr"):
+    for row_number, row in enumerate(table.select("tbody tr"), start=1):
         cells = row.find_all("td")
+        if not cells:
+            continue
         player_cell = cells[0]
         player_link = player_cell.find("a")
         player = player_cell.get("data-export", "").strip()
         if not player and player_link:
             player = player_link.get_text(strip=True)
-        player = player or None
+        if not player:
+            raise ValueError(
+                f"contract row {row_number} is missing the player name"
+            )
         link = player_link["href"] if player_link else None
         position_age = player_cell.select_one("div.text-muted")
         if position_age is not None:
