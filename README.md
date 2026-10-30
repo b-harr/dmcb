@@ -13,6 +13,14 @@ Python scripts for collecting NBA player, contract, and position data and syncin
 
 The contract workflow reads the `Owned` and `Contracts` tabs while pulling, to refresh and merge owner information. The stats pull currently requests the 2026 Basketball-Reference totals. Its derived columns include `FP`, `FPPG`, `FPPM`, `MPG`, and `FPR`.
 
+## Commissioner Application
+
+Requirements and a proposed implementation roadmap for a commissioner-facing
+application are documented in [docs/application-requirements.md](docs/application-requirements.md),
+including the refined implementation prompt, confirmed requirements, roadmap,
+and remaining decisions. No application implementation is implied by that
+document.
+
 ## Setup
 
 Use Python 3.11 or newer and install the dependencies in a virtual environment:
