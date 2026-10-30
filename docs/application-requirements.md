@@ -2,9 +2,10 @@
 
 ## Project context
 
-The repository is a Python data-sync toolkit with shared scraping,
-normalization, and Google Sheets helpers in `src/dmcb/utils.py` (also exposed
-through `scripts/utils.py` for compatibility); separate pull
+The repository is a Python data-sync toolkit with shared normalization and
+source helpers in `src/dmcb/utils.py` (also exposed through `scripts/utils.py`
+for compatibility), plus source-specific services such as Spotrac in
+`src/dmcb/services/`; separate pull
 and push scripts for contracts, contract types, player statistics, and
 positions; CSV datasets in `data/`; Makefile workflows; and focused tests.
 

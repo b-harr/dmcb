@@ -76,6 +76,16 @@ class TestUtilityConfiguration(unittest.TestCase):
 
 
 class TestSpotracServices(unittest.TestCase):
+    def test_legacy_scrape_team_import_delegates_to_spotrac_service(self):
+        frame = pd.DataFrame([{"Player": "Test Player"}])
+        with patch.object(spotrac, "scrape_team", return_value=frame) as scrape:
+            result = spotrac.utils.scrape_team("boston-celtics", season_limit=None)
+
+        self.assertIs(result, frame)
+        scrape.assert_called_once_with(
+            "boston-celtics", session=None, season_limit=None
+        )
+
     def test_team_contract_parser_handles_missing_pills_and_all_season_values(self):
         table = BeautifulSoup(
             """
@@ -91,7 +101,7 @@ class TestSpotracServices(unittest.TestCase):
             """,
             "html.parser",
         ).table
-        parsed = spotrac.utils._extract_team_contracts(table, season_limit=None)
+        parsed = spotrac._extract_team_contracts(table, season_limit=None)
         self.assertEqual(parsed[0][4:], ["$1000000", "$0", None])
 
     def test_contract_scrape_preserves_all_years_and_displays_latest_five(self):
@@ -110,7 +120,7 @@ class TestSpotracServices(unittest.TestCase):
             }
         )
 
-        with patch.object(spotrac.utils, "_scrape_team_with_retries", return_value=source):
+        with patch.object(spotrac, "_scrape_team_with_retries", return_value=source):
             result = spotrac.scrape_contracts(["boston-celtics"])
 
         self.assertEqual(len(result.season_columns), 6)
@@ -140,7 +150,7 @@ class TestSpotracServices(unittest.TestCase):
         with (
             patch.object(spotrac.utils, "_save_page", return_value=BeautifulSoup("", "html.parser")),
             patch.object(
-                spotrac.utils,
+                spotrac,
                 "_extract_player_details",
                 side_effect=lambda _soup: parsed.copy(),
             ),
@@ -168,7 +178,7 @@ class TestSpotracServices(unittest.TestCase):
             ]
         )
         player_url = "https://www.spotrac.com/nba/player/_/id/12345/test-player"
-        with patch.object(spotrac.utils, "scrape_players", return_value=source) as scrape:
+        with patch.object(spotrac, "scrape_players", return_value=source) as scrape:
             result = spotrac.scrape_player_details([f" {player_url} "])
 
         self.assertEqual(result.columns.tolist(), [*PLAYER_DETAIL_COLUMNS, "Data Source"])

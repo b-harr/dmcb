@@ -169,6 +169,7 @@ dmcb/
 │   ├── utils.py                Shared library utilities (also exposed via scripts/utils.py)
 │   ├── models/                 Shared data records and schemas
 │   ├── services/               Scraping, reconciliation, and Sheets services
+│   │   ├── spotrac.py          Spotrac scraping and contract services
 │   │   └── google_sheets.py    Shared Google Sheets client
 │   └── ui/                     PySide6 desktop interface
 ├── packaging/windows.iss       Windows installer script
