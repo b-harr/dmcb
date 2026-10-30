@@ -1,6 +1,1 @@
-bs4>=0.0.2
-dotenv>=0.9.9
-gspread>=6.2.1
-nba_api>=1.11.4
-pandas>=3.0.5
-requests>=2.34.2
+-e .

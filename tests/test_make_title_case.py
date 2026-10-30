@@ -13,6 +13,7 @@ class TestMakeTitleCase(unittest.TestCase):
         self.assertEqual(make_title_case("sign and trade deal"), "Sign-and-Trade Deal")
         self.assertEqual(make_title_case("non taxpayer bi annual mle"), "Non-Taxpayer Bi-Annual MLE")
         self.assertEqual(make_title_case("la-lakers"), "LA Lakers")
+        self.assertEqual(make_title_case("la-clippers"), "LA Clippers")
         self.assertEqual(make_title_case("philadelphia-76ers"), "Philadelphia 76ers")
         self.assertEqual(make_title_case("non-bird-rights"), "Non-Bird Rights")
         self.assertEqual(make_title_case("room-mid-level-exception"), "Room Mid-Level Exception")

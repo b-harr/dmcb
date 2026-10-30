@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dmcb"
+version = "0.1.0"
+description = "DMCB fantasy basketball commissioner tools"
+requires-python = ">=3.11"
+dependencies = [
+    "beautifulsoup4>=4.12",
+    "gspread>=6.2",
+    "nba_api>=1.11",
+    "pandas>=2.2",
+    "python-dotenv>=1.0",
+    "requests>=2.31",
+    "PySide6-Essentials>=6.8",
+]
+
+[project.optional-dependencies]
+build = ["pyinstaller>=6.10"]
+
+[project.scripts]
+dmcb = "dmcb.app:main"
+
+[tool.setuptools]
+packages = ["dmcb", "dmcb.models", "dmcb.services", "dmcb.ui", "scripts"]
+package-dir = {"" = "src", "scripts" = "scripts"}

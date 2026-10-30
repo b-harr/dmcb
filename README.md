@@ -17,9 +17,50 @@ The contract workflow reads the `Owned` and `Contracts` tabs while pulling, to r
 
 Requirements and a proposed implementation roadmap for a commissioner-facing
 application are documented in [docs/application-requirements.md](docs/application-requirements.md),
-including the refined implementation prompt, confirmed requirements, roadmap,
-and remaining decisions. No application implementation is implied by that
-document.
+including the confirmed data rules and canonical prompt.
+
+The initial PySide6 desktop app runs from the project environment:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+make run-app
+```
+
+In the app's Settings tab, select the local Google service-account JSON file
+and spreadsheet URL, then save the settings. The app stores the path and URL
+in local application settings, not the credential contents. The `Owned` tab
+must use column A for Owner and column D
+for Player. The `Contracts` tab must contain a `Player Key` header, an `Owner`
+column, and season headers such as `2026-27`. Sheet writes are previewed and
+require confirmation; a timestamped CSV backup is saved under the platform's
+user data directory before writing.
+
+For a graphical installer, install the build extra and build on the target OS
+(PyInstaller does not cross-compile macOS/Windows executables):
+
+```bash
+python -m pip install -e ".[build]"
+```
+
+On macOS, build the `.app` bundle and create a compressed disk image:
+
+```bash
+make build-macos-installer
+```
+
+On Windows, install Inno Setup, then build the executable bundle and setup
+installer from PowerShell or a Make environment:
+
+```powershell
+make build-windows-installer PYTHON=python
+```
+
+On Linux, install the application command with `pipx install .` and launch it
+with `dmcb`. PyInstaller outputs and installers are written to `dist/`.
+macOS distribution outside trusted environments will require code signing and
+notarization; those credentials are intentionally not part of this project.
 
 ## Setup
 

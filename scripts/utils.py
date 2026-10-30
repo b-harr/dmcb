@@ -70,13 +70,24 @@ TEAMS = {
 
 
 class GoogleSheetsManager:
-    def __init__(self):
+    def __init__(
+        self,
+        credentials_path: str | None = None,
+        spreadsheet_url: str | None = None,
+    ):
         try:
-            logging.info("Initializing GoogleSheetsManager...")
-            self.gc = gspread.service_account(filename=GOOGLE_SHEETS_CREDENTIALS)
-            self.sheet = self.gc.open_by_url(GOOGLE_SHEETS_URL)
+            credentials_path = credentials_path or GOOGLE_SHEETS_CREDENTIALS
+            spreadsheet_url = spreadsheet_url or GOOGLE_SHEETS_URL
+            if not credentials_path:
+                raise ValueError("Google Sheets credentials path is not configured.")
+            if not spreadsheet_url:
+                raise ValueError("Google Sheets spreadsheet URL is not configured.")
 
-            with open(GOOGLE_SHEETS_CREDENTIALS, "r") as file:
+            logging.info("Initializing GoogleSheetsManager...")
+            self.gc = gspread.service_account(filename=credentials_path)
+            self.sheet = self.gc.open_by_url(spreadsheet_url)
+
+            with open(credentials_path, "r") as file:
                 credentials = json.load(file)
                 self.service_account_email = credentials.get("client_email")
 
@@ -187,7 +198,11 @@ def make_title_case(text: str) -> str:
 
     return title_text
 
-def scrape_team(team: str, session: requests.Session | None = None) -> pd.DataFrame:
+def scrape_team(
+    team: str,
+    session: requests.Session | None = None,
+    season_limit: int | None = 5,
+) -> pd.DataFrame:
     url = f"https://www.spotrac.com/nba/{team}/yearly"
 
     soup = _save_page(url, f".cache/teams/{team}.html", session=session)
@@ -207,12 +222,13 @@ def scrape_team(team: str, session: requests.Session | None = None) -> pd.DataFr
     # Extract season headers from the first table
     headers = [th.text.strip() for th in tables[0].find_all("th")]
     season_headers = [h for h in headers if h.startswith("20")]
-    season_headers = season_headers[:5]
+    if season_limit is not None:
+        season_headers = season_headers[:season_limit]
 
     # Extract data from all found tables
     data = []
     for table in tables:
-        data.extend(_extract_team_contracts(table))
+        data.extend(_extract_team_contracts(table, season_limit=season_limit))
 
     columns = ["Player", "Player Link", "Position", "Age"] + season_headers
 
@@ -249,26 +265,46 @@ def scrape_teams() -> pd.DataFrame:
 
     return pd.concat(all_data, ignore_index=True) if all_data else pd.DataFrame()
 
-def scrape_player(url: str) -> pd.DataFrame:
+def scrape_player(
+    url: str,
+    detail_fields: list[str] | None = None,
+) -> pd.DataFrame:
     player = "-".join(urlparse(url).path.rstrip("/").split("/")[-2:])
 
     soup = _save_page(url, f".cache/players/{player}.html")
     if soup is None:
-        return pd.DataFrame()
+        raise RuntimeError(f"Could not fetch Spotrac player details: {url}")
     data = _extract_player_details(soup)
+    if data.empty or not data.iloc[0].get("Player"):
+        raise ValueError(f"Spotrac player page did not contain player identity: {url}")
     data["Player Key"] = data["Player"].apply(make_player_key)
-    data["Signed Using"] = data["Signed Using"].replace("", "NA")
-    if "Drafted" not in data.columns:
-        data["Drafted"] = "Undrafted"
+    legacy_defaults = detail_fields is None
+    if "Signed Using" not in data:
+        data["Signed Using"] = ""
+    if legacy_defaults:
+        data["Signed Using"] = data["Signed Using"].replace("", "NA")
+    if "Drafted" not in data:
+        data["Drafted"] = "Undrafted" if legacy_defaults else ""
     columns = ["Player", "Player Link", "Player Key", "Signed Using", "Drafted"]
+    if detail_fields:
+        columns.extend(column for column in detail_fields if column not in columns)
+    for column in columns:
+        if column not in data:
+            data[column] = ""
     return data[columns]
 
-def scrape_players(urls: list[str]) -> pd.DataFrame:
+def scrape_players(
+    urls: list[str],
+    detail_fields: list[str] | None = None,
+) -> pd.DataFrame:
     all_data = []
     failures = []
 
     with ThreadPoolExecutor(max_workers=5) as executor:
-        futures = {executor.submit(scrape_player, url): url for url in urls}
+        futures = {
+            executor.submit(scrape_player, url, detail_fields): url
+            for url in urls
+        }
         for future in as_completed(futures):
             url = futures[future]
             try:
@@ -297,6 +333,8 @@ def scrape_bbref_stats(year: int) -> pd.DataFrame:
     url = f"https://www.basketball-reference.com/leagues/NBA_{year}_totals.html"
 
     soup = _save_page(url, f".cache/stats/bbref-{year}.html")
+    if soup is None:
+        raise RuntimeError(f"Could not fetch Basketball-Reference stats for {year}.")
     table = soup.find("table", {"id": "totals_stats"})
     if not table:
         raise ValueError("Table not found. Ensure the page structure has not changed.")
@@ -437,11 +475,15 @@ def _save_page(url: str, output: str, session: requests.Session | None = None) -
             raise
         return None
     soup = BeautifulSoup(response.content, "html.parser")
+    os.makedirs(os.path.dirname(output), exist_ok=True)
     with open(output, "w", encoding="utf-8") as file:
         file.write(soup.prettify())
     return soup
 
-def _extract_team_contracts(table: BeautifulSoup) -> list[list[str] | None]:
+def _extract_team_contracts(
+    table: BeautifulSoup,
+    season_limit: int | None = 5,
+) -> list[list[str] | None]:
     data = []
     for row in table.select("tbody tr"):
         cells = row.find_all("td")
@@ -469,13 +511,13 @@ def _extract_team_contracts(table: BeautifulSoup) -> list[list[str] | None]:
             pill_value = pill.get_text(strip=True) if pill else None
 
             for status in ("UFA", "RFA", "Two-Way", "Exhibit 10", "Exhibit 9"):
-                if pill_value.startswith(status):
+                if pill_value and pill_value.startswith(status):
                     return status
 
             if export_value == "0":
                 return "$0"
 
-            if pill_value.startswith("$"):
+            if pill_value and pill_value.startswith("$"):
                 return pill_value.replace(",", "")
 
             return None
@@ -484,20 +526,25 @@ def _extract_team_contracts(table: BeautifulSoup) -> list[list[str] | None]:
             _get_contract_value(cell)
             for cell in contract_cells
         ]
-        # Limit to the first 5 seasons of contract values
-        values = values[:5]
+        if season_limit is not None:
+            values = values[:season_limit]
 
         data.append([player, link, position, age, *values])
 
     return data
 
-def _scrape_team_with_retries(team: str) -> pd.DataFrame | None:
+def _scrape_team_with_retries(
+    team: str,
+    season_limit: int | None = 5,
+) -> pd.DataFrame | None:
     with requests.Session() as session:
         session.headers.update(HEADERS)
         for attempt in range(1, MAX_RETRIES + 1):
             try:
-                return scrape_team(team, session=session)
+                return scrape_team(team, session=session, season_limit=season_limit)
             except Exception as e:
+                if isinstance(e, requests.HTTPError) and getattr(e.response, "status_code", None) == 403:
+                    raise
                 if attempt == MAX_RETRIES:
                     raise
                 logging.warning(f"{team} scrape failed ({attempt}/{MAX_RETRIES}), retrying: {e}")
@@ -550,7 +597,7 @@ def _scrape_sportsws_stats() -> pd.DataFrame:
         logging.info(f"Successfully fetched data from {url}")
     except requests.exceptions.RequestException as e:
         logging.error(f"Error fetching data from {url}: {e}")
-        return pd.DataFrame()
+        raise RuntimeError(f"Could not fetch Sports.ws positions from {url}: {e}") from e
 
     soup = BeautifulSoup(response.content, "html.parser")
     players = soup.select("td:first-child a")
