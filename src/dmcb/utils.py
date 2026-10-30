@@ -386,18 +386,21 @@ def scrape_owners(sheet: str, output: str) -> pd.DataFrame:
         sheets_manager = GoogleSheetsManager()
         raw_data = sheets_manager.read_data(sheet)
     except Exception as e:
-        logging.warning(f"Could not read owner data from Google Sheets '{sheet}': {e}")
-        return pd.DataFrame()
+        raise RuntimeError(
+            f"Could not read owner data from Google Sheets worksheet '{sheet}'."
+        ) from e
 
     if not raw_data:
-        return pd.DataFrame()
+        return pd.DataFrame(columns=["Owner", "Player", "Player Key"])
 
     header = raw_data[0]
     rows = raw_data[1:] if len(raw_data) > 1 else []
 
-    if len(header) < 5:
-        logging.warning("Google Sheets 'Contracts' tab does not contain the expected owner column (Q).")
-        return pd.DataFrame()
+    if len(header) < 4:
+        raise ValueError(
+            f"Google Sheets worksheet '{sheet}' must include Owner in column A "
+            "and Player in column D."
+        )
 
     df = pd.DataFrame(rows, columns=[str(col).strip() for col in header])
     df = df.iloc[:, [0, 3]].copy()
@@ -409,9 +412,9 @@ def scrape_owners(sheet: str, output: str) -> pd.DataFrame:
 
     try:
         df.to_csv(output, index=False)
-        logging.info(f"Data saved to {output}")
-    except Exception as e:
-        logging.error(f"Failed to save data to CSV: {e}")
+    except OSError as e:
+        raise OSError(f"Could not save owner data to '{output}': {e}") from e
+    logging.info(f"Data saved to {output}")
 
     return df
 
