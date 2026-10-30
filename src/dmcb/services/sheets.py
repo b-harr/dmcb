@@ -7,8 +7,9 @@ from pathlib import Path
 import pandas as pd
 
 from dmcb.models.records import SheetWritePlan
+from dmcb.services.google_sheets import GoogleSheetsManager
 from dmcb.services.reconciliation import build_sheet_write_plan
-from dmcb.utils import GoogleSheetsManager, make_player_key
+from dmcb.utils import make_player_key
 
 
 class GoogleSheetsService:
@@ -20,10 +21,9 @@ class GoogleSheetsService:
             raise ValueError("Google Sheets spreadsheet URL is required.")
 
         self.manager = GoogleSheetsManager(str(path), spreadsheet_url)
-        self.spreadsheet = self.manager.sheet
 
     def read_values(self, worksheet_name: str) -> list[list[str]]:
-        return self.spreadsheet.worksheet(worksheet_name).get_all_values()
+        return self.manager.read_data(worksheet_name)
 
     def read_owners(self) -> pd.DataFrame:
         values = self.read_values("Owned")
@@ -81,7 +81,7 @@ class GoogleSheetsService:
         plan: SheetWritePlan,
         expected_sheet_values: list[list[str]] | None = None,
     ) -> None:
-        worksheet = self.spreadsheet.worksheet("Contracts")
+        worksheet = self.manager.get_worksheet("Contracts")
         current_values = worksheet.get_all_values()
         if expected_sheet_values is not None and current_values != expected_sheet_values:
             raise RuntimeError(

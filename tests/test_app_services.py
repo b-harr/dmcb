@@ -10,7 +10,8 @@ from bs4 import BeautifulSoup
 
 from dmcb.models.records import PLAYER_DETAIL_COLUMNS
 from dmcb.services import reconciliation, sheets, spotrac
-from dmcb.utils import GoogleSheetsManager, scrape_owners
+from dmcb.services.google_sheets import GoogleSheetsManager
+from dmcb.utils import scrape_owners
 
 
 class TestUtilityConfiguration(unittest.TestCase):
@@ -59,8 +60,11 @@ class TestUtilityConfiguration(unittest.TestCase):
                         "GOOGLE_SHEETS_URL": "https://example.test/sheet",
                     },
                 ),
-                patch("dmcb.utils.load_dotenv") as load_dotenv,
-                patch("dmcb.utils.gspread.service_account", return_value=client) as service_account,
+                patch("dmcb.services.google_sheets.load_dotenv") as load_dotenv,
+                patch(
+                    "dmcb.services.google_sheets.gspread.service_account",
+                    return_value=client,
+                ) as service_account,
             ):
                 manager = GoogleSheetsManager()
 
@@ -497,22 +501,22 @@ class TestContractReconciliation(unittest.TestCase):
             def batch_update(self, *_args, **_kwargs):
                 self.updated = True
 
-        class Spreadsheet:
+        class Manager:
             def __init__(self):
                 self.sheet = Worksheet()
 
-            def worksheet(self, _name):
+            def get_worksheet(self, _name):
                 return self.sheet
 
         service = sheets.GoogleSheetsService.__new__(sheets.GoogleSheetsService)
-        service.spreadsheet = Spreadsheet()
+        service.manager = Manager()
         plan = reconciliation.SheetWritePlan(
             updates=[reconciliation.CellUpdate("A2", "updated")]
         )
 
         with self.assertRaisesRegex(RuntimeError, "changed after the write preview"):
             service.apply_write_plan(plan, expected_sheet_values=[["Player Key"], ["old"]])
-        self.assertFalse(service.spreadsheet.sheet.updated)
+        self.assertFalse(service.manager.sheet.updated)
 
     def test_owned_tab_uses_confirmed_owner_and_player_columns(self):
         service = sheets.GoogleSheetsService.__new__(sheets.GoogleSheetsService)

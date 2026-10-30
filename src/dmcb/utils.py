@@ -1,7 +1,5 @@
 import os
 import logging
-import gspread
-import json
 import re
 import requests
 import time
@@ -9,9 +7,10 @@ import unicodedata
 import pandas as pd
 from bs4 import BeautifulSoup
 from nba_api.stats.endpoints import leaguedashplayerstats
-from dotenv import load_dotenv
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from urllib.parse import urlparse
+
+from dmcb.services.google_sheets import GoogleSheetsManager
 
 HEADERS = {
     "User-Agent": (
@@ -57,81 +56,6 @@ TEAMS = {
     "toronto-raptors", "utah-jazz", "washington-wizards",
 }
 
-
-class GoogleSheetsManager:
-    def __init__(
-        self,
-        credentials_path: str | None = None,
-        spreadsheet_url: str | None = None,
-    ):
-        try:
-            if not credentials_path or not spreadsheet_url:
-                load_dotenv()
-            credentials_path = credentials_path or os.getenv("GOOGLE_SHEETS_CREDENTIALS")
-            spreadsheet_url = spreadsheet_url or os.getenv("GOOGLE_SHEETS_URL")
-            if not credentials_path:
-                raise ValueError("Google Sheets credentials path is not configured.")
-            if not spreadsheet_url:
-                raise ValueError("Google Sheets spreadsheet URL is not configured.")
-
-            logging.info("Initializing GoogleSheetsManager...")
-            self.gc = gspread.service_account(filename=credentials_path)
-            self.sheet = self.gc.open_by_url(spreadsheet_url)
-
-            with open(credentials_path, "r") as file:
-                credentials = json.load(file)
-                self.service_account_email = credentials.get("client_email")
-
-            logging.info(f"Successfully connected to Google Sheets. Service Account Email: {self.service_account_email}")
-        except Exception as e:
-            logging.error(f"Failed to initialize GoogleSheetsManager: {e}")
-            raise
-
-    def get_worksheet(self, sheet: str):
-        try:
-            worksheet = self.sheet.worksheet(sheet)
-            logging.info(f"Accessed worksheet: {sheet}")
-            return worksheet
-        except Exception as e:
-            logging.error(f"Error accessing worksheet '{sheet}': {e}")
-            raise
-
-    def read_data(self, sheet: str):
-        try:
-            worksheet = self.get_worksheet(sheet)
-            data = worksheet.get_all_values()
-            logging.info(f"Read {len(data)} rows from worksheet '{sheet}'.")
-            return data
-        except Exception as e:
-            logging.error(f"Error reading data from worksheet '{sheet}': {e}")
-            raise
-
-    def write_data(self, data: pd.DataFrame, sheet: str, cell: str):
-        try:
-            worksheet = self.get_worksheet(sheet)
-            worksheet.update(cell, data)
-            logging.info(f"Written data to worksheet '{sheet}' starting at '{cell}'.")
-        except Exception as e:
-            logging.error(f"Error writing data to worksheet '{sheet}': {e}")
-            raise
-
-    def clear_data(self, sheet: str):
-        try:
-            worksheet = self.get_worksheet(sheet)
-            worksheet.clear()
-            logging.info(f"Cleared data from worksheet '{sheet}'.")
-        except Exception as e:
-            logging.error(f"Error clearing data in worksheet '{sheet}': {e}")
-            raise
-
-    def clear_range(self, sheet: str, range: str):
-        try:
-            worksheet = self.get_worksheet(sheet)
-            worksheet.batch_clear([range])
-            logging.info(f"Cleared range '{range}' in worksheet '{sheet}'.")
-        except Exception as e:
-            logging.error(f"Error clearing range '{range}' in worksheet '{sheet}': {e}")
-            raise
 
 def make_player_key(name: str) -> str:
     # Remove accents and convert to lowercase
