@@ -8,7 +8,7 @@ import pandas as pd
 
 from dmcb.models.records import SheetWritePlan
 from dmcb.services.reconciliation import build_sheet_write_plan
-from scripts.utils import GoogleSheetsManager, make_player_key
+from dmcb.utils import GoogleSheetsManager, make_player_key
 
 
 class GoogleSheetsService:

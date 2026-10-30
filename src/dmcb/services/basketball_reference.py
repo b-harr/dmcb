@@ -7,7 +7,7 @@ import re
 import pandas as pd
 
 from dmcb.models.records import STATS_SOURCE
-from scripts.utils import make_player_key, scrape_bbref_stats
+from dmcb.utils import make_player_key, scrape_bbref_stats
 
 
 def latest_available_season(archive_directory: str = "data/archive/bbref") -> int:

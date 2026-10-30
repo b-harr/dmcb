@@ -162,10 +162,11 @@ dmcb/
 │   ├── push_positions.py       Publish positions
 │   ├── push_stats.py           Publish stats
 │   ├── push_types.py           Publish contract types
-│   └── utils.py                Shared scraping, formatting, and Sheets utilities
+│   └── utils.py                Compatibility import for dmcb.utils
 ├── src/dmcb/
 │   ├── app.py                  Desktop app entry point
 │   ├── config.py               Local app configuration and backup paths
+│   ├── utils.py                Shared library utilities (also exposed via scripts/utils.py)
 │   ├── models/                 Shared data records and schemas
 │   ├── services/               Scraping, reconciliation, and Sheets services
 │   └── ui/                     PySide6 desktop interface

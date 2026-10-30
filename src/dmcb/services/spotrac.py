@@ -13,7 +13,7 @@ from dmcb.models.records import (
     ContractScrapeResult,
     PLAYER_DETAIL_COLUMNS,
 )
-from scripts import utils
+from dmcb import utils
 
 PLAYER_DETAIL_EXTRA_FIELDS = PLAYER_DETAIL_COLUMNS[5:]
 
