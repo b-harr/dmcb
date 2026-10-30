@@ -6,11 +6,14 @@ from pathlib import Path
 from unittest.mock import Mock, patch
 
 import pandas as pd
+import requests
 from bs4 import BeautifulSoup
 
 from dmcb.models.records import PLAYER_DETAIL_COLUMNS
-from dmcb.services import reconciliation, sheets, spotrac
-from dmcb.utils import GoogleSheetsManager, scrape_owners
+from dmcb.services import reconciliation, sheets, spotrac, sportsws
+from dmcb.services import basketball_reference
+from dmcb.services.google_sheets import GoogleSheetsManager
+from dmcb.utils import scrape_owners
 
 
 class TestUtilityConfiguration(unittest.TestCase):
@@ -59,8 +62,11 @@ class TestUtilityConfiguration(unittest.TestCase):
                         "GOOGLE_SHEETS_URL": "https://example.test/sheet",
                     },
                 ),
-                patch("dmcb.utils.load_dotenv") as load_dotenv,
-                patch("dmcb.utils.gspread.service_account", return_value=client) as service_account,
+                patch("dmcb.services.google_sheets.load_dotenv") as load_dotenv,
+                patch(
+                    "dmcb.services.google_sheets.gspread.service_account",
+                    return_value=client,
+                ) as service_account,
             ):
                 manager = GoogleSheetsManager()
 
@@ -69,9 +75,20 @@ class TestUtilityConfiguration(unittest.TestCase):
         client.open_by_url.assert_called_once_with("https://example.test/sheet")
         self.assertIs(manager.sheet, spreadsheet)
         self.assertEqual(manager.service_account_email, "service@example.test")
+        self.assertIs(GoogleSheetsManager, sheets.GoogleSheetsService)
 
 
 class TestSpotracServices(unittest.TestCase):
+    def test_legacy_scrape_team_import_delegates_to_spotrac_service(self):
+        frame = pd.DataFrame([{"Player": "Test Player"}])
+        with patch.object(spotrac, "scrape_team", return_value=frame) as scrape:
+            result = spotrac.utils.scrape_team("boston-celtics", season_limit=None)
+
+        self.assertIs(result, frame)
+        scrape.assert_called_once_with(
+            "boston-celtics", session=None, season_limit=None
+        )
+
     def test_team_contract_parser_handles_missing_pills_and_all_season_values(self):
         table = BeautifulSoup(
             """
@@ -87,7 +104,7 @@ class TestSpotracServices(unittest.TestCase):
             """,
             "html.parser",
         ).table
-        parsed = spotrac.utils._extract_team_contracts(table, season_limit=None)
+        parsed = spotrac._extract_team_contracts(table, season_limit=None)
         self.assertEqual(parsed[0][4:], ["$1000000", "$0", None])
 
     def test_contract_scrape_preserves_all_years_and_displays_latest_five(self):
@@ -106,7 +123,7 @@ class TestSpotracServices(unittest.TestCase):
             }
         )
 
-        with patch.object(spotrac.utils, "_scrape_team_with_retries", return_value=source):
+        with patch.object(spotrac, "_scrape_team_with_retries", return_value=source):
             result = spotrac.scrape_contracts(["boston-celtics"])
 
         self.assertEqual(len(result.season_columns), 6)
@@ -136,7 +153,7 @@ class TestSpotracServices(unittest.TestCase):
         with (
             patch.object(spotrac.utils, "_save_page", return_value=BeautifulSoup("", "html.parser")),
             patch.object(
-                spotrac.utils,
+                spotrac,
                 "_extract_player_details",
                 side_effect=lambda _soup: parsed.copy(),
             ),
@@ -164,7 +181,7 @@ class TestSpotracServices(unittest.TestCase):
             ]
         )
         player_url = "https://www.spotrac.com/nba/player/_/id/12345/test-player"
-        with patch.object(spotrac.utils, "scrape_players", return_value=source) as scrape:
+        with patch.object(spotrac, "scrape_players", return_value=source) as scrape:
             result = spotrac.scrape_player_details([f" {player_url} "])
 
         self.assertEqual(result.columns.tolist(), [*PLAYER_DETAIL_COLUMNS, "Data Source"])
@@ -172,6 +189,143 @@ class TestSpotracServices(unittest.TestCase):
         self.assertEqual(result.iloc[0]["Country"], "USA")
         scrape.assert_called_once()
         self.assertEqual(scrape.call_args.args[0], [player_url])
+
+
+class TestSportswsService(unittest.TestCase):
+    def test_positions_scraper_parses_and_sorts_player_data(self):
+        response = Mock()
+        response.content = b"""
+            <table><tbody>
+              <tr><td><a href="/nba/z-player">Z Player</a>, BOS, F</td></tr>
+              <tr><td><a href="/nba/a-player">A Player</a>, LAL, G</td></tr>
+              <tr><td><a href="/nba/placeholder-player">Placeholder</a>, BOS, G</td></tr>
+            </tbody></table>
+        """
+        with patch("dmcb.services.sportsws.requests.get", return_value=response):
+            positions = sportsws.get_positions()
+
+        self.assertEqual(positions["Player Key"].tolist(), ["a-player", "z-player"])
+        self.assertEqual(positions["Position"].tolist(), ["G", "F"])
+        self.assertEqual(positions["Data Source"].tolist(), ["Sports.ws", "Sports.ws"])
+
+    def test_positions_scraper_returns_empty_frame_with_schema_when_no_players(self):
+        response = Mock()
+        response.content = b"<html><body>No player table</body></html>"
+        with patch("dmcb.services.sportsws.requests.get", return_value=response):
+            positions = sportsws.scrape_positions()
+
+        self.assertEqual(
+            positions.columns.tolist(),
+            ["Name", "Player Link", "Player Key", "Position"],
+        )
+        self.assertTrue(positions.empty)
+
+    def test_positions_scraper_reports_network_errors(self):
+        with (
+            patch(
+                "dmcb.services.sportsws.requests.get",
+                side_effect=requests.ConnectionError("network unavailable"),
+            ),
+            self.assertRaisesRegex(RuntimeError, "Could not fetch Sports.ws positions"),
+        ):
+            sportsws.scrape_positions()
+
+
+class TestBasketballReferenceService(unittest.TestCase):
+    def test_stats_uses_basketball_reference_and_adds_derived_columns(self):
+        source = pd.DataFrame(
+            [
+                {
+                    "Player": "A Player",
+                    "Player Link": "a-link",
+                    "Team Link": "team-link",
+                },
+                {"Player": "League Average", "Player Link": None, "Team Link": None},
+            ]
+        )
+        with patch.object(
+            basketball_reference, "scrape_bbref_stats", return_value=source
+        ):
+            stats = basketball_reference.get_stats(2027)
+
+        self.assertEqual(stats["Player"].tolist(), ["A Player"])
+        self.assertEqual(stats.iloc[0]["Data Source"], "Basketball-Reference")
+        self.assertEqual(stats.iloc[0]["Player Key"], "a-player")
+
+    def test_stats_raises_when_basketball_reference_returns_no_rows(self):
+        with (
+            patch.object(
+            basketball_reference, "scrape_bbref_stats", return_value=pd.DataFrame()
+            ),
+            self.assertRaisesRegex(
+                RuntimeError, "Basketball-Reference returned no stats"
+            ),
+        ):
+            basketball_reference.get_stats(2027)
+
+    def test_stats_raises_when_basketball_reference_data_lacks_player_column(self):
+        with (
+            patch.object(
+                basketball_reference,
+                "scrape_bbref_stats",
+                return_value=pd.DataFrame([{"Name": "A Player"}]),
+            ),
+            self.assertRaisesRegex(ValueError, "missing the Player column"),
+        ):
+            basketball_reference.get_stats(2027)
+
+    def test_stats_scraper_extracts_player_and_team_links(self):
+        soup = BeautifulSoup(
+            """
+            <table id="totals_stats">
+              <thead><tr><th>Rk</th><th>Player</th><th>Pos</th><th>Age</th><th>Tm</th></tr></thead>
+              <tbody><tr>
+                <th>1</th>
+                <td><a href="/players/a/a_player.html">A Player</a></td>
+                <td>G</td>
+                <td>25</td>
+                <td><a href="/teams/BOS/2026.html">BOS</a></td>
+              </tr></tbody>
+            </table>
+            """,
+            "html.parser",
+        )
+        with patch("dmcb.utils._save_page", return_value=soup) as save_page:
+            stats = basketball_reference.scrape_bbref_stats(2026)
+
+        self.assertEqual(stats.columns.tolist(), [
+            "Player", "Pos", "Age", "Tm", "Player Link", "Team Link"
+        ])
+        self.assertEqual(stats.iloc[0]["Player"], "A Player")
+        self.assertEqual(
+            stats.iloc[0]["Player Link"],
+            "https://www.basketball-reference.com/players/a/a_player.html",
+        )
+        self.assertEqual(
+            stats.iloc[0]["Team Link"],
+            "https://www.basketball-reference.com/teams/BOS/2026.html",
+        )
+        save_page.assert_called_once_with(
+            "https://www.basketball-reference.com/leagues/NBA_2026_totals.html",
+            ".cache/stats/bbref-2026.html",
+        )
+
+    def test_legacy_stats_scraper_delegates_to_service(self):
+        frame = pd.DataFrame([{"Player": "A Player"}])
+        with patch.object(
+            basketball_reference, "scrape_bbref_stats", return_value=frame
+        ) as scrape:
+            result = basketball_reference.utils.scrape_bbref_stats(2026)
+
+        self.assertIs(result, frame)
+        scrape.assert_called_once_with(2026)
+
+    def test_stats_scraper_reports_missing_table(self):
+        with (
+            patch("dmcb.utils._save_page", return_value=BeautifulSoup("<html></html>", "html.parser")),
+            self.assertRaisesRegex(ValueError, "Table not found"),
+        ):
+            basketball_reference.scrape_bbref_stats(2026)
 
 
 class TestContractReconciliation(unittest.TestCase):
@@ -497,22 +651,34 @@ class TestContractReconciliation(unittest.TestCase):
             def batch_update(self, *_args, **_kwargs):
                 self.updated = True
 
-        class Spreadsheet:
+        class Manager:
             def __init__(self):
                 self.sheet = Worksheet()
 
-            def worksheet(self, _name):
+            def get_worksheet(self, _name):
                 return self.sheet
 
         service = sheets.GoogleSheetsService.__new__(sheets.GoogleSheetsService)
-        service.spreadsheet = Spreadsheet()
+        service.sheet = Manager()
+        service.get_worksheet = service.sheet.get_worksheet
         plan = reconciliation.SheetWritePlan(
             updates=[reconciliation.CellUpdate("A2", "updated")]
         )
 
         with self.assertRaisesRegex(RuntimeError, "changed after the write preview"):
             service.apply_write_plan(plan, expected_sheet_values=[["Player Key"], ["old"]])
-        self.assertFalse(service.spreadsheet.sheet.updated)
+        self.assertFalse(service.sheet.sheet.updated)
+
+    def test_legacy_manager_write_and_clear_keyword_forms(self):
+        worksheet = Mock()
+        service = sheets.GoogleSheetsService.__new__(sheets.GoogleSheetsService)
+        service.get_worksheet = Mock(return_value=worksheet)
+
+        service.write_data([["value"]], sheet_name="Contracts", start_cell="A1")
+        service.clear_range(sheet_name="Types", range_to_clear="A:E")
+
+        worksheet.update.assert_called_once_with("A1", [["value"]])
+        worksheet.batch_clear.assert_called_once_with(["A:E"])
 
     def test_owned_tab_uses_confirmed_owner_and_player_columns(self):
         service = sheets.GoogleSheetsService.__new__(sheets.GoogleSheetsService)

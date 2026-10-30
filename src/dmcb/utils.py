@@ -1,17 +1,12 @@
 import os
 import logging
-import gspread
-import json
 import re
 import requests
-import time
 import unicodedata
 import pandas as pd
 from bs4 import BeautifulSoup
-from nba_api.stats.endpoints import leaguedashplayerstats
-from dotenv import load_dotenv
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from urllib.parse import urlparse
+
+from dmcb.services.google_sheets import GoogleSheetsManager
 
 HEADERS = {
     "User-Agent": (
@@ -21,8 +16,6 @@ HEADERS = {
     )
 }
 TIMEOUT = 10
-RETRY_DELAY = 5
-MAX_RETRIES = 3
 
 PLAYER_KEY_OVERRIDES = {
     "cam-thomas": "cameron-thomas",
@@ -57,81 +50,6 @@ TEAMS = {
     "toronto-raptors", "utah-jazz", "washington-wizards",
 }
 
-
-class GoogleSheetsManager:
-    def __init__(
-        self,
-        credentials_path: str | None = None,
-        spreadsheet_url: str | None = None,
-    ):
-        try:
-            if not credentials_path or not spreadsheet_url:
-                load_dotenv()
-            credentials_path = credentials_path or os.getenv("GOOGLE_SHEETS_CREDENTIALS")
-            spreadsheet_url = spreadsheet_url or os.getenv("GOOGLE_SHEETS_URL")
-            if not credentials_path:
-                raise ValueError("Google Sheets credentials path is not configured.")
-            if not spreadsheet_url:
-                raise ValueError("Google Sheets spreadsheet URL is not configured.")
-
-            logging.info("Initializing GoogleSheetsManager...")
-            self.gc = gspread.service_account(filename=credentials_path)
-            self.sheet = self.gc.open_by_url(spreadsheet_url)
-
-            with open(credentials_path, "r") as file:
-                credentials = json.load(file)
-                self.service_account_email = credentials.get("client_email")
-
-            logging.info(f"Successfully connected to Google Sheets. Service Account Email: {self.service_account_email}")
-        except Exception as e:
-            logging.error(f"Failed to initialize GoogleSheetsManager: {e}")
-            raise
-
-    def get_worksheet(self, sheet: str):
-        try:
-            worksheet = self.sheet.worksheet(sheet)
-            logging.info(f"Accessed worksheet: {sheet}")
-            return worksheet
-        except Exception as e:
-            logging.error(f"Error accessing worksheet '{sheet}': {e}")
-            raise
-
-    def read_data(self, sheet: str):
-        try:
-            worksheet = self.get_worksheet(sheet)
-            data = worksheet.get_all_values()
-            logging.info(f"Read {len(data)} rows from worksheet '{sheet}'.")
-            return data
-        except Exception as e:
-            logging.error(f"Error reading data from worksheet '{sheet}': {e}")
-            raise
-
-    def write_data(self, data: pd.DataFrame, sheet: str, cell: str):
-        try:
-            worksheet = self.get_worksheet(sheet)
-            worksheet.update(cell, data)
-            logging.info(f"Written data to worksheet '{sheet}' starting at '{cell}'.")
-        except Exception as e:
-            logging.error(f"Error writing data to worksheet '{sheet}': {e}")
-            raise
-
-    def clear_data(self, sheet: str):
-        try:
-            worksheet = self.get_worksheet(sheet)
-            worksheet.clear()
-            logging.info(f"Cleared data from worksheet '{sheet}'.")
-        except Exception as e:
-            logging.error(f"Error clearing data in worksheet '{sheet}': {e}")
-            raise
-
-    def clear_range(self, sheet: str, range: str):
-        try:
-            worksheet = self.get_worksheet(sheet)
-            worksheet.batch_clear([range])
-            logging.info(f"Cleared range '{range}' in worksheet '{sheet}'.")
-        except Exception as e:
-            logging.error(f"Error clearing range '{range}' in worksheet '{sheet}': {e}")
-            raise
 
 def make_player_key(name: str) -> str:
     # Remove accents and convert to lowercase
@@ -194,192 +112,42 @@ def scrape_team(
     session: requests.Session | None = None,
     season_limit: int | None = 5,
 ) -> pd.DataFrame:
-    url = f"https://www.spotrac.com/nba/{team}/yearly"
+    from dmcb.services.spotrac import scrape_team as implementation
 
-    soup = _save_page(url, f".cache/teams/{team}.html", session=session)
-    if soup is None:
-        raise RuntimeError(f"Could not fetch contracts for {team}")
-
-    # Find both active and pending contract tables
-    tables = []
-    for table_id in ["dataTable-active", "dataTable-pending"]:
-        table = soup.find("table", {"id": table_id})
-        if table is not None:
-            tables.append(table)
-
-    if not tables:
-        raise ValueError(f"No contracts tables found for {team}")
-
-    # Extract season headers from the first table
-    headers = [th.text.strip() for th in tables[0].find_all("th")]
-    season_headers = [h for h in headers if h.startswith("20")]
-    if season_limit is not None:
-        season_headers = season_headers[:season_limit]
-
-    # Extract data from all found tables
-    data = []
-    for table in tables:
-        data.extend(_extract_team_contracts(table, season_limit=season_limit))
-
-    columns = ["Player", "Player Link", "Position", "Age"] + season_headers
-
-    return pd.DataFrame(data, columns=columns)
+    return implementation(team, session=session, season_limit=season_limit)
 
 def scrape_teams() -> pd.DataFrame:
-    all_data = []
-    failures = []
+    from dmcb.services.spotrac import scrape_teams as implementation
 
-    with ThreadPoolExecutor(max_workers=6) as executor:
-        futures = {
-            executor.submit(_scrape_team_with_retries, team): team
-            for team in TEAMS
-        }
-
-        for future in as_completed(futures):
-            team = futures[future]
-            try:
-                df = future.result()
-                if df is None or df.empty:
-                    failures.append(f"{team}: no data returned")
-                    logging.error(f"{team} returned no data")
-                    continue
-
-                df["Team"] = team
-                all_data.append(df)
-                logging.info(f"✔ Finished {team}")
-            except Exception as e:
-                logging.error(f"{team} failed: {e}")
-                failures.append(f"{team}: {e}")
-
-    if failures:
-        raise RuntimeError("One or more teams failed to scrape: " + "; ".join(failures))
-
-    return pd.concat(all_data, ignore_index=True) if all_data else pd.DataFrame()
+    return implementation()
 
 def scrape_player(
     url: str,
     detail_fields: list[str] | None = None,
 ) -> pd.DataFrame:
-    player = "-".join(urlparse(url).path.rstrip("/").split("/")[-2:])
+    from dmcb.services.spotrac import scrape_player as implementation
 
-    soup = _save_page(url, f".cache/players/{player}.html")
-    if soup is None:
-        raise RuntimeError(f"Could not fetch Spotrac player details: {url}")
-    data = _extract_player_details(soup)
-    if data.empty or not data.iloc[0].get("Player"):
-        raise ValueError(f"Spotrac player page did not contain player identity: {url}")
-    data["Player Key"] = data["Player"].apply(make_player_key)
-    legacy_defaults = detail_fields is None
-    if "Signed Using" not in data:
-        data["Signed Using"] = ""
-    if legacy_defaults:
-        data["Signed Using"] = data["Signed Using"].replace("", "NA")
-    if "Drafted" not in data:
-        data["Drafted"] = "Undrafted" if legacy_defaults else ""
-    columns = ["Player", "Player Link", "Player Key", "Signed Using", "Drafted"]
-    if detail_fields:
-        columns.extend(column for column in detail_fields if column not in columns)
-    for column in columns:
-        if column not in data:
-            data[column] = ""
-    return data[columns]
+    return implementation(url, detail_fields=detail_fields)
 
 def scrape_players(
     urls: list[str],
     detail_fields: list[str] | None = None,
 ) -> pd.DataFrame:
-    all_data = []
-    failures = []
+    from dmcb.services.spotrac import scrape_players as implementation
 
-    with ThreadPoolExecutor(max_workers=5) as executor:
-        futures = {
-            executor.submit(scrape_player, url, detail_fields): url
-            for url in urls
-        }
-        for future in as_completed(futures):
-            url = futures[future]
-            try:
-                df = future.result()
-                if not df.empty:
-                    all_data.append(df)
-                    logging.info(f"✔ Finished {url}")
-                else:
-                    failures.append(f"{url}: no data returned")
-                    logging.error(f"{url} returned no data")
-            except Exception as e:
-                logging.error(f"{url} failed: {e}")
-                failures.append(f"{url}: {e}")
-
-    if failures:
-        raise RuntimeError("One or more players failed to scrape: " + "; ".join(failures))
-
-    return pd.concat(all_data, ignore_index=True) if all_data else pd.DataFrame()
+    return implementation(urls, detail_fields=detail_fields)
 
 def scrape_positions() -> pd.DataFrame:
-    df = _scrape_sportsws_stats()
-    df = _process_sportsws_data(df)
-    return df
+    from dmcb.services.sportsws import scrape_positions as implementation
+
+    return implementation()
 
 def scrape_bbref_stats(year: int) -> pd.DataFrame:
-    url = f"https://www.basketball-reference.com/leagues/NBA_{year}_totals.html"
+    from dmcb.services.basketball_reference import (
+        scrape_bbref_stats as implementation,
+    )
 
-    soup = _save_page(url, f".cache/stats/bbref-{year}.html")
-    if soup is None:
-        raise RuntimeError(f"Could not fetch Basketball-Reference stats for {year}.")
-    table = soup.find("table", {"id": "totals_stats"})
-    if not table:
-        raise ValueError("Table not found. Ensure the page structure has not changed.")
-
-    headers = [th.get_text() for th in table.find("thead").find_all("th")][1:]
-    headers.extend(["Player Link", "Team Link"])
-    rows = table.find("tbody").find_all("tr")
-
-    data = []
-    for row in rows:
-        if row.find("td"):
-            row_data = [td.get_text() for td in row.find_all("td")]
-            links = row.find_all("a")
-            player_link, team_link = None, None
-
-            for link in links:
-                href = link.get("href", "")
-                if "/players/" in href:
-                    player_link = "https://www.basketball-reference.com" + href
-                elif "/teams/" in href:
-                    team_link = "https://www.basketball-reference.com" + href
-
-            row_data.append(player_link)
-            row_data.append(team_link)
-            data.append(row_data)
-
-    return pd.DataFrame(data, columns=headers)
-
-def scrape_nba_stats(year: int) -> pd.DataFrame:
-    season_str = f"{year-1}-{str(year)[-2:]}"  # e.g., 2027 => 2026-27
-
-    stats = leaguedashplayerstats.LeagueDashPlayerStats(season=season_str)
-    df = stats.get_data_frames()[0]
-
-    df = df.dropna(subset=["PLAYER_NAME"])
-
-    df.rename(columns={
-        "PLAYER_NAME": "Player",
-        "TEAM_ABBREVIATION": "Team",
-        "GP": "G",
-        "MIN": "MP",
-        "PTS": "PTS",
-        "REB": "TRB",
-        "AST": "AST",
-        "STL": "STL",
-        "BLK": "BLK",
-        "TO": "TOV",
-        "PF": "PF"
-    }, inplace=True)
-
-    column_order = ["Player", "Team", "G", "MP", "PTS", "TRB", "AST", "STL", "BLK", "TOV", "PF"]
-    df = df[column_order]
-
-    return df
+    return implementation(year)
 
 def scrape_owners(sheet: str, output: str) -> pd.DataFrame:
     try:
@@ -478,150 +246,30 @@ def _extract_team_contracts(
     table: BeautifulSoup,
     season_limit: int | None = 5,
 ) -> list[list[str] | None]:
-    data = []
-    for row in table.select("tbody tr"):
-        cells = row.find_all("td")
+    from dmcb.services.spotrac import _extract_team_contracts as implementation
 
-        player_cell = cells[0]
-        player_link = player_cell.find("a")
-        player = player_cell.get("data-export", "").strip()
-        if not player and player_link:
-            player = player_link.get_text(strip=True)
-        player = player or None
-        link = player_link["href"] if player_link else None
-        position_age = player_cell.select_one("div.text-muted")
-        if position_age is not None:
-            match = re.search(r"\(([^,]+),\s*(\d+)\)", position_age.get_text(strip=True))
-            position, age = match.groups() if match else (None, None)
-            contract_cells = cells[1:]
-        else:
-            position = cells[1].get("data-export", "").strip() or None
-            age = cells[2].get("data-export", "").strip() or None
-            contract_cells = cells[3:]
-
-        def _get_contract_value(cell: BeautifulSoup) -> str | None:
-            export_value = cell.get("data-export").strip() if cell.get("data-export") else None
-            pill = cell.select_one(".pill-start")
-            pill_value = pill.get_text(strip=True) if pill else None
-
-            for status in ("UFA", "RFA", "Two-Way", "Exhibit 10", "Exhibit 9"):
-                if pill_value and pill_value.startswith(status):
-                    return status
-
-            if export_value == "0":
-                return "$0"
-
-            if pill_value and pill_value.startswith("$"):
-                return pill_value.replace(",", "")
-
-            return None
-
-        values = [
-            _get_contract_value(cell)
-            for cell in contract_cells
-        ]
-        if season_limit is not None:
-            values = values[:season_limit]
-
-        data.append([player, link, position, age, *values])
-
-    return data
+    return implementation(table, season_limit=season_limit)
 
 def _scrape_team_with_retries(
     team: str,
     season_limit: int | None = 5,
 ) -> pd.DataFrame | None:
-    with requests.Session() as session:
-        session.headers.update(HEADERS)
-        for attempt in range(1, MAX_RETRIES + 1):
-            try:
-                return scrape_team(team, session=session, season_limit=season_limit)
-            except Exception as e:
-                if isinstance(e, requests.HTTPError) and getattr(e.response, "status_code", None) == 403:
-                    raise
-                if attempt == MAX_RETRIES:
-                    raise
-                logging.warning(f"{team} scrape failed ({attempt}/{MAX_RETRIES}), retrying: {e}")
-                time.sleep(RETRY_DELAY)
+    from dmcb.services.spotrac import _scrape_team_with_retries as implementation
+
+    return implementation(team, season_limit=season_limit)
 
 def _extract_player_details(soup: BeautifulSoup) -> pd.DataFrame:
-    details = {}
+    from dmcb.services.spotrac import _extract_player_details as implementation
 
-    for script in soup.select('script[type="application/ld+json"]'):
-        try:
-            structured_data = json.loads(script.string or script.get_text())
-        except json.JSONDecodeError:
-            continue
-
-        if structured_data.get("@type") == "Person":
-            details["Player"] = structured_data.get("name")
-            details["Player Link"] = structured_data.get("url")
-            break
-
-    profile = soup.select_one("#main article > div.row.m-0.mt-0.pb-3")
-    if profile is not None:
-        team_position = profile.select_one(".col-md-12.text-yellow.fw-bold span")
-        if team_position is not None:
-            team_link = team_position.find("a")
-            if team_link is not None:
-                team = team_link.get_text(strip=True)
-                details["Team"] = team
-                details["Position"] = team_position.get_text(" ", strip=True).replace(team, "", 1).strip(" ,")
-
-        for label in profile.find_all("strong"):
-            value = label.find_next_sibling("span")
-            if value is not None:
-                details[label.get_text(strip=True).rstrip(":")] = value.get_text(" ", strip=True)
-
-    table = soup.find("div", class_="contract-details")
-    if table is not None:
-        for label, value in zip(
-            table.find_all("div", class_="label"),
-            table.find_all("div", class_="value"),
-        ):
-            details[label.get_text(strip=True).rstrip(":")] = value.get_text(strip=True)
-
-    return pd.DataFrame([details])
+    return implementation(soup)
 
 def _scrape_sportsws_stats() -> pd.DataFrame:
-    url = "https://sports.ws/nba/stats"
-    try:
-        response = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
-        response.raise_for_status()
-        logging.info(f"Successfully fetched data from {url}")
-    except requests.exceptions.RequestException as e:
-        logging.error(f"Error fetching data from {url}: {e}")
-        raise RuntimeError(f"Could not fetch Sports.ws positions from {url}: {e}") from e
+    from dmcb.services.sportsws import _scrape_sportsws_stats as implementation
 
-    soup = BeautifulSoup(response.content, "html.parser")
-    players = soup.select("td:first-child a")
+    return implementation()
 
-    # Extract data into a list of dictionaries then convert to a DataFrame
-    player_data = []
-    for player in players:
-        name = player.get_text(strip=True)
-        link = "https://sports.ws" + player.get("href")
-        sibling = player.next_sibling
-        tail = sibling.strip() if isinstance(sibling, str) else ""
-
-        player_data.append({"Name": name, "Player Link": link, "Tail": tail})
-    df = pd.DataFrame(player_data)
-
-    # Split the Tail into Team and Position then drop Tail
-    df[["Team", "Position"]] = df["Tail"].str.extract(r",\s*([\w*]+),\s*(\w+)")
-    df = df.drop(columns=["Tail"])
-
-    # Filter rows where Name is blank
-    df = df[df["Name"].str.strip().ne(".")]  # Exclude blank/whitespace-only names
-    df = df.dropna(subset=["Name"])  # Also drop rows where Name is NaN
-    df = df.fillna("")
-
-    return df
 
 def _process_sportsws_data(df: pd.DataFrame) -> pd.DataFrame:
-    df["Player Key"] = df["Player Link"].str.replace(
-        "https://sports.ws/nba/", "", regex=False
-    ).apply(make_player_key)
-    column_order = ["Name", "Player Link", "Player Key", "Position"]
-    df = df[~df["Player Key"].str.contains("placeholder", case=False, na=False)].copy()
-    return df[column_order].sort_values(by="Player Key").reset_index(drop=True)
+    from dmcb.services.sportsws import _process_sportsws_data as implementation
+
+    return implementation(df)

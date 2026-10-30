@@ -72,7 +72,6 @@
 * Sports.ws: https://sports.ws/fantasy-basketball
 * Spotrac: https://www.spotrac.com/nba
 * Basketball-Reference: https://www.basketball-reference.com/leagues/NBA_2026_totals.html
-* NBA.com: https://www.nba.com/stats/leaders?PerMode=Totals&SeasonType=Regular+Season
 * GitHub: https://github.com/b-harr/dmcb
 
 ---
