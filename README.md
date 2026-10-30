@@ -50,6 +50,9 @@ On macOS, build the `.app` bundle and create a compressed disk image:
 make build-macos-installer
 ```
 
+The desktop app and packaged builds use the artwork in `icon.iconset`, with
+platform-specific bundle icons for macOS and Windows.
+
 On Windows, install Inno Setup, then build the executable bundle and setup
 installer from PowerShell or a Make environment:
 
