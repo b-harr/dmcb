@@ -144,38 +144,11 @@ def scrape_positions() -> pd.DataFrame:
     return implementation()
 
 def scrape_bbref_stats(year: int) -> pd.DataFrame:
-    url = f"https://www.basketball-reference.com/leagues/NBA_{year}_totals.html"
+    from dmcb.services.basketball_reference import (
+        scrape_bbref_stats as implementation,
+    )
 
-    soup = _save_page(url, f".cache/stats/bbref-{year}.html")
-    if soup is None:
-        raise RuntimeError(f"Could not fetch Basketball-Reference stats for {year}.")
-    table = soup.find("table", {"id": "totals_stats"})
-    if not table:
-        raise ValueError("Table not found. Ensure the page structure has not changed.")
-
-    headers = [th.get_text() for th in table.find("thead").find_all("th")][1:]
-    headers.extend(["Player Link", "Team Link"])
-    rows = table.find("tbody").find_all("tr")
-
-    data = []
-    for row in rows:
-        if row.find("td"):
-            row_data = [td.get_text() for td in row.find_all("td")]
-            links = row.find_all("a")
-            player_link, team_link = None, None
-
-            for link in links:
-                href = link.get("href", "")
-                if "/players/" in href:
-                    player_link = "https://www.basketball-reference.com" + href
-                elif "/teams/" in href:
-                    team_link = "https://www.basketball-reference.com" + href
-
-            row_data.append(player_link)
-            row_data.append(team_link)
-            data.append(row_data)
-
-    return pd.DataFrame(data, columns=headers)
+    return implementation(year)
 
 def scrape_nba_stats(year: int) -> pd.DataFrame:
     season_str = f"{year-1}-{str(year)[-2:]}"  # e.g., 2027 => 2026-27

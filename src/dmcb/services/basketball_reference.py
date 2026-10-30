@@ -6,8 +6,36 @@ import re
 
 import pandas as pd
 
+from dmcb import utils
 from dmcb.models.records import STATS_SOURCE
-from dmcb.utils import make_player_key, scrape_bbref_stats
+
+
+def scrape_bbref_stats(year: int) -> pd.DataFrame:
+    url = f"https://www.basketball-reference.com/leagues/NBA_{year}_totals.html"
+    soup = utils._save_page(url, f".cache/stats/bbref-{year}.html")
+    if soup is None:
+        raise RuntimeError(f"Could not fetch Basketball-Reference stats for {year}.")
+
+    table = soup.find("table", {"id": "totals_stats"})
+    if not table:
+        raise ValueError("Table not found. Ensure the page structure has not changed.")
+
+    headers = [header.get_text() for header in table.find("thead").find_all("th")][1:]
+    headers.extend(["Player Link", "Team Link"])
+    rows = []
+    for row in table.find("tbody").find_all("tr"):
+        if not row.find("td"):
+            continue
+        values = [cell.get_text() for cell in row.find_all("td")]
+        player_link, team_link = None, None
+        for link in row.find_all("a"):
+            href = link.get("href", "")
+            if "/players/" in href:
+                player_link = "https://www.basketball-reference.com" + href
+            elif "/teams/" in href:
+                team_link = "https://www.basketball-reference.com" + href
+        rows.append([*values, player_link, team_link])
+    return pd.DataFrame(rows, columns=headers)
 
 
 def latest_available_season(archive_directory: str = "data/archive/bbref") -> int:
@@ -26,7 +54,7 @@ def get_stats(season_end_year: int) -> pd.DataFrame:
         raise RuntimeError(f"Basketball-Reference returned no stats for {season_end_year}.")
 
     stats = stats[stats["Player"].fillna("").ne("League Average")].copy()
-    stats["Player Key"] = stats["Player"].fillna("").map(make_player_key)
+    stats["Player Key"] = stats["Player"].fillna("").map(utils.make_player_key)
     stats["Data Source"] = STATS_SOURCE
     return stats
 

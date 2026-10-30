@@ -11,6 +11,7 @@ from bs4 import BeautifulSoup
 
 from dmcb.models.records import PLAYER_DETAIL_COLUMNS
 from dmcb.services import reconciliation, sheets, spotrac, sportsws
+from dmcb.services import basketball_reference
 from dmcb.services.google_sheets import GoogleSheetsManager
 from dmcb.utils import scrape_owners
 
@@ -227,6 +228,61 @@ class TestSportswsService(unittest.TestCase):
             self.assertRaisesRegex(RuntimeError, "Could not fetch Sports.ws positions"),
         ):
             sportsws.scrape_positions()
+
+
+class TestBasketballReferenceService(unittest.TestCase):
+    def test_stats_scraper_extracts_player_and_team_links(self):
+        soup = BeautifulSoup(
+            """
+            <table id="totals_stats">
+              <thead><tr><th>Rk</th><th>Player</th><th>Pos</th><th>Age</th><th>Tm</th></tr></thead>
+              <tbody><tr>
+                <th>1</th>
+                <td><a href="/players/a/a_player.html">A Player</a></td>
+                <td>G</td>
+                <td>25</td>
+                <td><a href="/teams/BOS/2026.html">BOS</a></td>
+              </tr></tbody>
+            </table>
+            """,
+            "html.parser",
+        )
+        with patch("dmcb.utils._save_page", return_value=soup) as save_page:
+            stats = basketball_reference.scrape_bbref_stats(2026)
+
+        self.assertEqual(stats.columns.tolist(), [
+            "Player", "Pos", "Age", "Tm", "Player Link", "Team Link"
+        ])
+        self.assertEqual(stats.iloc[0]["Player"], "A Player")
+        self.assertEqual(
+            stats.iloc[0]["Player Link"],
+            "https://www.basketball-reference.com/players/a/a_player.html",
+        )
+        self.assertEqual(
+            stats.iloc[0]["Team Link"],
+            "https://www.basketball-reference.com/teams/BOS/2026.html",
+        )
+        save_page.assert_called_once_with(
+            "https://www.basketball-reference.com/leagues/NBA_2026_totals.html",
+            ".cache/stats/bbref-2026.html",
+        )
+
+    def test_legacy_stats_scraper_delegates_to_service(self):
+        frame = pd.DataFrame([{"Player": "A Player"}])
+        with patch.object(
+            basketball_reference, "scrape_bbref_stats", return_value=frame
+        ) as scrape:
+            result = basketball_reference.utils.scrape_bbref_stats(2026)
+
+        self.assertIs(result, frame)
+        scrape.assert_called_once_with(2026)
+
+    def test_stats_scraper_reports_missing_table(self):
+        with (
+            patch("dmcb.utils._save_page", return_value=BeautifulSoup("<html></html>", "html.parser")),
+            self.assertRaisesRegex(ValueError, "Table not found"),
+        ):
+            basketball_reference.scrape_bbref_stats(2026)
 
 
 class TestContractReconciliation(unittest.TestCase):
