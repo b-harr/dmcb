@@ -103,8 +103,12 @@ Features:
 3. Compare Spotrac contracts with the `Contracts` tab. Compare numeric salary
    representations by amount, serialize them in CSV without grouping commas
    (e.g. `$1000000`), and treat Spotrac status text separately. Show old/new
-   values and season, distinguish changed/missing/unmatched/ambiguous/
-   unchanged, and never treat missing as zero.
+   values and season, and classify rows as `Signed` (Spotrac player absent from
+   Sheets), `Waived` (Sheets player absent from Spotrac), `Extended` (a new
+   populated season after the latest season with an existing contract value),
+   `Changed` (other value differences), or `Unchanged` (equal values or both
+   missing). Flag duplicate/ambiguous player keys separately and never treat
+   missing values as zero.
 4. Support explicit writes to `Contracts`: match existing rows by `Player
    Key`, update data columns A-L in place, preserve Owner in M and unrelated
    cells, append new player keys only after showing a preview, and never

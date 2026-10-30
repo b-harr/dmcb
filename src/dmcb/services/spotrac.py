@@ -75,7 +75,8 @@ def scrape_contracts(teams: Iterable[str], display_seasons: int = 5) -> Contract
     all_years["Data Source"] = CONTRACT_SOURCE
     all_years = all_years.sort_values(["Player Key", "Team"], ignore_index=True)
 
-    display_columns = [*CONTRACT_IDENTITY_COLUMNS, *season_columns[:display_seasons]]
+    displayed_seasons = list(reversed(season_columns[:display_seasons]))
+    display_columns = [*CONTRACT_IDENTITY_COLUMNS, *displayed_seasons]
     displayed = all_years.reindex(columns=display_columns).copy()
     displayed["Data Source"] = CONTRACT_SOURCE
     return ContractScrapeResult(all_years, displayed, season_columns)

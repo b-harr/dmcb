@@ -307,30 +307,17 @@ class MainWindow(QMainWindow):
         owners, comparisons = result
         self.owners = owners
         self.comparisons = comparisons
-        owner_lookup, ambiguous_owners = reconciliation.owner_index(owners)
+        owner_lookup, _ = reconciliation.owner_index(owners)
         self.contracts = self.contracts.copy()
         self.contracts["Owner"] = self.contracts["Player Key"].map(owner_lookup).fillna("")
-        self.contracts["Owner Match"] = self.contracts["Player Key"].map(
-            lambda key: "ambiguous" if key in ambiguous_owners else ("matched" if key in owner_lookup else "unmatched")
-        )
+        self.contracts["Owner Match"] = self.contracts["Owner"]
         self.contracts["Owner Source"] = self.contracts["Owner"].map(
             lambda owner: OWNER_SOURCE if owner else ""
         )
         self._populate_table(self.contract_table, self.contracts)
         self._populate_table(self.comparison_table, comparisons)
         self.contract_views.setCurrentWidget(self.comparison_table)
-        discrepant = int(
-            comparisons["Status"].isin(
-                [
-                    "changed",
-                    "missing_sheet_value",
-                    "missing_spotrac_value",
-                    "unmatched_spotrac",
-                    "unmatched_sheet",
-                    "ambiguous",
-                ]
-            ).sum()
-        )
+        discrepant = int(comparisons["Status"].ne("Unchanged").sum())
         self.status_label.setText(f"Comparison complete: {discrepant} discrepancy/status row(s).")
 
     def _prepare_sheet_write(self) -> None:
@@ -495,10 +482,7 @@ class MainWindow(QMainWindow):
         if self.comparisons is None:
             self._show_error("Compare contracts with Google Sheets before exporting.")
             return
-        discrepancies = self.comparisons[
-            self.comparisons["Status"].ne("unchanged")
-            & self.comparisons["Status"].ne("missing_both")
-        ]
+        discrepancies = self.comparisons[self.comparisons["Status"].ne("Unchanged")]
         self._export_frame_data(discrepancies, "contract_discrepancies.csv")
 
     def _export_league_data(self) -> None:

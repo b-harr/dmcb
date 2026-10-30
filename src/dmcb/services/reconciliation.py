@@ -133,14 +133,10 @@ def compare_contracts(
         old_row = existing_by_key.get(key, {})
         player = _clean(new_row.get("Player")) or _clean(old_row.get("Player"))
         owner = owner_by_key.get(key, "")
-        owner_match = (
-            "ambiguous"
-            if key in duplicate_owners
-            else ("matched" if owner else "unmatched")
-        )
+        owner_match = owner
         team = _clean(new_row.get("Team")) or _clean(old_row.get("Team"))
         if key in duplicate_spotrac or key in duplicate_existing or key in duplicate_owners:
-            status = "ambiguous"
+            status = "Ambiguous"
             seasons_to_report = seasons or [""]
             for season in seasons_to_report:
                 comparisons.append(
@@ -156,7 +152,7 @@ def compare_contracts(
                 comparisons.append(
                     _comparison_row(
                         player, key, owner, team, season,
-                        _clean(old_row.get(season)), "", "unmatched_spotrac",
+                        _clean(old_row.get(season)), "", "Waived",
                         owner_match,
                     )
                 )
@@ -167,27 +163,40 @@ def compare_contracts(
                 comparisons.append(
                     _comparison_row(
                         player, key, owner, team, season, "",
-                        _clean(new_row.get(season)), "unmatched_sheet",
+                        _clean(new_row.get(season)), "Signed",
                         owner_match,
                     )
                 )
             continue
 
+        latest_existing_season = max(
+            (
+                season_sort(season)
+                for season in existing_seasons
+                if normalized_contract_value(old_row.get(season))[0] != "missing"
+            ),
+            default=-1,
+        )
         for season in seasons:
             old_value = _clean(old_row.get(season))
             new_value = _clean(new_row.get(season))
             old_normalized = normalized_contract_value(old_value)
             new_normalized = normalized_contract_value(new_value)
             if old_normalized[0] == "missing" and new_normalized[0] == "missing":
-                status = "missing_both"
+                status = "Unchanged"
             elif old_normalized[0] == "missing":
-                status = "missing_sheet_value"
+                status = (
+                    "Extended"
+                    if latest_existing_season >= 0
+                    and season_sort(season) > latest_existing_season
+                    else "Changed"
+                )
             elif new_normalized[0] == "missing":
-                status = "missing_spotrac_value"
+                status = "Changed"
             elif old_normalized == new_normalized:
-                status = "unchanged"
+                status = "Unchanged"
             else:
-                status = "changed"
+                status = "Changed"
             comparisons.append(
                 _comparison_row(
                     player, key, owner, team, season, old_value, new_value, status,

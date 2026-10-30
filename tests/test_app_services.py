@@ -54,7 +54,7 @@ class TestSpotracServices(unittest.TestCase):
         self.assertNotIn("2022-23", result.displayed.columns)
         self.assertEqual(
             [column for column in result.displayed if column.startswith("20")],
-            ["2027-28", "2026-27", "2025-26", "2024-25", "2023-24"],
+            ["2023-24", "2024-25", "2025-26", "2026-27", "2027-28"],
         )
         self.assertEqual(result.displayed.iloc[0]["Player Key"], "test-player")
 
@@ -153,9 +153,10 @@ class TestContractReconciliation(unittest.TestCase):
         )
         statuses = dict(zip(result["Season"], result["Status"]))
 
-        self.assertEqual(statuses["2026-27"], "unchanged")
-        self.assertEqual(statuses["2027-28"], "changed")
+        self.assertEqual(statuses["2026-27"], "Unchanged")
+        self.assertEqual(statuses["2027-28"], "Changed")
         self.assertNotIn("unselected-player", result["Player Key"].tolist())
+        self.assertEqual(result["Owner Match"].tolist(), ["GM", "GM"])
         self.assertEqual(reconciliation.format_contract_value("$1,000,000"), "$1000000")
 
     def test_missing_and_unmatched_records_are_explicit(self):
@@ -170,8 +171,64 @@ class TestContractReconciliation(unittest.TestCase):
         )
 
         statuses = dict(zip(result["Player Key"], result["Status"]))
-        self.assertEqual(statuses["new-player"], "unmatched_sheet")
-        self.assertEqual(statuses["old-player"], "unmatched_spotrac")
+        self.assertEqual(statuses["new-player"], "Signed")
+        self.assertEqual(statuses["old-player"], "Waived")
+        self.assertEqual(result["Owner Match"].tolist(), ["", ""])
+
+    def test_comparison_classifies_missing_values_and_extensions(self):
+        spotrac_data = pd.DataFrame(
+            [
+                {
+                    "Player": "Extended Player",
+                    "Player Key": "extended-player",
+                    "2026-27": "$11",
+                    "2027-28": "$12",
+                },
+                {
+                    "Player": "Blank Player",
+                    "Player Key": "blank-player",
+                    "2026-27": "",
+                },
+                {
+                    "Player": "Missing Spotrac",
+                    "Player Key": "missing-spotrac",
+                    "2026-27": "",
+                },
+            ]
+        )
+        existing = pd.DataFrame(
+            [
+                {
+                    "Player": "Extended Player",
+                    "Player Key": "extended-player",
+                    "2026-27": "$10",
+                    "2027-28": "",
+                },
+                {
+                    "Player": "Blank Player",
+                    "Player Key": "blank-player",
+                    "2026-27": "",
+                },
+                {
+                    "Player": "Missing Spotrac",
+                    "Player Key": "missing-spotrac",
+                    "2026-27": "$13",
+                },
+            ]
+        )
+
+        result = reconciliation.compare_contracts(
+            spotrac_data, existing, pd.DataFrame(columns=["Player Key", "Owner"])
+        )
+        statuses = {
+            (row["Player Key"], row["Season"]): row["Status"]
+            for row in result.to_dict("records")
+        }
+
+        self.assertEqual(statuses[("extended-player", "2026-27")], "Changed")
+        self.assertEqual(statuses[("extended-player", "2027-28")], "Extended")
+        self.assertEqual(statuses[("blank-player", "2026-27")], "Unchanged")
+        self.assertEqual(statuses[("missing-spotrac", "2026-27")], "Changed")
 
     def test_contract_comparison_ignores_older_seasons_outside_spotrac_projection(self):
         spotrac_data = pd.DataFrame(
@@ -202,7 +259,7 @@ class TestContractReconciliation(unittest.TestCase):
         result = reconciliation.compare_contracts(
             spotrac_data, pd.DataFrame(), pd.DataFrame()
         )
-        self.assertEqual(result["Status"].tolist(), ["ambiguous"])
+        self.assertEqual(result["Status"].tolist(), ["Ambiguous"])
 
     def test_write_plan_preserves_owner_skips_missing_and_appends_new_keys(self):
         headers = [
