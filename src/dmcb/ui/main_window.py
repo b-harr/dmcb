@@ -282,9 +282,10 @@ class MainWindow(QMainWindow):
         )
 
     def _compare_contracts(self) -> None:
-        if self.contracts is None:
+        if self.contracts is None or self.all_contracts is None:
             self._show_error("Fetch Spotrac contracts before comparing.")
             return
+        all_contracts = self.all_contracts
         selected_teams = self.selected_team_slugs
         credentials_path = self.credentials_path.text().strip()
         spreadsheet_url = self.spreadsheet_url.text().strip()
@@ -294,7 +295,7 @@ class MainWindow(QMainWindow):
             owners = manager.read_owners()
             _, existing = manager.read_contracts()
             comparisons = reconciliation.compare_contracts(
-                self.contracts,
+                all_contracts,
                 existing,
                 owners,
                 selected_teams=selected_teams,
@@ -315,7 +316,7 @@ class MainWindow(QMainWindow):
             lambda owner: OWNER_SOURCE if owner else ""
         )
         self._populate_table(self.contract_table, self.contracts)
-        self._populate_table(self.comparison_table, comparisons)
+        self._populate_table(self.comparison_table, comparisons, enable_sorting=False)
         self.contract_views.setCurrentWidget(self.comparison_table)
         discrepant = int(comparisons["Status"].ne("Unchanged").sum())
         self.status_label.setText(f"Comparison complete: {discrepant} discrepancy/status row(s).")
@@ -533,7 +534,9 @@ class MainWindow(QMainWindow):
         return pd.DataFrame(rows, columns=headers)
 
     @staticmethod
-    def _populate_table(table: QTableWidget, frame: pd.DataFrame) -> None:
+    def _populate_table(
+        table: QTableWidget, frame: pd.DataFrame, enable_sorting: bool = True
+    ) -> None:
         table.setSortingEnabled(False)
         table.clear()
         table.setColumnCount(len(frame.columns))
@@ -544,7 +547,7 @@ class MainWindow(QMainWindow):
                 text = "" if pd.isna(value) else str(value)
                 table.setItem(row_number, column_number, QTableWidgetItem(text))
         table.resizeColumnsToContents()
-        table.setSortingEnabled(True)
+        table.setSortingEnabled(enable_sorting)
 
     def closeEvent(self, event: QCloseEvent) -> None:
         if self.current_job is not None and self.current_job.isRunning():

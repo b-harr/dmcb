@@ -152,11 +152,11 @@ class TestContractReconciliation(unittest.TestCase):
             spotrac_data, existing, owners, selected_teams=["boston-celtics"]
         )
         statuses = dict(zip(result["Season"], result["Status"]))
-
-        self.assertEqual(statuses["2026-27"], "Unchanged")
         self.assertEqual(statuses["2027-28"], "Changed")
+        self.assertNotIn("2026-27", statuses)
+        self.assertNotIn("Unchanged", result["Status"].tolist())
         self.assertNotIn("unselected-player", result["Player Key"].tolist())
-        self.assertEqual(result["Owner Match"].tolist(), ["GM", "GM"])
+        self.assertEqual(result["Owner Match"].tolist(), ["GM"])
         self.assertEqual(reconciliation.format_contract_value("$1,000,000"), "$1000000")
 
     def test_missing_and_unmatched_records_are_explicit(self):
@@ -227,12 +227,70 @@ class TestContractReconciliation(unittest.TestCase):
 
         self.assertEqual(statuses[("extended-player", "2026-27")], "Changed")
         self.assertEqual(statuses[("extended-player", "2027-28")], "Extended")
-        self.assertEqual(statuses[("blank-player", "2026-27")], "Unchanged")
+        self.assertNotIn(("blank-player", "2026-27"), statuses)
         self.assertEqual(statuses[("missing-spotrac", "2026-27")], "Changed")
+        self.assertNotIn("Unchanged", result["Status"].tolist())
+
+    def test_comparison_keeps_oldest_five_seasons_and_sorts_by_key_then_season(self):
+        seasons = [
+            "2019-20",
+            "2020-21",
+            "2021-22",
+            "2022-23",
+            "2023-24",
+            "2024-25",
+            "2025-26",
+        ]
+        spotrac_data = pd.DataFrame(
+            [
+                {
+                    "Player": "Z Player",
+                    "Player Key": "z-player",
+                    **{season: "$2" for season in seasons},
+                },
+                {
+                    "Player": "A Player",
+                    "Player Key": "a-player",
+                    **{season: "$2" for season in seasons},
+                },
+            ]
+        )
+        existing = pd.DataFrame(
+            [
+                {
+                    "Player": "Z Player",
+                    "Player Key": "z-player",
+                    **{season: "$1" for season in seasons},
+                },
+                {
+                    "Player": "A Player",
+                    "Player Key": "a-player",
+                    **{season: "$1" for season in seasons},
+                },
+            ]
+        )
+
+        result = reconciliation.compare_contracts(
+            spotrac_data, existing, pd.DataFrame(columns=["Player Key", "Owner"])
+        )
+
+        self.assertEqual(
+            result["Season"].drop_duplicates().tolist(),
+            seasons[:5],
+        )
+        self.assertEqual(
+            result[["Player Key", "Season"]].values.tolist(),
+            [
+                [key, season]
+                for key in ["a-player", "z-player"]
+                for season in seasons[:5]
+            ],
+        )
+        self.assertNotIn("Unchanged", result["Status"].tolist())
 
     def test_contract_comparison_ignores_older_seasons_outside_spotrac_projection(self):
         spotrac_data = pd.DataFrame(
-            [{"Player": "Player", "Player Key": "player", "2026-27": "$10"}]
+            [{"Player": "Player", "Player Key": "player", "2026-27": "$11"}]
         )
         existing = pd.DataFrame(
             [
