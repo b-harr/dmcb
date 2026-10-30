@@ -200,12 +200,14 @@ def merge_owners(df: pd.DataFrame) -> pd.DataFrame:
 
     merged_df = df.copy()
     if "Player Key" in merged_df.columns and "Player Key" in owners.columns and "Owner" in owners.columns:
-        owner_data = owners[["Player Key", "Owner"]].copy()
-        owner_data["Player Key"] = owner_data["Player Key"].astype("string").str.strip()
-        owner_data = owner_data.dropna(subset=["Player Key"])
-        owner_data = owner_data[owner_data["Player Key"] != ""]
-        owner_lookup = owner_data.drop_duplicates("Player Key", keep="first").set_index("Player Key")["Owner"]
+        from dmcb.services.reconciliation import owner_index
 
+        owner_lookup, ambiguous_keys = owner_index(owners)
+        if ambiguous_keys:
+            logging.warning(
+                "Skipped owner assignments for ambiguous Player Key(s): %s",
+                ", ".join(sorted(ambiguous_keys)),
+            )
         merged_df["Player Key"] = merged_df["Player Key"].astype("string").str.strip()
         merged_df["Owner"] = merged_df["Player Key"].map(owner_lookup).fillna("")
         logging.info("Merged owner data into contracts DataFrame.")
