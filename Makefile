@@ -22,6 +22,7 @@
 # ============================================================
 
 .DEFAULT_GOAL := default
+PYTHON ?= python3
 
 # -------------------------
 # Contracts
@@ -74,6 +75,21 @@ push-positions:
 
 update-positions:
 	python3 scripts/pull_positions.py && python3 scripts/push_positions.py
+
+# -------------------------
+# Desktop app
+# -------------------------
+run-app:
+	PYTHONPATH=src:. $(PYTHON) -m dmcb.app
+
+build-gui:
+	$(PYTHON) -m PyInstaller --noconfirm --windowed --name DMCB --paths src --paths . src/dmcb/app.py
+
+build-macos-installer: build-gui
+	hdiutil create -volname "DMCB Commissioner" -srcfolder dist/DMCB.app -ov -format UDZO dist/DMCB-macos.dmg
+
+build-windows-installer: build-gui
+	ISCC packaging/windows.iss
 
 # -------------------------
 # Groups
