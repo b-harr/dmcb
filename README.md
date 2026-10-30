@@ -128,6 +128,9 @@ perform data syncs or write to Google Sheets. Individual scripts can also be
 run with `python scripts/pull_types.py` or `python scripts/push_types.py`.
 Set `PYTHON` when invoking Make to select a different interpreter, for example
 `make pull-contracts PYTHON=python`.
+Pull and push failures are reported to the caller with a nonzero exit status.
+Push scripts reject missing, unreadable, or empty CSVs before clearing a Sheets
+tab; update commands stop if the pull step fails.
 
 Packaging tools can be overridden with `PYINSTALLER`, `HDIUTIL`, and `ISCC` if
 they are not available under their default command names.

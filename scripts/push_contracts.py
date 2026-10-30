@@ -34,15 +34,13 @@ logging.basicConfig(
 
 def load_contracts(input_csv: str) -> pd.DataFrame:
     if not os.path.exists(input_csv):
-        logging.warning(f"Input CSV file does not exist: {input_csv}")
-        return pd.DataFrame()
+        raise FileNotFoundError(f"Input contracts CSV does not exist: {input_csv}")
     try:
         df = pd.read_csv(input_csv)
         logging.info(f"Loaded contracts data from {input_csv}.")
         return df
     except Exception as e:
-        logging.error(f"Failed to load contracts data from CSV: {e}")
-        return pd.DataFrame()
+        raise RuntimeError(f"Failed to load contracts data from {input_csv}") from e
 
 def process_data(df: pd.DataFrame) -> pd.DataFrame:
         # Identify salary/year columns (those starting with '20', e.g., '2025-26')
@@ -63,6 +61,9 @@ def process_data(df: pd.DataFrame) -> pd.DataFrame:
         return df
 
 def update_sheets(df: pd.DataFrame, sheet: str, range: str) -> None:
+        if df.replace(r"^\s*$", pd.NA, regex=True).dropna(how="all").empty:
+            raise ValueError(f"Refusing to clear Google Sheets '{sheet}' with empty contracts data")
+
         logging.info(f"Updating Google Sheets: {sheet}")
         try:
             timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
@@ -79,7 +80,8 @@ def update_sheets(df: pd.DataFrame, sheet: str, range: str) -> None:
             sheets_manager.write_data([[f"{timestamp}"]], sheet, cell="AB2")
             logging.info("Wrote timestamp to Google Sheets.")
         except Exception as e:
-            logging.error(f"Failed to update Google Sheets: {e}")
+            logging.exception("Failed to update Google Sheets '%s'", sheet)
+            raise RuntimeError(f"Failed to update Google Sheets '{sheet}'") from e
 
 def main():
     contracts = load_contracts(input_path)

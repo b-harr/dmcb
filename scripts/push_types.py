@@ -35,21 +35,18 @@ logging.basicConfig(
 
 def load_contract_types(input_csv: str) -> pd.DataFrame:
     if not os.path.exists(input_csv):
-        logging.warning("Input CSV file does not exist: %s", input_csv)
-        return pd.DataFrame()
+        raise FileNotFoundError(f"Input contract types CSV does not exist: {input_csv}")
     try:
         df = pd.read_csv(input_csv)
         logging.info("Loaded contract types data from %s.", input_csv)
         return df
     except Exception as error:
-        logging.error("Failed to load contract types data from CSV: %s", error)
-        return pd.DataFrame()
+        raise RuntimeError(f"Failed to load contract types data from {input_csv}") from error
 
 
 def update_sheets(df: pd.DataFrame, sheet: str) -> None:
-    if df.empty:
-        logging.warning("No contract types data provided; Google Sheets was not changed.")
-        return
+    if df.replace(r"^\s*$", pd.NA, regex=True).dropna(how="all").empty:
+        raise ValueError(f"Refusing to clear Google Sheets '{sheet}' with empty contract types data")
 
     try:
         sheets_manager = GoogleSheetsManager()
@@ -68,7 +65,8 @@ def update_sheets(df: pd.DataFrame, sheet: str) -> None:
         )
         logging.info("Google Sheets '%s' updated successfully.", sheet)
     except Exception as error:
-        logging.error("Failed to update Google Sheets: %s", error)
+        logging.exception("Failed to update Google Sheets '%s'", sheet)
+        raise RuntimeError(f"Failed to update Google Sheets '{sheet}'") from error
 
 
 def main() -> None:
