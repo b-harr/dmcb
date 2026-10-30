@@ -6,10 +6,11 @@ from pathlib import Path
 from unittest.mock import Mock, patch
 
 import pandas as pd
+import requests
 from bs4 import BeautifulSoup
 
 from dmcb.models.records import PLAYER_DETAIL_COLUMNS
-from dmcb.services import reconciliation, sheets, spotrac
+from dmcb.services import reconciliation, sheets, spotrac, sportsws
 from dmcb.services.google_sheets import GoogleSheetsManager
 from dmcb.utils import scrape_owners
 
@@ -186,6 +187,46 @@ class TestSpotracServices(unittest.TestCase):
         self.assertEqual(result.iloc[0]["Country"], "USA")
         scrape.assert_called_once()
         self.assertEqual(scrape.call_args.args[0], [player_url])
+
+
+class TestSportswsService(unittest.TestCase):
+    def test_positions_scraper_parses_and_sorts_player_data(self):
+        response = Mock()
+        response.content = b"""
+            <table><tbody>
+              <tr><td><a href="/nba/z-player">Z Player</a>, BOS, F</td></tr>
+              <tr><td><a href="/nba/a-player">A Player</a>, LAL, G</td></tr>
+              <tr><td><a href="/nba/placeholder-player">Placeholder</a>, BOS, G</td></tr>
+            </tbody></table>
+        """
+        with patch("dmcb.services.sportsws.requests.get", return_value=response):
+            positions = sportsws.get_positions()
+
+        self.assertEqual(positions["Player Key"].tolist(), ["a-player", "z-player"])
+        self.assertEqual(positions["Position"].tolist(), ["G", "F"])
+        self.assertEqual(positions["Data Source"].tolist(), ["Sports.ws", "Sports.ws"])
+
+    def test_positions_scraper_returns_empty_frame_with_schema_when_no_players(self):
+        response = Mock()
+        response.content = b"<html><body>No player table</body></html>"
+        with patch("dmcb.services.sportsws.requests.get", return_value=response):
+            positions = sportsws.scrape_positions()
+
+        self.assertEqual(
+            positions.columns.tolist(),
+            ["Name", "Player Link", "Player Key", "Position"],
+        )
+        self.assertTrue(positions.empty)
+
+    def test_positions_scraper_reports_network_errors(self):
+        with (
+            patch(
+                "dmcb.services.sportsws.requests.get",
+                side_effect=requests.ConnectionError("network unavailable"),
+            ),
+            self.assertRaisesRegex(RuntimeError, "Could not fetch Sports.ws positions"),
+        ):
+            sportsws.scrape_positions()
 
 
 class TestContractReconciliation(unittest.TestCase):

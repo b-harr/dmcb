@@ -139,9 +139,9 @@ def scrape_players(
     return implementation(urls, detail_fields=detail_fields)
 
 def scrape_positions() -> pd.DataFrame:
-    df = _scrape_sportsws_stats()
-    df = _process_sportsws_data(df)
-    return df
+    from dmcb.services.sportsws import scrape_positions as implementation
+
+    return implementation()
 
 def scrape_bbref_stats(year: int) -> pd.DataFrame:
     url = f"https://www.basketball-reference.com/leagues/NBA_{year}_totals.html"
@@ -319,44 +319,12 @@ def _extract_player_details(soup: BeautifulSoup) -> pd.DataFrame:
     return implementation(soup)
 
 def _scrape_sportsws_stats() -> pd.DataFrame:
-    url = "https://sports.ws/nba/stats"
-    try:
-        response = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
-        response.raise_for_status()
-        logging.info(f"Successfully fetched data from {url}")
-    except requests.exceptions.RequestException as e:
-        logging.error(f"Error fetching data from {url}: {e}")
-        raise RuntimeError(f"Could not fetch Sports.ws positions from {url}: {e}") from e
+    from dmcb.services.sportsws import _scrape_sportsws_stats as implementation
 
-    soup = BeautifulSoup(response.content, "html.parser")
-    players = soup.select("td:first-child a")
+    return implementation()
 
-    # Extract data into a list of dictionaries then convert to a DataFrame
-    player_data = []
-    for player in players:
-        name = player.get_text(strip=True)
-        link = "https://sports.ws" + player.get("href")
-        sibling = player.next_sibling
-        tail = sibling.strip() if isinstance(sibling, str) else ""
-
-        player_data.append({"Name": name, "Player Link": link, "Tail": tail})
-    df = pd.DataFrame(player_data)
-
-    # Split the Tail into Team and Position then drop Tail
-    df[["Team", "Position"]] = df["Tail"].str.extract(r",\s*([\w*]+),\s*(\w+)")
-    df = df.drop(columns=["Tail"])
-
-    # Filter rows where Name is blank
-    df = df[df["Name"].str.strip().ne(".")]  # Exclude blank/whitespace-only names
-    df = df.dropna(subset=["Name"])  # Also drop rows where Name is NaN
-    df = df.fillna("")
-
-    return df
 
 def _process_sportsws_data(df: pd.DataFrame) -> pd.DataFrame:
-    df["Player Key"] = df["Player Link"].str.replace(
-        "https://sports.ws/nba/", "", regex=False
-    ).apply(make_player_key)
-    column_order = ["Name", "Player Link", "Player Key", "Position"]
-    df = df[~df["Player Key"].str.contains("placeholder", case=False, na=False)].copy()
-    return df[column_order].sort_values(by="Player Key").reset_index(drop=True)
+    from dmcb.services.sportsws import _process_sportsws_data as implementation
+
+    return implementation(df)
