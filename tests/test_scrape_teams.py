@@ -6,10 +6,6 @@ sys.path.append(base_dir)
 
 from dmcb.services.spotrac import scrape_teams
 
-OUTPUT_DIR = os.path.join(".cache", "teams")
-os.makedirs(OUTPUT_DIR, exist_ok=True)
-
-
 def main():
     nba_contracts = scrape_teams()
     print(nba_contracts)

@@ -6,6 +6,7 @@ import json
 import logging
 import os
 from pathlib import Path
+import re
 from typing import Any
 
 import gspread
@@ -173,15 +174,55 @@ class GoogleSheetsService:
         return values, build_sheet_write_plan(spotrac, values, owners)
 
     @staticmethod
-    def save_backup(values: list[list[str]], backup_directory: str | Path) -> Path:
+    def save_backup(
+        values: list[list[str]],
+        backup_directory: str | Path,
+        prefix: str = "contracts",
+        timestamp: str | None = None,
+    ) -> Path:
         directory = Path(backup_directory).expanduser()
         directory.mkdir(parents=True, exist_ok=True)
-        timestamp = datetime.now().strftime("%Y%m%d-%H%M%S-%f")
-        destination = directory / f"contracts-{timestamp}.csv"
+        timestamp = timestamp or datetime.now().strftime("%Y%m%d-%H%M%S-%f")
+        safe_prefix = re.sub(r"[^a-zA-Z0-9_-]+", "-", prefix).strip("-_")
+        if not safe_prefix:
+            raise ValueError("A non-empty backup filename prefix is required.")
+        destination = directory / f"{safe_prefix}-{timestamp}.csv"
         with destination.open("w", newline="", encoding="utf-8") as file:
             writer = csv.writer(file)
             writer.writerows(values)
         return destination
+
+    def backup_before_write(
+        self,
+        sheet: str,
+        outgoing_values: list[list[Any]],
+        backup_directory: str | Path,
+    ) -> tuple[Path, Path]:
+        existing_values = self.read_data(sheet)
+        timestamp = datetime.now().strftime("%Y%m%d-%H%M%S-%f")
+        sheet_prefix = re.sub(r"[^a-zA-Z0-9_-]+", "-", sheet).strip("-_")
+        if not sheet_prefix:
+            raise ValueError("A non-empty worksheet name is required for backups.")
+
+        before_path = self.save_backup(
+            existing_values,
+            backup_directory,
+            prefix=f"{sheet_prefix}-before",
+            timestamp=timestamp,
+        )
+        outgoing_path = self.save_backup(
+            outgoing_values,
+            backup_directory,
+            prefix=f"{sheet_prefix}-outgoing",
+            timestamp=timestamp,
+        )
+        logging.info(
+            "Saved pre-write backups for worksheet %r: %s and %s",
+            sheet,
+            before_path,
+            outgoing_path,
+        )
+        return before_path, outgoing_path
 
     def apply_write_plan(
         self,

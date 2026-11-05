@@ -31,7 +31,7 @@ def scrape_team(
     season_limit: int | None = 5,
 ) -> pd.DataFrame:
     url = f"https://www.spotrac.com/nba/{team}/yearly"
-    soup = utils._save_page(url, f".cache/teams/{team}.html", session=session)
+    soup = utils._fetch_page(url, session=session)
     if soup is None:
         raise RuntimeError(f"Could not fetch Spotrac contracts for team {team} from {url}.")
 
@@ -113,7 +113,7 @@ def scrape_player(
     detail_fields: list[str] | None = None,
 ) -> pd.DataFrame:
     player = "-".join(urlparse(url).path.rstrip("/").split("/")[-2:])
-    soup = utils._save_page(url, f".cache/players/{player}.html")
+    soup = utils._fetch_page(url)
     if soup is None:
         raise RuntimeError(f"Could not fetch Spotrac player details: {url}")
 

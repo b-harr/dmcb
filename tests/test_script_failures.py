@@ -103,7 +103,27 @@ class TestPushFailures(unittest.TestCase):
                     manager.write_data.side_effect = OSError("Sheets unavailable")
                     with self.assertRaisesRegex(RuntimeError, "Failed to update"):
                         updater(frame, *arguments)
+                    manager.backup_before_write.assert_called_once()
                     getattr(manager, clear_name).assert_called_once()
+                    call_names = [call[0] for call in manager.method_calls]
+                    self.assertLess(
+                        call_names.index("backup_before_write"),
+                        call_names.index(clear_name),
+                    )
+
+    def test_backup_failures_abort_before_modifying_sheets(self):
+        frame = pd.DataFrame({"Player": ["Player One"]})
+        for module, updater_name, clear_name, has_range in PUSH_UPDATERS:
+            with self.subTest(updater=module.__name__):
+                updater = getattr(module, updater_name)
+                arguments = ("Contracts", "A1:L751") if has_range else ("Contracts",)
+                with patch.object(module, "GoogleSheetsService") as manager_factory:
+                    manager = manager_factory.return_value
+                    manager.backup_before_write.side_effect = OSError("disk full")
+                    with self.assertRaisesRegex(RuntimeError, "Failed to update"):
+                        updater(frame, *arguments)
+                    getattr(manager, clear_name).assert_not_called()
+                    manager.write_data.assert_not_called()
 
 
 class TestPullFailures(unittest.TestCase):

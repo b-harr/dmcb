@@ -71,7 +71,7 @@ class TestSpotracServices(unittest.TestCase):
         with (
             patch.object(
                 spotrac.utils,
-                "_save_page",
+                "_fetch_page",
                 return_value=BeautifulSoup("<html></html>", "html.parser"),
             ),
             self.assertRaisesRegex(
@@ -87,7 +87,7 @@ class TestSpotracServices(unittest.TestCase):
             "html.parser",
         )
         with (
-            patch.object(spotrac.utils, "_save_page", return_value=page),
+            patch.object(spotrac.utils, "_fetch_page", return_value=page),
             self.assertRaisesRegex(
                 ValueError,
                 r"Spotrac contract table is missing its header for team boston-celtics",
@@ -106,7 +106,7 @@ class TestSpotracServices(unittest.TestCase):
             "html.parser",
         )
         with (
-            patch.object(spotrac.utils, "_save_page", return_value=page),
+            patch.object(spotrac.utils, "_fetch_page", return_value=page),
             self.assertRaisesRegex(
                 ValueError,
                 r"Could not parse Spotrac contracts for team boston-celtics .*contract row 1 is missing the player name",
@@ -158,7 +158,7 @@ class TestSpotracServices(unittest.TestCase):
         )
         url = "https://www.spotrac.com/nba/player/_/id/12345/test-player"
         with (
-            patch.object(spotrac.utils, "_save_page", return_value=BeautifulSoup("", "html.parser")),
+            patch.object(spotrac.utils, "_fetch_page", return_value=BeautifulSoup("", "html.parser")),
             patch.object(
                 spotrac,
                 "_extract_player_details",
@@ -202,7 +202,7 @@ class TestSpotracServices(unittest.TestCase):
         with (
             patch.object(
                 spotrac.utils,
-                "_save_page",
+                "_fetch_page",
                 return_value=BeautifulSoup("<html></html>", "html.parser"),
             ),
             self.assertRaisesRegex(
@@ -336,7 +336,7 @@ class TestBasketballReferenceService(unittest.TestCase):
             """,
             "html.parser",
         )
-        with patch("dmcb.utils._save_page", return_value=soup) as save_page:
+        with patch("dmcb.utils._fetch_page", return_value=soup) as fetch_page:
             stats = basketball_reference.scrape_bbref_stats(2026)
 
         self.assertEqual(stats.columns.tolist(), [
@@ -351,14 +351,13 @@ class TestBasketballReferenceService(unittest.TestCase):
             stats.iloc[0]["Team Link"],
             "https://www.basketball-reference.com/teams/BOS/2026.html",
         )
-        save_page.assert_called_once_with(
-            "https://www.basketball-reference.com/leagues/NBA_2026_totals.html",
-            ".cache/stats/bbref-2026.html",
+        fetch_page.assert_called_once_with(
+            "https://www.basketball-reference.com/leagues/NBA_2026_totals.html"
         )
 
     def test_stats_scraper_reports_missing_table(self):
         with (
-            patch("dmcb.utils._save_page", return_value=BeautifulSoup("<html></html>", "html.parser")),
+            patch("dmcb.utils._fetch_page", return_value=BeautifulSoup("<html></html>", "html.parser")),
             self.assertRaisesRegex(
                 ValueError,
                 r"Basketball-Reference stats table 'totals_stats' was not found for season 2026",
@@ -372,7 +371,7 @@ class TestBasketballReferenceService(unittest.TestCase):
             "html.parser",
         )
         with (
-            patch("dmcb.utils._save_page", return_value=page),
+            patch("dmcb.utils._fetch_page", return_value=page),
             self.assertRaisesRegex(
                 ValueError,
                 r"Basketball-Reference stats table is missing its header for season 2026",
@@ -391,7 +390,7 @@ class TestBasketballReferenceService(unittest.TestCase):
             "html.parser",
         )
         with (
-            patch("dmcb.utils._save_page", return_value=page),
+            patch("dmcb.utils._fetch_page", return_value=page),
             self.assertRaisesRegex(
                 ValueError,
                 r"Basketball-Reference stats row 1 has 1 cells; expected 2 for season 2026 .*basketball-reference.com",
@@ -711,6 +710,31 @@ class TestContractReconciliation(unittest.TestCase):
         self.assertEqual(rows[1], ["Test Player", "GM"])
         self.assertTrue(backup.name.startswith("contracts-"))
         self.assertEqual(backup.suffix, ".csv")
+
+    def test_pre_write_backup_saves_current_sheet_and_outgoing_data(self):
+        service = GoogleSheetsService.__new__(GoogleSheetsService)
+        service.read_data = Mock(return_value=[["Existing"], ["Sheet value"]])
+
+        with tempfile.TemporaryDirectory() as temporary:
+            before_path, outgoing_path = service.backup_before_write(
+                "Contract Types",
+                [["Timestamp"], ["Player"], ["New Player"]],
+                temporary,
+            )
+            with before_path.open(newline="", encoding="utf-8") as file:
+                before_rows = list(csv.reader(file))
+            with outgoing_path.open(newline="", encoding="utf-8") as file:
+                outgoing_rows = list(csv.reader(file))
+
+        self.assertEqual(before_rows, [["Existing"], ["Sheet value"]])
+        self.assertEqual(outgoing_rows, [["Timestamp"], ["Player"], ["New Player"]])
+        self.assertTrue(before_path.name.startswith("Contract-Types-before-"))
+        self.assertTrue(outgoing_path.name.startswith("Contract-Types-outgoing-"))
+        timestamp = before_path.stem.removeprefix("Contract-Types-before-")
+        self.assertEqual(
+            outgoing_path.stem.removeprefix("Contract-Types-outgoing-"), timestamp
+        )
+        service.read_data.assert_called_once_with("Contract Types")
 
     def test_sheets_write_aborts_if_sheet_changed_after_preview(self):
         class Worksheet:

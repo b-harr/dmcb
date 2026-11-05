@@ -7,6 +7,7 @@ base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(base_dir)
 
 from dmcb.services.google_sheets import GoogleSheetsService
+from dmcb.config import AppConfig
 
 LOG_DIR = os.path.join(".logs")
 DATA_DIR = os.path.join("data")
@@ -48,14 +49,26 @@ def update_sheets(df: pd.DataFrame, sheet: str) -> None:
 
     try:
         sheets_manager = GoogleSheetsService()
-        sheets_manager.clear_data(sheet)
-        logging.info(f"Cleared existing data in Google Sheets: {sheet}")
 
         timestamp = logging.Formatter('%(asctime)s').format(logging.LogRecord("", 0, "", 0, "", [], None))
-        sheets_manager.write_data([[f"Last updated {timestamp} by {sheets_manager.service_account_email} from {os.path.basename(__file__)}"]], sheet, cell="A1")
-        logging.info("Added timestamp to Google Sheets.")
-
         write_df = df.replace([pd.NA, None, float("inf"), float("-inf")], "").fillna("")
+        timestamp_row = [
+            f"Last updated {timestamp} by {sheets_manager.service_account_email} "
+            f"from {os.path.basename(__file__)}"
+        ]
+        write_values = [
+            timestamp_row,
+            write_df.columns.tolist(),
+            *write_df.values.tolist(),
+        ]
+        sheets_manager.backup_before_write(
+            sheet, write_values, AppConfig.backup_directory()
+        )
+        sheets_manager.clear_data(sheet)
+        logging.info("Cleared existing data in Google Sheets: %s", sheet)
+
+        sheets_manager.write_data([timestamp_row], sheet, cell="A1")
+        logging.info("Added timestamp to Google Sheets.")
         sheets_manager.write_data([write_df.columns.tolist()] + write_df.values.tolist(), sheet, cell="A2")
         logging.info(f"Data successfully written to Google Sheets: {sheet}")
     except Exception as e:

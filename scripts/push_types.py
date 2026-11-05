@@ -10,6 +10,7 @@ if base_dir not in sys.path:
     sys.path.insert(0, base_dir)
 
 from dmcb.services.google_sheets import GoogleSheetsService
+from dmcb.config import AppConfig
 
 LOG_DIR = os.path.join(".logs")
 DATA_DIR = os.path.join("data")
@@ -50,16 +51,22 @@ def update_sheets(df: pd.DataFrame, sheet: str) -> None:
 
     try:
         sheets_manager = GoogleSheetsService()
-        sheets_manager.clear_range(sheet=sheet, range="A:E")
 
         timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
-        sheets_manager.write_data(
-            [[f"Last updated {timestamp} by {sheets_manager.service_account_email}"]],
-            sheet=sheet,
-            cell="A1",
+        timestamp_row = [f"Last updated {timestamp} by {sheets_manager.service_account_email}"]
+        write_df = df.fillna("")
+        write_values = [
+            timestamp_row,
+            df.columns.tolist(),
+            *write_df.values.tolist(),
+        ]
+        sheets_manager.backup_before_write(
+            sheet, write_values, AppConfig.backup_directory()
         )
+        sheets_manager.clear_range(sheet=sheet, range="A:E")
+        sheets_manager.write_data([timestamp_row], sheet=sheet, cell="A1")
         sheets_manager.write_data(
-            [df.columns.tolist()] + df.fillna("").values.tolist(),
+            [df.columns.tolist()] + write_df.values.tolist(),
             sheet=sheet,
             cell="A2",
         )

@@ -1,4 +1,3 @@
-import os
 import logging
 import re
 import requests
@@ -104,7 +103,7 @@ def make_title_case(text: str) -> str:
 
     return title_text
 
-def _save_page(url: str, output: str, session: requests.Session | None = None) -> BeautifulSoup | None:
+def _fetch_page(url: str, session: requests.Session | None = None) -> BeautifulSoup | None:
     try:
         if session is None:
             response = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
@@ -116,8 +115,4 @@ def _save_page(url: str, output: str, session: requests.Session | None = None) -
         if isinstance(e, requests.HTTPError) and getattr(e.response, "status_code", None) == 403:
             raise
         return None
-    soup = BeautifulSoup(response.content, "html.parser")
-    os.makedirs(os.path.dirname(output), exist_ok=True)
-    with open(output, "w", encoding="utf-8") as file:
-        file.write(soup.prettify())
-    return soup
+    return BeautifulSoup(response.content, "html.parser")
