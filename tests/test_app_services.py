@@ -230,17 +230,14 @@ class TestSportswsService(unittest.TestCase):
         self.assertEqual(positions["Position"].tolist(), ["G", "F"])
         self.assertEqual(positions["Data Source"].tolist(), ["Sports.ws", "Sports.ws"])
 
-    def test_positions_scraper_returns_empty_frame_with_schema_when_no_players(self):
+    def test_positions_fetch_raises_when_no_players_are_returned(self):
         response = Mock()
         response.content = b"<table><tbody></tbody></table>"
-        with patch("dmcb.services.sportsws.requests.get", return_value=response):
-            positions = sportsws.scrape_positions()
-
-        self.assertEqual(
-            positions.columns.tolist(),
-            ["Name", "Player Link", "Player Key", "Position"],
-        )
-        self.assertTrue(positions.empty)
+        with (
+            patch("dmcb.services.sportsws.requests.get", return_value=response),
+            self.assertRaisesRegex(RuntimeError, "returned no player positions"),
+        ):
+            sportsws.get_positions()
 
     def test_positions_scraper_reports_missing_table(self):
         response = Mock()
@@ -249,7 +246,7 @@ class TestSportswsService(unittest.TestCase):
             patch("dmcb.services.sportsws.requests.get", return_value=response),
             self.assertRaisesRegex(ValueError, "Sports.ws stats table was not found"),
         ):
-            sportsws.scrape_positions()
+            sportsws.get_positions()
 
     def test_positions_scraper_reports_malformed_player_row(self):
         response = Mock()
@@ -264,7 +261,7 @@ class TestSportswsService(unittest.TestCase):
                 r"Could not parse Sports.ws player row 1 \(Test Player\).*team, and position",
             ),
         ):
-            sportsws.scrape_positions()
+            sportsws.get_positions()
 
     def test_positions_scraper_reports_network_errors(self):
         with (
@@ -274,7 +271,7 @@ class TestSportswsService(unittest.TestCase):
             ),
             self.assertRaisesRegex(RuntimeError, "Could not fetch Sports.ws positions"),
         ):
-            sportsws.scrape_positions()
+            sportsws.get_positions()
 
 
 class TestBasketballReferenceService(unittest.TestCase):
