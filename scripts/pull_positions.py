@@ -31,9 +31,6 @@ logging.basicConfig(
 )
 
 
-def scrape_sportsws_positions() -> pd.DataFrame:
-    return get_positions()
-
 def merge_fantasy_owners(df: pd.DataFrame) -> pd.DataFrame:
     if df.empty:
         logging.info("Positions DataFrame is empty, returning as is.")
@@ -71,7 +68,7 @@ def save_positions_data(df: pd.DataFrame, output_csv: str) -> None:
         raise RuntimeError(f"Failed to save positions data to {output_csv}") from e
 
 def main():
-    positions = scrape_sportsws_positions()
+    positions = get_positions()
     data = merge_fantasy_owners(positions)
     save_positions_data(data, output_path)
 
