@@ -12,7 +12,7 @@ from dmcb.models.records import STATS_SOURCE
 
 def scrape_bbref_stats(year: int) -> pd.DataFrame:
     url = f"https://www.basketball-reference.com/leagues/NBA_{year}_totals.html"
-    soup = utils._save_page(url, f".cache/stats/bbref-{year}.html")
+    soup = utils._fetch_page(url)
     if soup is None:
         raise RuntimeError(
             f"Could not fetch Basketball-Reference stats for season {year} from {url}."

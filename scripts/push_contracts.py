@@ -8,7 +8,8 @@ import time
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(base_dir)
 
-from scripts.utils import GoogleSheetsManager
+from dmcb.services.google_sheets import GoogleSheetsService
+from dmcb.config import AppConfig
 
 LOG_DIR = os.path.join(".logs")
 DATA_DIR = os.path.join("data")
@@ -67,14 +68,17 @@ def update_sheets(df: pd.DataFrame, sheet: str, range: str) -> None:
         logging.info(f"Updating Google Sheets: {sheet}")
         try:
             timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
-
-            sheets_manager = GoogleSheetsManager()
-            sheets_manager.clear_range(sheet, range)
+            sheets_manager = GoogleSheetsService()
 
             # Exclude the Owner column from the sheet write so it does not overwrite column M
             write_df = df.drop(columns=["Owner"]) if "Owner" in df.columns else df.copy()
+            write_values = [write_df.columns.tolist()] + write_df.values.tolist()
 
-            sheets_manager.write_data([write_df.columns.tolist()] + write_df.values.tolist(), sheet=sheet, cell="A1")
+            sheets_manager.backup_before_write(
+                sheet, write_values, AppConfig.backup_directory()
+            )
+            sheets_manager.clear_range(sheet, range)
+            sheets_manager.write_data(write_values, sheet=sheet, cell="A1")
             logging.info("Google Sheets updated successfully.")
 
             sheets_manager.write_data([[f"{timestamp}"]], sheet, cell="AB2")

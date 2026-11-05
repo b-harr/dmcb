@@ -10,7 +10,8 @@ import requests
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(base_dir)
 
-from scripts import pull_types, utils
+from dmcb import utils
+from scripts import pull_types
 
 
 class TestPullDetails(unittest.TestCase):
@@ -77,7 +78,21 @@ class TestPullDetails(unittest.TestCase):
 
         with patch.object(utils.requests, "get", return_value=response):
             with self.assertRaises(requests.HTTPError):
-                utils._save_page("https://example.com/player", "ignored.html")
+                utils._fetch_page("https://example.com/player")
+
+    def test_fetch_page_does_not_write_html_to_disk(self):
+        response = Mock(content=b"<html><body>Player</body></html>")
+        with tempfile.TemporaryDirectory() as directory:
+            previous_directory = os.getcwd()
+            try:
+                os.chdir(directory)
+                with patch.object(utils.requests, "get", return_value=response):
+                    page = utils._fetch_page("https://example.com/player")
+            finally:
+                os.chdir(previous_directory)
+
+            self.assertEqual(page.body.get_text(), "Player")
+            self.assertEqual(os.listdir(directory), [])
 
     def test_403_stops_player_retries(self):
         error = RuntimeError("403 Client Error: Forbidden for url 'https://example.com'")

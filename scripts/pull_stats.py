@@ -6,7 +6,8 @@ import pandas as pd
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(base_dir)
 
-from scripts.utils import scrape_bbref_stats, make_player_key
+from dmcb.services.basketball_reference import scrape_bbref_stats
+from dmcb.utils import make_player_key
 
 LOG_DIR = os.path.join(".logs")
 DATA_DIR = os.path.join("data")

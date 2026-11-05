@@ -4,11 +4,7 @@ import sys
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(base_dir)
 
-from scripts.utils import scrape_team
-
-OUTPUT_DIR = os.path.join(".cache", "teams")
-os.makedirs(OUTPUT_DIR, exist_ok=True)
-
+from dmcb.services.spotrac import scrape_team
 
 def get_team(team: str = "san-antonio-spurs") -> str:
     return input(f"Enter team name (default: {team}): ") or team

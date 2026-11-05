@@ -31,9 +31,11 @@ def scrape_team(
     season_limit: int | None = 5,
 ) -> pd.DataFrame:
     url = f"https://www.spotrac.com/nba/{team}/yearly"
-    soup = utils._save_page(url, f".cache/teams/{team}.html", session=session)
+    soup = utils._fetch_page(url, session=session)
     if soup is None:
-        raise RuntimeError(f"Could not fetch Spotrac contracts for team {team} from {url}.")
+        raise RuntimeError(
+            f"Could not fetch Spotrac contracts for team {team} from {url}."
+        )
 
     tables = [
         table
@@ -52,7 +54,9 @@ def scrape_team(
             f"Spotrac contract table is missing its header for team {team} at {url}."
         )
     headers = [header.get_text(strip=True) for header in header_row.find_all("th")]
-    if not headers or not any(header.casefold().startswith("player") for header in headers):
+    if not headers or not any(
+        header.casefold().startswith("player") for header in headers
+    ):
         raise ValueError(
             f"Spotrac contract table is missing the Player header for team {team} "
             f"at {url}."
@@ -108,12 +112,81 @@ def scrape_teams() -> pd.DataFrame:
     return pd.concat(all_data, ignore_index=True) if all_data else pd.DataFrame()
 
 
+def available_teams() -> list[str]:
+    return sorted(utils.TEAMS)
+
+
+def scrape_contracts(
+    teams: Iterable[str], display_seasons: int = 5
+) -> ContractScrapeResult:
+    selected = list(dict.fromkeys(teams))
+    if not selected:
+        raise ValueError("Select at least one NBA team.")
+
+    invalid = sorted(set(selected) - utils.TEAMS)
+    if invalid:
+        raise ValueError(f"Unknown NBA team slug(s): {', '.join(invalid)}")
+    if display_seasons < 1:
+        raise ValueError("display_seasons must be positive.")
+
+    frames_by_team: dict[str, pd.DataFrame] = {}
+    failures: list[str] = []
+    with ThreadPoolExecutor(max_workers=min(6, len(selected))) as executor:
+        futures = {
+            executor.submit(_scrape_team_with_retries, team, None): team
+            for team in selected
+        }
+        for future in as_completed(futures):
+            team = futures[future]
+            try:
+                frame = future.result()
+                if frame is None or frame.empty:
+                    failures.append(f"{team}: Spotrac returned no contract data")
+                    continue
+                frame = frame.copy()
+                frame["Player Key"] = (
+                    frame["Player"].fillna("").map(utils.make_player_key)
+                )
+                frame["Team"] = utils.make_title_case(team)
+                frame["Team Link"] = f"https://www.spotrac.com/nba/{team}/yearly"
+                frames_by_team[team] = frame
+            except Exception as error:
+                failures.append(f"{team}: {error}")
+    if failures:
+        raise RuntimeError(
+            "One or more Spotrac team requests failed: " + "; ".join(failures)
+        )
+
+    frames = [frames_by_team[team] for team in selected]
+    all_years = pd.concat(frames, ignore_index=True, sort=False)
+    season_columns = tuple(
+        sorted(
+            (
+                column
+                for column in all_years.columns
+                if re.match(r"^20\d{2}-\d{2}$", str(column))
+            ),
+            key=_season_sort_key,
+            reverse=True,
+        )
+    )
+    all_years = all_years.reindex(columns=[*CONTRACT_IDENTITY_COLUMNS, *season_columns])
+    all_years["Data Source"] = CONTRACT_SOURCE
+    all_years = all_years.sort_values(["Player Key", "Team"], ignore_index=True)
+
+    displayed_seasons = list(reversed(season_columns[:display_seasons]))
+    display_columns = [*CONTRACT_IDENTITY_COLUMNS, *displayed_seasons]
+    displayed = all_years.reindex(columns=display_columns).copy()
+    displayed["Data Source"] = CONTRACT_SOURCE
+    return ContractScrapeResult(all_years, displayed, season_columns)
+
+
 def scrape_player(
     url: str,
     detail_fields: list[str] | None = None,
 ) -> pd.DataFrame:
     player = "-".join(urlparse(url).path.rstrip("/").split("/")[-2:])
-    soup = utils._save_page(url, f".cache/players/{player}.html")
+    soup = utils._fetch_page(url)
     if soup is None:
         raise RuntimeError(f"Could not fetch Spotrac player details: {url}")
 
@@ -149,8 +222,7 @@ def scrape_players(
 
     with ThreadPoolExecutor(max_workers=5) as executor:
         futures = {
-            executor.submit(scrape_player, url, detail_fields): url
-            for url in urls
+            executor.submit(scrape_player, url, detail_fields): url for url in urls
         }
         for future in as_completed(futures):
             url = futures[future]
@@ -167,8 +239,32 @@ def scrape_players(
                 failures.append(f"{url}: {error}")
 
     if failures:
-        raise RuntimeError("One or more players failed to scrape: " + "; ".join(failures))
+        raise RuntimeError(
+            "One or more players failed to scrape: " + "; ".join(failures)
+        )
     return pd.concat(all_data, ignore_index=True) if all_data else pd.DataFrame()
+
+
+def scrape_player_details(urls: Iterable[str]) -> pd.DataFrame:
+    selected = list(dict.fromkeys(url.strip() for url in urls if url.strip()))
+    if not selected:
+        raise ValueError("Enter at least one Spotrac player URL.")
+    for url in selected:
+        parsed = urlparse(url)
+        if (
+            parsed.scheme not in {"http", "https"}
+            or parsed.hostname not in {"spotrac.com", "www.spotrac.com"}
+            or not parsed.path.startswith("/nba/player/")
+        ):
+            raise ValueError(f"Not a Spotrac NBA player URL: {url}")
+
+    details = scrape_players(selected, detail_fields=PLAYER_DETAIL_EXTRA_FIELDS)
+    for column in PLAYER_DETAIL_COLUMNS:
+        if column not in details:
+            details[column] = ""
+    details = details.reindex(columns=PLAYER_DETAIL_COLUMNS)
+    details["Data Source"] = CONTRACT_SOURCE
+    return details
 
 
 def _extract_team_contracts(
@@ -186,13 +282,13 @@ def _extract_team_contracts(
         if not player and player_link:
             player = player_link.get_text(strip=True)
         if not player:
-            raise ValueError(
-                f"contract row {row_number} is missing the player name"
-            )
+            raise ValueError(f"contract row {row_number} is missing the player name")
         link = player_link["href"] if player_link else None
         position_age = player_cell.select_one("div.text-muted")
         if position_age is not None:
-            match = re.search(r"\(([^,]+),\s*(\d+)\)", position_age.get_text(strip=True))
+            match = re.search(
+                r"\(([^,]+),\s*(\d+)\)", position_age.get_text(strip=True)
+            )
             position, age = match.groups() if match else (None, None)
             contract_cells = cells[1:]
         else:
@@ -230,9 +326,10 @@ def _scrape_team_with_retries(
             try:
                 return scrape_team(team, session=session, season_limit=season_limit)
             except Exception as error:
-                if isinstance(error, requests.HTTPError) and getattr(
-                    error.response, "status_code", None
-                ) == 403:
+                if (
+                    isinstance(error, requests.HTTPError)
+                    and getattr(error.response, "status_code", None) == 403
+                ):
                     raise
                 if attempt == MAX_RETRIES:
                     raise
@@ -266,9 +363,11 @@ def _extract_player_details(soup: BeautifulSoup) -> pd.DataFrame:
             if team_link is not None:
                 team = team_link.get_text(strip=True)
                 details["Team"] = team
-                details["Position"] = team_position.get_text(
-                    " ", strip=True
-                ).replace(team, "", 1).strip(" ,")
+                details["Position"] = (
+                    team_position.get_text(" ", strip=True)
+                    .replace(team, "", 1)
+                    .strip(" ,")
+                )
 
         for label in profile.find_all("strong"):
             value = label.find_next_sibling("span")
@@ -287,87 +386,6 @@ def _extract_player_details(soup: BeautifulSoup) -> pd.DataFrame:
     return pd.DataFrame([details])
 
 
-def available_teams() -> list[str]:
-    return sorted(utils.TEAMS)
-
-
 def _season_sort_key(column: str) -> int:
     match = re.match(r"^(20\d{2})-\d{2}$", column)
     return int(match.group(1)) if match else -1
-
-
-def scrape_contracts(teams: Iterable[str], display_seasons: int = 5) -> ContractScrapeResult:
-    selected = list(dict.fromkeys(teams))
-    if not selected:
-        raise ValueError("Select at least one NBA team.")
-
-    invalid = sorted(set(selected) - utils.TEAMS)
-    if invalid:
-        raise ValueError(f"Unknown NBA team slug(s): {', '.join(invalid)}")
-    if display_seasons < 1:
-        raise ValueError("display_seasons must be positive.")
-
-    frames_by_team: dict[str, pd.DataFrame] = {}
-    failures: list[str] = []
-    with ThreadPoolExecutor(max_workers=min(6, len(selected))) as executor:
-        futures = {
-            executor.submit(_scrape_team_with_retries, team, None): team
-            for team in selected
-        }
-        for future in as_completed(futures):
-            team = futures[future]
-            try:
-                frame = future.result()
-                if frame is None or frame.empty:
-                    failures.append(f"{team}: Spotrac returned no contract data")
-                    continue
-                frame = frame.copy()
-                frame["Player Key"] = frame["Player"].fillna("").map(utils.make_player_key)
-                frame["Team"] = utils.make_title_case(team)
-                frame["Team Link"] = f"https://www.spotrac.com/nba/{team}/yearly"
-                frames_by_team[team] = frame
-            except Exception as error:
-                failures.append(f"{team}: {error}")
-    if failures:
-        raise RuntimeError("One or more Spotrac team requests failed: " + "; ".join(failures))
-
-    frames = [frames_by_team[team] for team in selected]
-    all_years = pd.concat(frames, ignore_index=True, sort=False)
-    season_columns = tuple(
-        sorted(
-            (column for column in all_years.columns if re.match(r"^20\d{2}-\d{2}$", str(column))),
-            key=_season_sort_key,
-            reverse=True,
-        )
-    )
-    all_years = all_years.reindex(columns=[*CONTRACT_IDENTITY_COLUMNS, *season_columns])
-    all_years["Data Source"] = CONTRACT_SOURCE
-    all_years = all_years.sort_values(["Player Key", "Team"], ignore_index=True)
-
-    displayed_seasons = list(reversed(season_columns[:display_seasons]))
-    display_columns = [*CONTRACT_IDENTITY_COLUMNS, *displayed_seasons]
-    displayed = all_years.reindex(columns=display_columns).copy()
-    displayed["Data Source"] = CONTRACT_SOURCE
-    return ContractScrapeResult(all_years, displayed, season_columns)
-
-
-def scrape_player_details(urls: Iterable[str]) -> pd.DataFrame:
-    selected = list(dict.fromkeys(url.strip() for url in urls if url.strip()))
-    if not selected:
-        raise ValueError("Enter at least one Spotrac player URL.")
-    for url in selected:
-        parsed = urlparse(url)
-        if (
-            parsed.scheme not in {"http", "https"}
-            or parsed.hostname not in {"spotrac.com", "www.spotrac.com"}
-            or not parsed.path.startswith("/nba/player/")
-        ):
-            raise ValueError(f"Not a Spotrac NBA player URL: {url}")
-
-    details = scrape_players(selected, detail_fields=PLAYER_DETAIL_EXTRA_FIELDS)
-    for column in PLAYER_DETAIL_COLUMNS:
-        if column not in details:
-            details[column] = ""
-    details = details.reindex(columns=PLAYER_DETAIL_COLUMNS)
-    details["Data Source"] = CONTRACT_SOURCE
-    return details

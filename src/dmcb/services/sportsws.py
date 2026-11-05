@@ -11,20 +11,6 @@ from dmcb import utils
 from dmcb.models.records import POSITIONS_SOURCE
 
 
-def get_positions() -> pd.DataFrame:
-    positions = scrape_positions()
-    if positions.empty:
-        raise RuntimeError("Sports.ws returned no player positions.")
-
-    positions = positions.copy()
-    positions["Data Source"] = POSITIONS_SOURCE
-    return positions
-
-
-def scrape_positions() -> pd.DataFrame:
-    return _process_sportsws_data(_scrape_sportsws_stats())
-
-
 def _scrape_sportsws_stats() -> pd.DataFrame:
     url = "https://sports.ws/nba/stats"
     try:
@@ -82,3 +68,13 @@ def _process_sportsws_data(frame: pd.DataFrame) -> pd.DataFrame:
     columns = ["Name", "Player Link", "Player Key", "Position"]
     frame = frame[~frame["Player Key"].str.contains("placeholder", case=False, na=False)]
     return frame[columns].sort_values(by="Player Key").reset_index(drop=True)
+
+
+def get_positions() -> pd.DataFrame:
+    positions = _process_sportsws_data(_scrape_sportsws_stats())
+    if positions.empty:
+        raise RuntimeError("Sports.ws returned no player positions.")
+
+    positions = positions.copy()
+    positions["Data Source"] = POSITIONS_SOURCE
+    return positions

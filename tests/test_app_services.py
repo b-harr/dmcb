@@ -10,41 +10,12 @@ import requests
 from bs4 import BeautifulSoup
 
 from dmcb.models.records import PLAYER_DETAIL_COLUMNS
-from dmcb.services import reconciliation, sheets, spotrac, sportsws
-from dmcb.services import basketball_reference
-from dmcb.services.google_sheets import GoogleSheetsManager
-from dmcb.utils import scrape_owners
+from dmcb.services import basketball_reference, reconciliation, spotrac, sportsws
+from dmcb.services.google_sheets import GoogleSheetsService
 
 
 class TestUtilityConfiguration(unittest.TestCase):
-    def test_scrape_owners_raises_when_sheets_read_fails(self):
-        error = RuntimeError("authentication failed")
-        with (
-            patch("dmcb.utils.GoogleSheetsManager") as manager_class,
-            self.assertRaisesRegex(RuntimeError, "worksheet 'Owned'") as raised,
-        ):
-            manager_class.return_value.read_data.side_effect = error
-            scrape_owners("Owned", "owners.csv")
-
-        self.assertIs(raised.exception.__cause__, error)
-
-    def test_scrape_owners_returns_schema_for_empty_worksheet(self):
-        with patch("dmcb.utils.GoogleSheetsManager") as manager_class:
-            manager_class.return_value.read_data.return_value = []
-            owners = scrape_owners("Owned", "owners.csv")
-
-        self.assertEqual(owners.columns.tolist(), ["Owner", "Player", "Player Key"])
-        self.assertTrue(owners.empty)
-
-    def test_scrape_owners_rejects_sheet_without_owner_and_player_columns(self):
-        with (
-            patch("dmcb.utils.GoogleSheetsManager") as manager_class,
-            self.assertRaisesRegex(ValueError, "Owner in column A.*Player in column D"),
-        ):
-            manager_class.return_value.read_data.return_value = [["Owner", "Player"]]
-            scrape_owners("Owned", "owners.csv")
-
-    def test_sheets_manager_reads_environment_when_initialized(self):
+    def test_sheets_service_reads_environment_when_initialized(self):
         with tempfile.TemporaryDirectory() as directory:
             credentials_path = Path(directory) / "credentials.json"
             credentials_path.write_text(
@@ -68,27 +39,16 @@ class TestUtilityConfiguration(unittest.TestCase):
                     return_value=client,
                 ) as service_account,
             ):
-                manager = GoogleSheetsManager()
+                service = GoogleSheetsService()
 
         load_dotenv.assert_called_once_with()
         service_account.assert_called_once_with(filename=str(credentials_path))
         client.open_by_url.assert_called_once_with("https://example.test/sheet")
-        self.assertIs(manager.sheet, spreadsheet)
-        self.assertEqual(manager.service_account_email, "service@example.test")
-        self.assertIs(GoogleSheetsManager, sheets.GoogleSheetsService)
+        self.assertIs(service.sheet, spreadsheet)
+        self.assertEqual(service.service_account_email, "service@example.test")
 
 
 class TestSpotracServices(unittest.TestCase):
-    def test_legacy_scrape_team_import_delegates_to_spotrac_service(self):
-        frame = pd.DataFrame([{"Player": "Test Player"}])
-        with patch.object(spotrac, "scrape_team", return_value=frame) as scrape:
-            result = spotrac.utils.scrape_team("boston-celtics", season_limit=None)
-
-        self.assertIs(result, frame)
-        scrape.assert_called_once_with(
-            "boston-celtics", session=None, season_limit=None
-        )
-
     def test_team_contract_parser_handles_missing_pills_and_all_season_values(self):
         table = BeautifulSoup(
             """
@@ -111,7 +71,7 @@ class TestSpotracServices(unittest.TestCase):
         with (
             patch.object(
                 spotrac.utils,
-                "_save_page",
+                "_fetch_page",
                 return_value=BeautifulSoup("<html></html>", "html.parser"),
             ),
             self.assertRaisesRegex(
@@ -127,7 +87,7 @@ class TestSpotracServices(unittest.TestCase):
             "html.parser",
         )
         with (
-            patch.object(spotrac.utils, "_save_page", return_value=page),
+            patch.object(spotrac.utils, "_fetch_page", return_value=page),
             self.assertRaisesRegex(
                 ValueError,
                 r"Spotrac contract table is missing its header for team boston-celtics",
@@ -146,7 +106,7 @@ class TestSpotracServices(unittest.TestCase):
             "html.parser",
         )
         with (
-            patch.object(spotrac.utils, "_save_page", return_value=page),
+            patch.object(spotrac.utils, "_fetch_page", return_value=page),
             self.assertRaisesRegex(
                 ValueError,
                 r"Could not parse Spotrac contracts for team boston-celtics .*contract row 1 is missing the player name",
@@ -198,18 +158,18 @@ class TestSpotracServices(unittest.TestCase):
         )
         url = "https://www.spotrac.com/nba/player/_/id/12345/test-player"
         with (
-            patch.object(spotrac.utils, "_save_page", return_value=BeautifulSoup("", "html.parser")),
+            patch.object(spotrac.utils, "_fetch_page", return_value=BeautifulSoup("", "html.parser")),
             patch.object(
                 spotrac,
                 "_extract_player_details",
                 side_effect=lambda _soup: parsed.copy(),
             ),
         ):
-            legacy = spotrac.utils.scrape_player(url)
-            app_record = spotrac.utils.scrape_player(url, detail_fields=["Country"])
+            default_record = spotrac.scrape_player(url)
+            app_record = spotrac.scrape_player(url, detail_fields=["Country"])
 
-        self.assertEqual(legacy.iloc[0]["Signed Using"], "NA")
-        self.assertEqual(legacy.iloc[0]["Drafted"], "Undrafted")
+        self.assertEqual(default_record.iloc[0]["Signed Using"], "NA")
+        self.assertEqual(default_record.iloc[0]["Drafted"], "Undrafted")
         self.assertEqual(app_record.iloc[0]["Signed Using"], "")
         self.assertEqual(app_record.iloc[0]["Drafted"], "")
         self.assertEqual(app_record.iloc[0]["Country"], "")
@@ -242,7 +202,7 @@ class TestSpotracServices(unittest.TestCase):
         with (
             patch.object(
                 spotrac.utils,
-                "_save_page",
+                "_fetch_page",
                 return_value=BeautifulSoup("<html></html>", "html.parser"),
             ),
             self.assertRaisesRegex(
@@ -270,17 +230,14 @@ class TestSportswsService(unittest.TestCase):
         self.assertEqual(positions["Position"].tolist(), ["G", "F"])
         self.assertEqual(positions["Data Source"].tolist(), ["Sports.ws", "Sports.ws"])
 
-    def test_positions_scraper_returns_empty_frame_with_schema_when_no_players(self):
+    def test_positions_fetch_raises_when_no_players_are_returned(self):
         response = Mock()
         response.content = b"<table><tbody></tbody></table>"
-        with patch("dmcb.services.sportsws.requests.get", return_value=response):
-            positions = sportsws.scrape_positions()
-
-        self.assertEqual(
-            positions.columns.tolist(),
-            ["Name", "Player Link", "Player Key", "Position"],
-        )
-        self.assertTrue(positions.empty)
+        with (
+            patch("dmcb.services.sportsws.requests.get", return_value=response),
+            self.assertRaisesRegex(RuntimeError, "returned no player positions"),
+        ):
+            sportsws.get_positions()
 
     def test_positions_scraper_reports_missing_table(self):
         response = Mock()
@@ -289,7 +246,7 @@ class TestSportswsService(unittest.TestCase):
             patch("dmcb.services.sportsws.requests.get", return_value=response),
             self.assertRaisesRegex(ValueError, "Sports.ws stats table was not found"),
         ):
-            sportsws.scrape_positions()
+            sportsws.get_positions()
 
     def test_positions_scraper_reports_malformed_player_row(self):
         response = Mock()
@@ -304,7 +261,7 @@ class TestSportswsService(unittest.TestCase):
                 r"Could not parse Sports.ws player row 1 \(Test Player\).*team, and position",
             ),
         ):
-            sportsws.scrape_positions()
+            sportsws.get_positions()
 
     def test_positions_scraper_reports_network_errors(self):
         with (
@@ -314,7 +271,7 @@ class TestSportswsService(unittest.TestCase):
             ),
             self.assertRaisesRegex(RuntimeError, "Could not fetch Sports.ws positions"),
         ):
-            sportsws.scrape_positions()
+            sportsws.get_positions()
 
 
 class TestBasketballReferenceService(unittest.TestCase):
@@ -376,7 +333,7 @@ class TestBasketballReferenceService(unittest.TestCase):
             """,
             "html.parser",
         )
-        with patch("dmcb.utils._save_page", return_value=soup) as save_page:
+        with patch("dmcb.utils._fetch_page", return_value=soup) as fetch_page:
             stats = basketball_reference.scrape_bbref_stats(2026)
 
         self.assertEqual(stats.columns.tolist(), [
@@ -391,24 +348,13 @@ class TestBasketballReferenceService(unittest.TestCase):
             stats.iloc[0]["Team Link"],
             "https://www.basketball-reference.com/teams/BOS/2026.html",
         )
-        save_page.assert_called_once_with(
-            "https://www.basketball-reference.com/leagues/NBA_2026_totals.html",
-            ".cache/stats/bbref-2026.html",
+        fetch_page.assert_called_once_with(
+            "https://www.basketball-reference.com/leagues/NBA_2026_totals.html"
         )
-
-    def test_legacy_stats_scraper_delegates_to_service(self):
-        frame = pd.DataFrame([{"Player": "A Player"}])
-        with patch.object(
-            basketball_reference, "scrape_bbref_stats", return_value=frame
-        ) as scrape:
-            result = basketball_reference.utils.scrape_bbref_stats(2026)
-
-        self.assertIs(result, frame)
-        scrape.assert_called_once_with(2026)
 
     def test_stats_scraper_reports_missing_table(self):
         with (
-            patch("dmcb.utils._save_page", return_value=BeautifulSoup("<html></html>", "html.parser")),
+            patch("dmcb.utils._fetch_page", return_value=BeautifulSoup("<html></html>", "html.parser")),
             self.assertRaisesRegex(
                 ValueError,
                 r"Basketball-Reference stats table 'totals_stats' was not found for season 2026",
@@ -422,7 +368,7 @@ class TestBasketballReferenceService(unittest.TestCase):
             "html.parser",
         )
         with (
-            patch("dmcb.utils._save_page", return_value=page),
+            patch("dmcb.utils._fetch_page", return_value=page),
             self.assertRaisesRegex(
                 ValueError,
                 r"Basketball-Reference stats table is missing its header for season 2026",
@@ -441,7 +387,7 @@ class TestBasketballReferenceService(unittest.TestCase):
             "html.parser",
         )
         with (
-            patch("dmcb.utils._save_page", return_value=page),
+            patch("dmcb.utils._fetch_page", return_value=page),
             self.assertRaisesRegex(
                 ValueError,
                 r"Basketball-Reference stats row 1 has 1 cells; expected 2 for season 2026 .*basketball-reference.com",
@@ -752,7 +698,7 @@ class TestContractReconciliation(unittest.TestCase):
 
     def test_sheet_backup_is_a_timestamped_csv(self):
         with tempfile.TemporaryDirectory() as temporary:
-            backup = sheets.GoogleSheetsService.save_backup(
+            backup = GoogleSheetsService.save_backup(
                 [["Player", "Owner"], ["Test Player", "GM"]], temporary
             )
             with backup.open(newline="", encoding="utf-8") as file:
@@ -761,6 +707,31 @@ class TestContractReconciliation(unittest.TestCase):
         self.assertEqual(rows[1], ["Test Player", "GM"])
         self.assertTrue(backup.name.startswith("contracts-"))
         self.assertEqual(backup.suffix, ".csv")
+
+    def test_pre_write_backup_saves_current_sheet_and_outgoing_data(self):
+        service = GoogleSheetsService.__new__(GoogleSheetsService)
+        service.read_data = Mock(return_value=[["Existing"], ["Sheet value"]])
+
+        with tempfile.TemporaryDirectory() as temporary:
+            before_path, outgoing_path = service.backup_before_write(
+                "Contract Types",
+                [["Timestamp"], ["Player"], ["New Player"]],
+                temporary,
+            )
+            with before_path.open(newline="", encoding="utf-8") as file:
+                before_rows = list(csv.reader(file))
+            with outgoing_path.open(newline="", encoding="utf-8") as file:
+                outgoing_rows = list(csv.reader(file))
+
+        self.assertEqual(before_rows, [["Existing"], ["Sheet value"]])
+        self.assertEqual(outgoing_rows, [["Timestamp"], ["Player"], ["New Player"]])
+        self.assertTrue(before_path.name.startswith("Contract-Types-before-"))
+        self.assertTrue(outgoing_path.name.startswith("Contract-Types-outgoing-"))
+        timestamp = before_path.stem.removeprefix("Contract-Types-before-")
+        self.assertEqual(
+            outgoing_path.stem.removeprefix("Contract-Types-outgoing-"), timestamp
+        )
+        service.read_data.assert_called_once_with("Contract Types")
 
     def test_sheets_write_aborts_if_sheet_changed_after_preview(self):
         class Worksheet:
@@ -780,7 +751,7 @@ class TestContractReconciliation(unittest.TestCase):
             def get_worksheet(self, _name):
                 return self.sheet
 
-        service = sheets.GoogleSheetsService.__new__(sheets.GoogleSheetsService)
+        service = GoogleSheetsService.__new__(GoogleSheetsService)
         service.sheet = Manager()
         service.get_worksheet = service.sheet.get_worksheet
         plan = reconciliation.SheetWritePlan(
@@ -791,20 +762,20 @@ class TestContractReconciliation(unittest.TestCase):
             service.apply_write_plan(plan, expected_sheet_values=[["Player Key"], ["old"]])
         self.assertFalse(service.sheet.sheet.updated)
 
-    def test_legacy_manager_write_and_clear_keyword_forms(self):
+    def test_sheets_service_writes_and_clears_canonical_ranges(self):
         worksheet = Mock()
-        service = sheets.GoogleSheetsService.__new__(sheets.GoogleSheetsService)
+        service = GoogleSheetsService.__new__(GoogleSheetsService)
         service.get_worksheet = Mock(return_value=worksheet)
 
-        service.write_data([["value"]], sheet_name="Contracts", start_cell="A1")
-        service.clear_range(sheet_name="Types", range_to_clear="A:E")
+        service.write_data([["value"]], sheet="Contracts", cell="A1")
+        service.clear_range(sheet="Types", range="A:E")
 
         worksheet.update.assert_called_once_with("A1", [["value"]])
         worksheet.batch_clear.assert_called_once_with(["A:E"])
 
     def test_owned_tab_uses_confirmed_owner_and_player_columns(self):
-        service = sheets.GoogleSheetsService.__new__(sheets.GoogleSheetsService)
-        service.read_values = lambda _worksheet: [
+        service = GoogleSheetsService.__new__(GoogleSheetsService)
+        service.read_data = lambda _worksheet: [
             ["Owner", "Unused", "Unused", "Player"],
             ["GM", "", "", "Test Player"],
         ]
