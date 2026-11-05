@@ -5,7 +5,8 @@ import pandas as pd
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(base_dir)
 
-from scripts.utils import scrape_team, scrape_players, make_title_case
+from dmcb.services.spotrac import scrape_players, scrape_team
+from dmcb.utils import make_title_case
 
 
 def ask_team(team: str = "atlanta-hawks") -> str:

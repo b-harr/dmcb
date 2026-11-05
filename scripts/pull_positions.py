@@ -6,7 +6,8 @@ import pandas as pd
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(base_dir)
 
-from scripts.utils import scrape_positions, merge_owners
+from dmcb.services.reconciliation import owner_index
+from dmcb.services.sportsws import get_positions
 
 LOG_DIR = os.path.join(".logs")
 DATA_DIR = os.path.join("data")
@@ -31,10 +32,33 @@ logging.basicConfig(
 
 
 def scrape_sportsws_positions() -> pd.DataFrame:
-    return scrape_positions()
+    return get_positions()
 
 def merge_fantasy_owners(df: pd.DataFrame) -> pd.DataFrame:
-    return merge_owners(df)
+    if df.empty:
+        logging.info("Positions DataFrame is empty, returning as is.")
+        return df
+
+    owners = pd.read_csv(os.path.join("data", "dmcb_owners.csv"))
+    if owners.empty:
+        logging.info("Owners DataFrame is empty, returning positions as is.")
+        return df
+
+    merged_df = df.copy()
+    if {"Player Key"}.issubset(merged_df.columns) and {"Player Key", "Owner"}.issubset(owners.columns):
+        owner_lookup, ambiguous_keys = owner_index(owners)
+        if ambiguous_keys:
+            logging.warning(
+                "Skipped owner assignments for ambiguous Player Key(s): %s",
+                ", ".join(sorted(ambiguous_keys)),
+            )
+        merged_df["Player Key"] = merged_df["Player Key"].astype("string").str.strip()
+        merged_df["Owner"] = merged_df["Player Key"].map(owner_lookup).fillna("")
+    else:
+        merged_df["Owner"] = ""
+
+    other_columns = [column for column in merged_df.columns if column != "Owner"]
+    return merged_df[other_columns + ["Owner"]]
 
 def save_positions_data(df: pd.DataFrame, output_csv: str) -> None:
     if df is None or df.empty:

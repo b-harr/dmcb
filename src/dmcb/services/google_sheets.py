@@ -69,33 +69,25 @@ class GoogleSheetsService:
             logging.exception("Error reading data from worksheet %r", sheet)
             raise
 
-    def read_values(self, worksheet_name: str) -> list[list[str]]:
-        return self.read_data(worksheet_name)
-
     def write_data(
         self,
         data: Any,
-        sheet: str | None = None,
-        cell: str | None = None,
-        *,
-        sheet_name: str | None = None,
-        start_cell: str | None = None,
+        sheet: str,
+        cell: str,
     ) -> None:
-        target_sheet = sheet or sheet_name
-        target_cell = cell or start_cell
-        if not target_sheet:
+        if not sheet:
             raise ValueError("A worksheet name is required.")
-        if not target_cell:
+        if not cell:
             raise ValueError("A starting cell is required.")
         try:
-            self.get_worksheet(target_sheet).update(target_cell, data)
+            self.get_worksheet(sheet).update(cell, data)
             logging.info(
                 "Written data to worksheet %r starting at %r.",
-                target_sheet,
-                target_cell,
+                sheet,
+                cell,
             )
         except Exception:
-            logging.exception("Error writing data to worksheet %r", target_sheet)
+            logging.exception("Error writing data to worksheet %r", sheet)
             raise
 
     def clear_data(self, sheet: str) -> None:
@@ -108,35 +100,30 @@ class GoogleSheetsService:
 
     def clear_range(
         self,
-        sheet: str | None = None,
-        range: str | None = None,
-        *,
-        sheet_name: str | None = None,
-        range_to_clear: str | None = None,
+        sheet: str,
+        range: str,
     ) -> None:
-        target_sheet = sheet or sheet_name
-        target_range = range or range_to_clear
-        if not target_sheet:
+        if not sheet:
             raise ValueError("A worksheet name is required.")
-        if not target_range:
+        if not range:
             raise ValueError("A range to clear is required.")
         try:
-            self.get_worksheet(target_sheet).batch_clear([target_range])
+            self.get_worksheet(sheet).batch_clear([range])
             logging.info(
-                "Cleared range %r in worksheet %r", target_range, target_sheet
+                "Cleared range %r in worksheet %r", range, sheet
             )
         except Exception:
             logging.exception(
                 "Error clearing range %r in worksheet %r",
-                target_range,
-                target_sheet,
+                range,
+                sheet,
             )
             raise
 
     def read_owners(self) -> pd.DataFrame:
         from dmcb.utils import make_player_key
 
-        values = self.read_values("Owned")
+        values = self.read_data("Owned")
         columns = ["Player", "Player Key", "Owner", "Sheet Row"]
         if len(values) < 2:
             return pd.DataFrame(columns=columns)
@@ -160,7 +147,7 @@ class GoogleSheetsService:
     def read_contracts(self) -> tuple[list[list[str]], pd.DataFrame]:
         from dmcb.utils import make_player_key
 
-        values = self.read_values("Contracts")
+        values = self.read_data("Contracts")
         if not values:
             return values, pd.DataFrame()
         headers = [str(value).strip() for value in values[0]]
@@ -182,7 +169,7 @@ class GoogleSheetsService:
     ) -> tuple[list[list[str]], SheetWritePlan]:
         from dmcb.services.reconciliation import build_sheet_write_plan
 
-        values = self.read_values("Contracts")
+        values = self.read_data("Contracts")
         return values, build_sheet_write_plan(spotrac, values, owners)
 
     @staticmethod
@@ -224,6 +211,3 @@ class GoogleSheetsService:
             )
         if requests:
             worksheet.batch_update(requests, value_input_option="RAW")
-
-
-GoogleSheetsManager = GoogleSheetsService

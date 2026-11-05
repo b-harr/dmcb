@@ -32,7 +32,8 @@ from PySide6.QtWidgets import (
 
 from dmcb.config import AppConfig
 from dmcb.models.records import OWNER_SOURCE
-from dmcb.services import basketball_reference, reconciliation, sheets, spotrac, sportsws
+from dmcb.services import basketball_reference, reconciliation, spotrac, sportsws
+from dmcb.services.google_sheets import GoogleSheetsService
 from dmcb.utils import make_title_case
 
 LOGGER = logging.getLogger(__name__)
@@ -291,7 +292,7 @@ class MainWindow(QMainWindow):
         spreadsheet_url = self.spreadsheet_url.text().strip()
 
         def read_and_compare() -> tuple[pd.DataFrame, pd.DataFrame]:
-            manager = sheets.GoogleSheetsService(credentials_path, spreadsheet_url)
+            manager = GoogleSheetsService(credentials_path, spreadsheet_url)
             owners = manager.read_owners()
             _, existing = manager.read_contracts()
             comparisons = reconciliation.compare_contracts(
@@ -329,7 +330,7 @@ class MainWindow(QMainWindow):
         spreadsheet_url = self.spreadsheet_url.text().strip()
 
         def make_plan() -> tuple[list[list[str]], object]:
-            manager = sheets.GoogleSheetsService(credentials_path, spreadsheet_url)
+            manager = GoogleSheetsService(credentials_path, spreadsheet_url)
             owners = manager.read_owners()
             raw_values, plan = manager.build_write_plan(self.contracts, owners)
             return raw_values, plan
@@ -409,10 +410,10 @@ class MainWindow(QMainWindow):
             return
 
         def back_up_and_write() -> Path:
-            backup = sheets.GoogleSheetsService.save_backup(
+            backup = GoogleSheetsService.save_backup(
                 raw_values, AppConfig.backup_directory()
             )
-            sheets.GoogleSheetsService(credentials_path, spreadsheet_url).apply_write_plan(
+            GoogleSheetsService(credentials_path, spreadsheet_url).apply_write_plan(
                 plan, expected_sheet_values=raw_values
             )
             return backup

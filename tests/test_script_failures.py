@@ -85,7 +85,7 @@ class TestPushFailures(unittest.TestCase):
             with self.subTest(updater=module.__name__):
                 updater = getattr(module, updater_name)
                 arguments = ("Contracts", "A1:L751") if has_range else ("Contracts",)
-                with patch.object(module, "GoogleSheetsManager") as manager:
+                with patch.object(module, "GoogleSheetsService") as manager:
                     with self.assertRaises(ValueError):
                         updater(pd.DataFrame(), *arguments)
                     with self.assertRaises(ValueError):
@@ -98,7 +98,7 @@ class TestPushFailures(unittest.TestCase):
             with self.subTest(updater=module.__name__):
                 updater = getattr(module, updater_name)
                 arguments = ("Contracts", "A1:L751") if has_range else ("Contracts",)
-                with patch.object(module, "GoogleSheetsManager") as manager_factory:
+                with patch.object(module, "GoogleSheetsService") as manager_factory:
                     manager = manager_factory.return_value
                     manager.write_data.side_effect = OSError("Sheets unavailable")
                     with self.assertRaisesRegex(RuntimeError, "Failed to update"):
@@ -117,7 +117,7 @@ class TestPullFailures(unittest.TestCase):
                 pull_contracts.scrape_all()
 
     def test_contract_owner_read_failure_is_raised(self):
-        with patch.object(pull_contracts, "GoogleSheetsManager") as manager_factory:
+        with patch.object(pull_contracts, "GoogleSheetsService") as manager_factory:
             manager_factory.return_value.read_data.side_effect = OSError("Sheets unavailable")
             with self.assertRaisesRegex(RuntimeError, "Could not read owner data"):
                 pull_contracts.get_owners()

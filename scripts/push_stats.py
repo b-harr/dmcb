@@ -6,7 +6,7 @@ import pandas as pd
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(base_dir)
 
-from scripts.utils import GoogleSheetsManager
+from dmcb.services.google_sheets import GoogleSheetsService
 
 LOG_DIR = os.path.join(".logs")
 DATA_DIR = os.path.join("data")
@@ -47,7 +47,7 @@ def update_sheets(df: pd.DataFrame, sheet: str) -> None:
         raise ValueError(f"Refusing to clear Google Sheets '{sheet}' with empty stats data")
 
     try:
-        sheets_manager = GoogleSheetsManager()
+        sheets_manager = GoogleSheetsService()
         sheets_manager.clear_data(sheet)
         logging.info(f"Cleared existing data in Google Sheets: {sheet}")
 

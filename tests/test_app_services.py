@@ -10,41 +10,12 @@ import requests
 from bs4 import BeautifulSoup
 
 from dmcb.models.records import PLAYER_DETAIL_COLUMNS
-from dmcb.services import reconciliation, sheets, spotrac, sportsws
-from dmcb.services import basketball_reference
-from dmcb.services.google_sheets import GoogleSheetsManager
-from dmcb.utils import scrape_owners
+from dmcb.services import basketball_reference, reconciliation, spotrac, sportsws
+from dmcb.services.google_sheets import GoogleSheetsService
 
 
 class TestUtilityConfiguration(unittest.TestCase):
-    def test_scrape_owners_raises_when_sheets_read_fails(self):
-        error = RuntimeError("authentication failed")
-        with (
-            patch("dmcb.utils.GoogleSheetsManager") as manager_class,
-            self.assertRaisesRegex(RuntimeError, "worksheet 'Owned'") as raised,
-        ):
-            manager_class.return_value.read_data.side_effect = error
-            scrape_owners("Owned", "owners.csv")
-
-        self.assertIs(raised.exception.__cause__, error)
-
-    def test_scrape_owners_returns_schema_for_empty_worksheet(self):
-        with patch("dmcb.utils.GoogleSheetsManager") as manager_class:
-            manager_class.return_value.read_data.return_value = []
-            owners = scrape_owners("Owned", "owners.csv")
-
-        self.assertEqual(owners.columns.tolist(), ["Owner", "Player", "Player Key"])
-        self.assertTrue(owners.empty)
-
-    def test_scrape_owners_rejects_sheet_without_owner_and_player_columns(self):
-        with (
-            patch("dmcb.utils.GoogleSheetsManager") as manager_class,
-            self.assertRaisesRegex(ValueError, "Owner in column A.*Player in column D"),
-        ):
-            manager_class.return_value.read_data.return_value = [["Owner", "Player"]]
-            scrape_owners("Owned", "owners.csv")
-
-    def test_sheets_manager_reads_environment_when_initialized(self):
+    def test_sheets_service_reads_environment_when_initialized(self):
         with tempfile.TemporaryDirectory() as directory:
             credentials_path = Path(directory) / "credentials.json"
             credentials_path.write_text(
@@ -68,27 +39,16 @@ class TestUtilityConfiguration(unittest.TestCase):
                     return_value=client,
                 ) as service_account,
             ):
-                manager = GoogleSheetsManager()
+                service = GoogleSheetsService()
 
         load_dotenv.assert_called_once_with()
         service_account.assert_called_once_with(filename=str(credentials_path))
         client.open_by_url.assert_called_once_with("https://example.test/sheet")
-        self.assertIs(manager.sheet, spreadsheet)
-        self.assertEqual(manager.service_account_email, "service@example.test")
-        self.assertIs(GoogleSheetsManager, sheets.GoogleSheetsService)
+        self.assertIs(service.sheet, spreadsheet)
+        self.assertEqual(service.service_account_email, "service@example.test")
 
 
 class TestSpotracServices(unittest.TestCase):
-    def test_legacy_scrape_team_import_delegates_to_spotrac_service(self):
-        frame = pd.DataFrame([{"Player": "Test Player"}])
-        with patch.object(spotrac, "scrape_team", return_value=frame) as scrape:
-            result = spotrac.utils.scrape_team("boston-celtics", season_limit=None)
-
-        self.assertIs(result, frame)
-        scrape.assert_called_once_with(
-            "boston-celtics", session=None, season_limit=None
-        )
-
     def test_team_contract_parser_handles_missing_pills_and_all_season_values(self):
         table = BeautifulSoup(
             """
@@ -205,11 +165,11 @@ class TestSpotracServices(unittest.TestCase):
                 side_effect=lambda _soup: parsed.copy(),
             ),
         ):
-            legacy = spotrac.utils.scrape_player(url)
-            app_record = spotrac.utils.scrape_player(url, detail_fields=["Country"])
+            default_record = spotrac.scrape_player(url)
+            app_record = spotrac.scrape_player(url, detail_fields=["Country"])
 
-        self.assertEqual(legacy.iloc[0]["Signed Using"], "NA")
-        self.assertEqual(legacy.iloc[0]["Drafted"], "Undrafted")
+        self.assertEqual(default_record.iloc[0]["Signed Using"], "NA")
+        self.assertEqual(default_record.iloc[0]["Drafted"], "Undrafted")
         self.assertEqual(app_record.iloc[0]["Signed Using"], "")
         self.assertEqual(app_record.iloc[0]["Drafted"], "")
         self.assertEqual(app_record.iloc[0]["Country"], "")
@@ -395,16 +355,6 @@ class TestBasketballReferenceService(unittest.TestCase):
             "https://www.basketball-reference.com/leagues/NBA_2026_totals.html",
             ".cache/stats/bbref-2026.html",
         )
-
-    def test_legacy_stats_scraper_delegates_to_service(self):
-        frame = pd.DataFrame([{"Player": "A Player"}])
-        with patch.object(
-            basketball_reference, "scrape_bbref_stats", return_value=frame
-        ) as scrape:
-            result = basketball_reference.utils.scrape_bbref_stats(2026)
-
-        self.assertIs(result, frame)
-        scrape.assert_called_once_with(2026)
 
     def test_stats_scraper_reports_missing_table(self):
         with (
@@ -752,7 +702,7 @@ class TestContractReconciliation(unittest.TestCase):
 
     def test_sheet_backup_is_a_timestamped_csv(self):
         with tempfile.TemporaryDirectory() as temporary:
-            backup = sheets.GoogleSheetsService.save_backup(
+            backup = GoogleSheetsService.save_backup(
                 [["Player", "Owner"], ["Test Player", "GM"]], temporary
             )
             with backup.open(newline="", encoding="utf-8") as file:
@@ -780,7 +730,7 @@ class TestContractReconciliation(unittest.TestCase):
             def get_worksheet(self, _name):
                 return self.sheet
 
-        service = sheets.GoogleSheetsService.__new__(sheets.GoogleSheetsService)
+        service = GoogleSheetsService.__new__(GoogleSheetsService)
         service.sheet = Manager()
         service.get_worksheet = service.sheet.get_worksheet
         plan = reconciliation.SheetWritePlan(
@@ -791,20 +741,20 @@ class TestContractReconciliation(unittest.TestCase):
             service.apply_write_plan(plan, expected_sheet_values=[["Player Key"], ["old"]])
         self.assertFalse(service.sheet.sheet.updated)
 
-    def test_legacy_manager_write_and_clear_keyword_forms(self):
+    def test_sheets_service_writes_and_clears_canonical_ranges(self):
         worksheet = Mock()
-        service = sheets.GoogleSheetsService.__new__(sheets.GoogleSheetsService)
+        service = GoogleSheetsService.__new__(GoogleSheetsService)
         service.get_worksheet = Mock(return_value=worksheet)
 
-        service.write_data([["value"]], sheet_name="Contracts", start_cell="A1")
-        service.clear_range(sheet_name="Types", range_to_clear="A:E")
+        service.write_data([["value"]], sheet="Contracts", cell="A1")
+        service.clear_range(sheet="Types", range="A:E")
 
         worksheet.update.assert_called_once_with("A1", [["value"]])
         worksheet.batch_clear.assert_called_once_with(["A:E"])
 
     def test_owned_tab_uses_confirmed_owner_and_player_columns(self):
-        service = sheets.GoogleSheetsService.__new__(sheets.GoogleSheetsService)
-        service.read_values = lambda _worksheet: [
+        service = GoogleSheetsService.__new__(GoogleSheetsService)
+        service.read_data = lambda _worksheet: [
             ["Owner", "Unused", "Unused", "Player"],
             ["GM", "", "", "Test Player"],
         ]

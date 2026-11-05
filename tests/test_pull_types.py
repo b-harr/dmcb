@@ -10,7 +10,8 @@ import requests
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(base_dir)
 
-from scripts import pull_types, utils
+from dmcb import utils
+from scripts import pull_types
 
 
 class TestPullDetails(unittest.TestCase):

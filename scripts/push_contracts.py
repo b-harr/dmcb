@@ -8,7 +8,7 @@ import time
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(base_dir)
 
-from scripts.utils import GoogleSheetsManager
+from dmcb.services.google_sheets import GoogleSheetsService
 
 LOG_DIR = os.path.join(".logs")
 DATA_DIR = os.path.join("data")
@@ -68,7 +68,7 @@ def update_sheets(df: pd.DataFrame, sheet: str, range: str) -> None:
         try:
             timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
 
-            sheets_manager = GoogleSheetsManager()
+            sheets_manager = GoogleSheetsService()
             sheets_manager.clear_range(sheet, range)
 
             # Exclude the Owner column from the sheet write so it does not overwrite column M

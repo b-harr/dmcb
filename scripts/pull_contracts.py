@@ -6,7 +6,9 @@ import pandas as pd
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(base_dir)
 
-from scripts.utils import make_player_key, make_title_case, scrape_teams, GoogleSheetsManager, save_owned, scrape_owners
+from dmcb.services.google_sheets import GoogleSheetsService
+from dmcb.services.spotrac import scrape_teams
+from dmcb.utils import make_player_key, make_title_case
 
 LOG_DIR = os.path.join(".logs")
 DATA_DIR = os.path.join("data")
@@ -69,16 +71,14 @@ def process_data(df: pd.DataFrame) -> pd.DataFrame:
         raise RuntimeError("Failed to process contract data") from e
 
 def update_owners():
-    sheet = "Owned"
     output = os.path.join("data", "dmcb_owners.csv")
-    df = scrape_owners(sheet, output)
-    column_order = ["Player", "Player Key", "Owner"]
-    df = df[column_order].sort_values("Player Key")
-    df.to_csv(output, index=False)
+    owners = GoogleSheetsService().read_owners()
+    owners = owners[["Player", "Player Key", "Owner"]].sort_values("Player Key")
+    owners.to_csv(output, index=False)
 
 def get_owners(sheet="Contracts") -> pd.DataFrame:
     try:
-        sheets_manager = GoogleSheetsManager()
+        sheets_manager = GoogleSheetsService()
         raw_data = sheets_manager.read_data(sheet=sheet)
     except Exception as e:
         logging.exception("Could not read owner data from Google Sheets '%s'", sheet)
@@ -121,6 +121,15 @@ def merge_owners(contracts: pd.DataFrame, owners: pd.DataFrame) -> pd.DataFrame:
 
     other_columns = [col for col in merged_df.columns if col != "Owner"]
     return merged_df[other_columns + ["Owner"]]
+
+def save_owned(df: pd.DataFrame, output: str) -> pd.DataFrame:
+    if "Owner" not in df.columns:
+        raise ValueError("DataFrame must contain an Owner column.")
+
+    owned_df = df[df["Owner"].fillna("").astype(str).str.strip().ne("")].copy()
+    owned_df.to_csv(output, index=False)
+    logging.info("Saved %s owned contracts to %s.", len(owned_df), output)
+    return owned_df
 
 def save_data(df: pd.DataFrame, output_csv: str) -> None:
     if df is None or df.empty:
