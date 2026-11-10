@@ -1,7 +1,7 @@
 Player,Player Link,Player Key,Team,Team Link,Position,Age,2026-27,2027-28,2028-29,2029-30,2030-31,Owner
 Aaron Gordon,https://www.spotrac.com/nba/player/_/id/15356/aaron-gordon,aaron-gordon,Denver Nuggets,https://www.spotrac.com/nba/denver-nuggets/yearly,PF,31,$31978037,$34536280,$37094523,UFA,,BJ
 Aaron Nesmith,https://www.spotrac.com/nba/player/_/id/70656/aaron-nesmith,aaron-nesmith,Indiana Pacers,https://www.spotrac.com/nba/indiana-pacers/yearly,SF,27,$11000000,$19418000,$20971440,UFA,,
-Aaron Wiggins,https://www.spotrac.com/nba/player/_/id/74162/aaron-wiggins,aaron-wiggins,Atlanta Hawks,https://www.spotrac.com/nba/atlanta-hawks/yearly,SG,28,$9028038,$8168226,$8168226,UFA,,
+Aaron Wiggins,https://www.spotrac.com/nba/player/_/id/74162/aaron-wiggins,aaron-wiggins,Atlanta Hawks,https://www.spotrac.com/nba/atlanta-hawks/yearly,SG,28,$9028038,$8168226,$8168226,UFA,,Colin
 Ace Bailey,https://www.spotrac.com/nba/player/_/id/98599/ace-bailey,ace-bailey,Utah Jazz,https://www.spotrac.com/nba/utah-jazz/yearly,SF,20,$9523080,$9976560,$12640302,RFA,,Hil
 Aday Mara,https://www.spotrac.com/nba/player/_/id/107930/aday-mara,aday-mara,Oklahoma City Thunder,https://www.spotrac.com/nba/oklahoma-city-thunder/yearly,C,21,$5791680,$6081480,$6371160,$8779459,RFA,John
 Adem Bona,https://www.spotrac.com/nba/player/_/id/91790/adem-bona,adem-bona,Philadelphia 76ers,https://www.spotrac.com/nba/philadelphia-76ers/yearly,C,23,$2296271,$2486995,UFA,,,
@@ -44,7 +44,6 @@ Ben Simmons,https://www.spotrac.com/nba/player/_/id/20206/ben-simmons,ben-simmon
 Bennedict Mathurin,https://www.spotrac.com/nba/player/_/id/78115/bennedict-mathurin,bennedict-mathurin,New Orleans Pelicans,https://www.spotrac.com/nba/new-orleans-pelicans/yearly,SG,24,$7500000,$7875000,UFA,,,
 Bennett Stirtz,https://www.spotrac.com/nba/player/_/id/107939/bennett-stirtz,bennett-stirtz,Oklahoma City Thunder,https://www.spotrac.com/nba/oklahoma-city-thunder/yearly,PG,23,$4717320,$4953240,$5189400,$7960540,RFA,Sam
 Bilal Coulibaly,https://www.spotrac.com/nba/player/_/id/82317/bilal-coulibaly,bilal-coulibaly,Washington Wizards,https://www.spotrac.com/nba/washington-wizards/yearly,SF,22,$9240012,RFA,,,,Brandon
-Blake Wesley,https://www.spotrac.com/nba/player/_/id/78132/blake-wesley,blake-wesley,LA Clippers,https://www.spotrac.com/nba/la-clippers/yearly,SG,23,$14077,,,,,
 Bobby Portis,https://www.spotrac.com/nba/player/_/id/17850/bobby-portis,bobby-portis,Miami Heat,https://www.spotrac.com/nba/miami-heat/yearly,PF,31,$14521414,$15597074,UFA,,,Robert
 Bogdan Bogdanovic,https://www.spotrac.com/nba/player/_/id/15379/bogdan-bogdanovic,bogdan-bogdanovic,Houston Rockets,https://www.spotrac.com/nba/houston-rockets/yearly,SG,34,$2449421,UFA,,,,Efrain
 Bogoljub Marković,https://www.spotrac.com/nba/player/_/id/99260/bogoljub-markovi%C4%87,bogoljub-markovic,Milwaukee Bucks,https://www.spotrac.com/nba/milwaukee-bucks/yearly,PF,21,$1357763,$2294370,$2694363,$2918152,UFA,
@@ -76,7 +75,6 @@ Cameron Carr,https://www.spotrac.com/nba/player/_/id/107940/cameron-carr,cameron
 Cameron Christie,https://www.spotrac.com/nba/player/_/id/91777/cameron-christie,cameron-christie,LA Clippers,https://www.spotrac.com/nba/la-clippers/yearly,SG,21,Two-Way,,,,,
 Cameron Johnson,https://www.spotrac.com/nba/player/_/id/31568/cameron-johnson,cameron-johnson,Denver Nuggets,https://www.spotrac.com/nba/denver-nuggets/yearly,SF,30,$23062500,UFA,,,,B-Har
 Caris LeVert,https://www.spotrac.com/nba/player/_/id/20225/caris-levert,caris-levert,Milwaukee Bucks,https://www.spotrac.com/nba/milwaukee-bucks/yearly,SG,32,$14809200,UFA,,,,
-Carson Cooper,https://www.spotrac.com/nba/player/_/id/110254/carson-cooper,carson-cooper,Memphis Grizzlies,https://www.spotrac.com/nba/memphis-grizzlies/yearly,C,22,Two-Way,Two-Way,,,,
 Carter Bryant,https://www.spotrac.com/nba/player/_/id/98614/carter-bryant,carter-bryant,San Antonio Spurs,https://www.spotrac.com/nba/san-antonio-spurs/yearly,SF,21,$5145360,$5390640,$7983539,RFA,,David
 Cason Wallace,https://www.spotrac.com/nba/player/_/id/82207/cason-wallace,cason-wallace,Oklahoma City Thunder,https://www.spotrac.com/nba/oklahoma-city-thunder/yearly,PG,23,$7420806,$23275862,$25137931,$27000000,$28862069,BJ
 Cedric Coward,https://www.spotrac.com/nba/player/_/id/98639/cedric-coward,cedric-coward,Memphis Grizzlies,https://www.spotrac.com/nba/memphis-grizzlies/yearly,SG,23,$6001080,$6286920,$8342743,RFA,,Brian
@@ -191,7 +189,7 @@ Ivica Zubac,https://www.spotrac.com/nba/player/_/id/20238/ivica-zubac,ivica-zuba
 Izaiyah Nelson,https://www.spotrac.com/nba/player/_/id/108436/izaiyah-nelson,izaiyah-nelson,Orlando Magic,https://www.spotrac.com/nba/orlando-magic/yearly,C,23,Two-Way,Two-Way,,,,
 Ja Morant,https://www.spotrac.com/nba/player/_/id/31559/ja-morant,ja-morant,Portland Trail Blazers,https://www.spotrac.com/nba/portland-trail-blazers/yearly,PG,27,$42166510,$44886930,UFA,,,Efrain
 Jabari Smith Jr.,https://www.spotrac.com/nba/player/_/id/78109/jabari-smith-jr,jabari-smith,Houston Rockets,https://www.spotrac.com/nba/houston-rockets/yearly,PF,23,$23643411,$21751940,$23643411,$25534883,$27426355,Hil
-Jabari Walker,https://www.spotrac.com/nba/player/_/id/78167/jabari-walker,jabari-walker,Philadelphia 76ers,https://www.spotrac.com/nba/philadelphia-76ers/yearly,SF,24,$2584539,UFA,,,,Robert
+Jabari Walker,https://www.spotrac.com/nba/player/_/id/78167/jabari-walker,jabari-walker,Philadelphia 76ers,https://www.spotrac.com/nba/philadelphia-76ers/yearly,SF,24,$2584539,UFA,,,,
 Jaden Akins,https://www.spotrac.com/nba/player/_/id/101299/jaden-akins,jaden-akins,New York Knicks,https://www.spotrac.com/nba/new-york-knicks/yearly,G,23,Two-Way,,,,,
 Jaden Bradley,https://www.spotrac.com/nba/player/_/id/108429/jaden-bradley,jaden-bradley,Toronto Raptors,https://www.spotrac.com/nba/toronto-raptors/yearly,PG,23,$1357763,$2294370,$2694363,$2918152,UFA,
 Jaden Hardy,https://www.spotrac.com/nba/player/_/id/78130/jaden-hardy,jaden-hardy,Los Angeles Lakers,https://www.spotrac.com/nba/los-angeles-lakers/yearly,SG,24,$6000000,$6000000,UFA,,,David
@@ -298,6 +296,7 @@ Keshad Johnson,https://www.spotrac.com/nba/player/_/id/91786/keshad-johnson,kesh
 Keshon Gilbert,https://www.spotrac.com/nba/player/_/id/101196/keshon-gilbert,keshon-gilbert,Atlanta Hawks,https://www.spotrac.com/nba/atlanta-hawks/yearly,G,23,Two-Way,,,,,
 Kevin Durant,https://www.spotrac.com/nba/player/_/id/2717/kevin-durant,kevin-durant,Houston Rockets,https://www.spotrac.com/nba/houston-rockets/yearly,SF,38,$43902439,$46097561,UFA,,,Sam
 Kevin Huerter,https://www.spotrac.com/nba/player/_/id/26985/kevin-huerter,kevin-huerter,Detroit Pistons,https://www.spotrac.com/nba/detroit-pistons/yearly,SG,28,$9507042,$8746479,$8746479,UFA,,
+Kevin McCullar Jr.,https://www.spotrac.com/nba/player/_/id/91763/kevin-mccullar-jr,kevin-mccullar,Toronto Raptors,https://www.spotrac.com/nba/toronto-raptors/yearly,SG,25,Two-Way,,,,,
 Kevon Looney,https://www.spotrac.com/nba/player/_/id/17858/kevon-looney,kevon-looney,Los Angeles Lakers,https://www.spotrac.com/nba/los-angeles-lakers/yearly,C,30,$2449421,UFA,,,,
 Keyonte George,https://www.spotrac.com/nba/player/_/id/82209/keyonte-george,keyonte-george,Utah Jazz,https://www.spotrac.com/nba/utah-jazz/yearly,SG,23,$6563925,$28703704,$29851852,$31000000,$32148148,Stein
 Khalifa Diop,https://www.spotrac.com/nba/player/_/id/78152/khalifa-diop,khalifa-diop,Cleveland Cavaliers,https://www.spotrac.com/nba/cleveland-cavaliers/yearly,C,25,$1357763,$2294370,$2694363,$2918152,UFA,
@@ -340,7 +339,7 @@ Malevy Leons,https://www.spotrac.com/nba/player/_/id/95611/malevy-leons,malevy-l
 Malik Dia,https://www.spotrac.com/nba/player/_/id/109941/malik-dia,malik-dia,New Orleans Pelicans,https://www.spotrac.com/nba/new-orleans-pelicans/yearly,F,22,Two-Way,,,,,
 Malik Monk,https://www.spotrac.com/nba/player/_/id/23606/malik-monk,malik-monk,Sacramento Kings,https://www.spotrac.com/nba/sacramento-kings/yearly,SG,28,$20190035,$21582451,UFA,,,Sam
 Maliq Brown,https://www.spotrac.com/nba/player/_/id/108559/maliq-brown,maliq-brown,San Antonio Spurs,https://www.spotrac.com/nba/san-antonio-spurs/yearly,PG,23,Two-Way,,,,,
-Marcus Sasser,https://www.spotrac.com/nba/player/_/id/84442/marcus-sasser,marcus-sasser,Dallas Mavericks,https://www.spotrac.com/nba/dallas-mavericks/yearly,PG,26,$5198983,RFA,,,,Will
+Marcus Sasser,https://www.spotrac.com/nba/player/_/id/84442/marcus-sasser,marcus-sasser,Dallas Mavericks,https://www.spotrac.com/nba/dallas-mavericks/yearly,PG,26,$5198983,RFA,,,,
 Marcus Smart,https://www.spotrac.com/nba/player/_/id/15358/marcus-smart,marcus-smart,Houston Rockets,https://www.spotrac.com/nba/houston-rockets/yearly,PG,32,$6064000,$6367200,UFA,,,
 Mario Hezonja,https://www.spotrac.com/nba/player/_/id/17833/mario-hezonja,mario-hezonja,Cleveland Cavaliers,https://www.spotrac.com/nba/cleveland-cavaliers/yearly,SF,31,$2449421,UFA,,,,Efrain
 Mark Williams,https://www.spotrac.com/nba/player/_/id/78121/mark-williams,mark-williams,Phoenix Suns,https://www.spotrac.com/nba/phoenix-suns/yearly,C,25,$11728395,$12666667,$13604938,UFA,,Brian
@@ -372,7 +371,7 @@ Moussa Diabate,https://www.spotrac.com/nba/player/_/id/78154/moussa-diabate,mous
 Myles Turner,https://www.spotrac.com/nba/player/_/id/17839/myles-turner,myles-turner,Milwaukee Bucks,https://www.spotrac.com/nba/milwaukee-bucks/yearly,C,30,$26584164,$27850077,$29115990,UFA,,
 Myron Gardner,https://www.spotrac.com/nba/player/_/id/95569/myron-gardner,myron-gardner,Miami Heat,https://www.spotrac.com/nba/miami-heat/yearly,SG,25,$2150917,$2525901,RFA,,,
 Nae'qwan Tomlin,https://www.spotrac.com/nba/player/_/id/95599/naeqwan-tomlin,naeqwan-tomlin,Cleveland Cavaliers,https://www.spotrac.com/nba/cleveland-cavaliers/yearly,PF,26,$2411090,RFA,,,,
-Nah'Shon Hyland,https://www.spotrac.com/nba/player/_/id/74133/nahshon-hyland,nahshon-hyland,Minnesota Timberwolves,https://www.spotrac.com/nba/minnesota-timberwolves/yearly,PG,26,$2449421,UFA,,,,
+Nah'Shon Hyland,https://www.spotrac.com/nba/player/_/id/74133/nahshon-hyland,nahshon-hyland,Minnesota Timberwolves,https://www.spotrac.com/nba/minnesota-timberwolves/yearly,PG,26,$2449421,UFA,,,,Will
 Naji Marshall,https://www.spotrac.com/nba/player/_/id/70704/naji-marshall,naji-marshall,Dallas Mavericks,https://www.spotrac.com/nba/dallas-mavericks/yearly,SF,29,$9428571,$18195600,$17323584,$16680816,UFA,
 Nate Ament,https://www.spotrac.com/nba/player/_/id/107924/nate-ament,nate-ament,Milwaukee Bucks,https://www.spotrac.com/nba/milwaukee-bucks/yearly,PF,20,$5502000,$5777280,$6052200,$8648594,RFA,Robert
 Nate Bittle,https://www.spotrac.com/nba/player/_/id/108976/nate-bittle,nate-bittle,Toronto Raptors,https://www.spotrac.com/nba/toronto-raptors/yearly,C,23,Two-Way,,,,,
@@ -386,11 +385,12 @@ Nikola Jokic,https://www.spotrac.com/nba/player/_/id/15393/nikola-jokic,nikola-j
 Nikola Jovic,https://www.spotrac.com/nba/player/_/id/78135/nikola-jovic,nikola-jovic,Miami Heat,https://www.spotrac.com/nba/miami-heat/yearly,SF,23,$16200000,$14904000,$15096000,$16200000,UFA,
 Nikola Topic,https://www.spotrac.com/nba/player/_/id/91737/nikola-topic,nikola-topic,Oklahoma City Thunder,https://www.spotrac.com/nba/oklahoma-city-thunder/yearly,PG,21,$5429760,UFA,,,,Brian
 Nikola Vucevic,https://www.spotrac.com/nba/player/_/id/8067/nikola-vucevic,nikola-vucevic,Orlando Magic,https://www.spotrac.com/nba/orlando-magic/yearly,C,36,$2449421,UFA,,,,Sam
-Nique Clifford,https://www.spotrac.com/nba/player/_/id/98612/nique-clifford,nique-clifford,Sacramento Kings,https://www.spotrac.com/nba/sacramento-kings/yearly,SF,24,$3263400,$3418800,$5979481,RFA,,Brandon
+Nique Clifford,https://www.spotrac.com/nba/player/_/id/98612/nique-clifford,nique-clifford,Oklahoma City Thunder,https://www.spotrac.com/nba/oklahoma-city-thunder/yearly,SF,24,$3263400,$3418800,$5979481,RFA,,Brandon
 Noa Essengue,https://www.spotrac.com/nba/player/_/id/98619/noa-essengue,noa-essengue,Chicago Bulls,https://www.spotrac.com/nba/chicago-bulls/yearly,PF,20,$5701200,$5972760,$8230464,RFA,,Efrain
 Noah Clowney,https://www.spotrac.com/nba/player/_/id/82214/noah-clowney,noah-clowney,Brooklyn Nets,https://www.spotrac.com/nba/brooklyn-nets/yearly,PF,22,$5414034,RFA,,,,
 Noah Penda,https://www.spotrac.com/nba/player/_/id/98630/noah-penda,noah-penda,Orlando Magic,https://www.spotrac.com/nba/orlando-magic/yearly,SF,22,$2150917,$2525901,$2735698,UFA,,
 Nolan Traore,https://www.spotrac.com/nba/player/_/id/98615/nolan-traore,nolan-traore,Brooklyn Nets,https://www.spotrac.com/nba/brooklyn-nets/yearly,PG,20,$4002000,$4193040,$6457282,RFA,,Efrain
+Norchad Omier,https://www.spotrac.com/nba/player/_/id/101248/norchad-omier,norchad-omier,Cleveland Cavaliers,https://www.spotrac.com/nba/cleveland-cavaliers/yearly,F,25,Two-Way,,,,,
 Norman Powell,https://www.spotrac.com/nba/player/_/id/17874/norman-powell,norman-powell,Chicago Bulls,https://www.spotrac.com/nba/chicago-bulls/yearly,SG,33,$21500000,$22575000,UFA,,,Brandon
 Obi Toppin,https://www.spotrac.com/nba/player/_/id/70650/obi-toppin,obi-toppin,Indiana Pacers,https://www.spotrac.com/nba/indiana-pacers/yearly,PF,28,$15000000,$16025000,UFA,,,Andrew
 OG Anunoby,https://www.spotrac.com/nba/player/_/id/23618/og-anunoby,og-anunoby,New York Knicks,https://www.spotrac.com/nba/new-york-knicks/yearly,PF,29,$42500000,$45431034,$48362068,UFA,,
@@ -422,6 +422,7 @@ Rayan Rupert,https://www.spotrac.com/nba/player/_/id/82212/rayan-rupert,rayan-ru
 RayJ Dennis,https://www.spotrac.com/nba/player/_/id/95567/rayj-dennis,rayj-dennis,Atlanta Hawks,https://www.spotrac.com/nba/atlanta-hawks/yearly,PG,25,Two-Way,,,,,
 Reece Beekman,https://www.spotrac.com/nba/player/_/id/94484/reece-beekman,reece-beekman,Washington Wizards,https://www.spotrac.com/nba/washington-wizards/yearly,PG,25,Two-Way,,,,,
 Reed Sheppard,https://www.spotrac.com/nba/player/_/id/91739/reed-sheppard,reed-sheppard,Houston Rockets,https://www.spotrac.com/nba/houston-rockets/yearly,SG,22,$11108880,$14041625,RFA,,,Efrain
+Richie Saunders,https://www.spotrac.com/nba/player/_/id/108430/richie-saunders,richie-saunders,Memphis Grizzlies,https://www.spotrac.com/nba/memphis-grizzlies/yearly,G,25,Two-Way,,,,,
 Riley Minix,https://www.spotrac.com/nba/player/_/id/95269/riley-minix,riley-minix,Cleveland Cavaliers,https://www.spotrac.com/nba/cleveland-cavaliers/yearly,SF,26,Two-Way,,,,,
 R.J. Barrett,https://www.spotrac.com/nba/player/_/id/31560/rj-barrett,rj-barrett,Toronto Raptors,https://www.spotrac.com/nba/toronto-raptors/yearly,SG,26,$29616071,UFA,,,,John
 Robert Williams III,https://www.spotrac.com/nba/player/_/id/26993/robert-williams-iii,robert-williams,Portland Trail Blazers,https://www.spotrac.com/nba/portland-trail-blazers/yearly,C,29,$14000000,$14500000,$15000000,UFA,,Will
@@ -484,10 +485,9 @@ Tre Mann,https://www.spotrac.com/nba/player/_/id/74125/tre-mann,tre-mann,Washing
 Trendon Watford,https://www.spotrac.com/nba/player/_/id/74232/trendon-watford,trendon-watford,New Orleans Pelicans,https://www.spotrac.com/nba/new-orleans-pelicans/yearly,PF,26,$2449421,UFA,,,,
 Trevon Brazile,https://www.spotrac.com/nba/player/_/id/91785/trevon-brazile,trevon-brazile,Denver Nuggets,https://www.spotrac.com/nba/denver-nuggets/yearly,PF,24,$1357763,$2294370,$2694363,$2918152,RFA,
 Trey Alexander,https://www.spotrac.com/nba/player/_/id/94483/trey-alexander,trey-alexander,Utah Jazz,https://www.spotrac.com/nba/utah-jazz/yearly,SG,23,Two-Way,,,,,
-Trey Lyles,https://www.spotrac.com/nba/player/_/id/17840/trey-lyles,trey-lyles,Minnesota Timberwolves,https://www.spotrac.com/nba/minnesota-timberwolves/yearly,PF,31,$2449421,UFA,,,,
+Trey Lyles,https://www.spotrac.com/nba/player/_/id/17840/trey-lyles,trey-lyles,Minnesota Timberwolves,https://www.spotrac.com/nba/minnesota-timberwolves/yearly,PF,31,$2449421,UFA,,,,Robert
 Trey Murphy III,https://www.spotrac.com/nba/player/_/id/74124/trey-murphy-iii,trey-murphy,New Orleans Pelicans,https://www.spotrac.com/nba/new-orleans-pelicans/yearly,SF,26,$27000000,$29000000,$31000000,UFA,,Stein
 Tristan Da Silva,https://www.spotrac.com/nba/player/_/id/91759/tristan-da-silva,tristan-da-silva,Orlando Magic,https://www.spotrac.com/nba/orlando-magic/yearly,SF,25,$3991200,$6138466,RFA,,,David
-Tristan Enaruna,https://www.spotrac.com/nba/player/_/id/94520/tristan-enaruna,tristan-enaruna,Cleveland Cavaliers,https://www.spotrac.com/nba/cleveland-cavaliers/yearly,PF,25,Two-Way,,,,,
 Tristan Vukcevic,https://www.spotrac.com/nba/player/_/id/84470/tristan-vukcevic,tristan-vukcevic,Washington Wizards,https://www.spotrac.com/nba/washington-wizards/yearly,C,23,$3000000,$3000000,UFA,,,
 Ty Jerome,https://www.spotrac.com/nba/player/_/id/31582/ty-jerome,ty-jerome,Memphis Grizzlies,https://www.spotrac.com/nba/memphis-grizzlies/yearly,PG,29,$9220050,$9659100,UFA,,,Brandon
 Tyler Bilodeau,https://www.spotrac.com/nba/player/_/id/108558/tyler-bilodeau,tyler-bilodeau,Brooklyn Nets,https://www.spotrac.com/nba/brooklyn-nets/yearly,F,22,Two-Way,,,,,
