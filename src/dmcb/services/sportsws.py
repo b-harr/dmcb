@@ -33,17 +33,33 @@ def _scrape_sportsws_stats() -> pd.DataFrame:
         if player is None:
             continue
         name = player.get_text(strip=True)
+        if name == ".":
+            continue
         href = player.get("href")
         link = f"https://sports.ws{href}" if href else ""
         sibling = player.next_sibling
         tail = sibling.strip() if isinstance(sibling, str) else ""
-        match = re.search(r",\s*([\w*]+),\s*(\w+)", tail)
+        match = re.search(r",\s*([\w*]+),\s*(\w*)", tail)
+        player_key = utils.make_player_key(
+            link.replace("https://sports.ws/nba/", "", 1)
+        )
+        if "placeholder" in player_key.casefold():
+            continue
         if not name or match is None:
             raise ValueError(
                 f"Could not parse Sports.ws player row {row_number} "
                 f"({name or 'unknown player'}) at {url}: expected player name, "
                 "team, and position."
             )
+        _, position = match.groups()
+        if not position:
+            logging.warning(
+                "Skipping Sports.ws player row %s (%s) at %s: position is missing.",
+                row_number,
+                name,
+                url,
+            )
+            continue
         player_data.append({"Name": name, "Player Link": link, "Tail": tail})
 
     columns = ["Name", "Player Link", "Team", "Position"]

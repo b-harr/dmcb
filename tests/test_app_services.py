@@ -263,6 +263,26 @@ class TestSportswsService(unittest.TestCase):
         ):
             sportsws.get_positions()
 
+    def test_positions_scraper_skips_malformed_placeholder_row(self):
+        response = Mock()
+        response.content = b"""
+            <table><tbody>
+              <tr><td><a href="/nba/placeholder-01">P. 01</a>, , GFC</td></tr>
+              <tr><td><a href="/nba/-">. </a>, , </td></tr>
+              <tr><td><a href="/nba/free-agent-player">Free Agent</a>, *FA, </td></tr>
+              <tr><td><a href="/nba/test-player">Test Player</a>, BOS, G</td></tr>
+            </tbody></table>
+        """
+        with (
+            patch("dmcb.services.sportsws.requests.get", return_value=response),
+            self.assertLogs("root", level="WARNING") as logs,
+        ):
+            positions = sportsws.get_positions()
+
+        self.assertEqual(positions["Player Key"].tolist(), ["test-player"])
+        self.assertEqual(positions["Position"].tolist(), ["G"])
+        self.assertIn("Free Agent", logs.output[0])
+
     def test_positions_scraper_reports_network_errors(self):
         with (
             patch(

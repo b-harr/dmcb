@@ -158,9 +158,26 @@ class TestPullFailures(unittest.TestCase):
             pull_positions.save_positions_data(pd.DataFrame(), "positions.csv")
 
         frame = pd.DataFrame({"Player": ["Player One"]})
-        with patch.object(frame, "to_csv", side_effect=OSError("disk full")):
+        with patch.object(pd.DataFrame, "to_csv", side_effect=OSError("disk full")):
             with self.assertRaisesRegex(RuntimeError, "Failed to save positions"):
                 pull_positions.save_positions_data(frame, "positions.csv")
+
+    def test_position_export_omits_data_source_column(self):
+        frame = pd.DataFrame(
+            {
+                "Name": ["Player One"],
+                "Position": ["G"],
+                "Data Source": ["Sports.ws"],
+                "Owner": ["GM"],
+            }
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            output_csv = os.path.join(directory, "positions.csv")
+            pull_positions.save_positions_data(frame, output_csv)
+            exported = pd.read_csv(output_csv)
+
+        self.assertEqual(exported.columns.tolist(), ["Name", "Position", "Owner"])
+        self.assertEqual(exported.iloc[0].tolist(), ["Player One", "G", "GM"])
 
     def test_stats_save_failures_are_raised(self):
         columns = ["Player", "Team", *pull_stats.NUMERIC_COLUMNS]
